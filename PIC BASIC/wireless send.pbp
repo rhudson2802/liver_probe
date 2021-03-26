@@ -1,0 +1,129 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2020 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 03/12/2020                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+include "modedefs.bas"
+
+#if __PROCESSOR__ = "18F2550"
+    #config
+        CONFIG  PLLDIV = 5            ; Divide by 5 (20 MHz oscillator input)
+        CONFIG  CPUDIV = OSC1_PLL2    ; [Primary Oscillator Src: /1][96 MHz PLL Src: /2]
+        CONFIG  USBDIV = 2            ; USB clock source comes from the 96 MHz PLL divided by 2
+        CONFIG  FOSC = INTOSCIO_EC       ; HS oscillator, PLL enabled (HSPLL)
+        CONFIG  FCMEN = OFF           ; Fail-Safe Clock Monitor disabled
+        CONFIG  IESO = OFF            ; Oscillator Switchover mode disabled
+        CONFIG  PWRT = OFF            ; PWRT disabled
+        CONFIG  BOR = ON              ; Brown-out Reset enabled in hardware only (SBOREN is disabled)
+        CONFIG  BORV = 3              ; Minimum setting
+        CONFIG  VREGEN = ON           ; USB voltage regulator enabled
+        CONFIG  WDT = OFF             ; WDT disabled
+        CONFIG  WDTPS = 512           ; 1:512
+        CONFIG  CCP2MX = OFF          ; CCP2 input/output is multiplexed with RB3
+        CONFIG  PBADEN = OFF          ; PORTB<4:0> pins are configured as digital I/O on Reset
+        CONFIG  LPT1OSC = OFF         ; Timer1 configured for higher power operation
+        CONFIG  MCLRE = ON            ; MCLR pin enabled; RE3 input pin disabled
+        CONFIG  STVREN = ON           ; Stack full/underflow will cause Reset
+        CONFIG  LVP = OFF             ; Single-Supply ICSP disabled
+        CONFIG  XINST = OFF           ; Instruction set extension and Indexed Addressing mode disabled (Legacy mode)
+        CONFIG  DEBUG = OFF           ; Background debugger disabled, RB6 and RB7 configured as general purpose I/O pins
+        CONFIG  CP0 = OFF             ; Block 0 (000800-001FFFh) is not code-protected
+        CONFIG  CP1 = OFF             ; Block 1 (002000-003FFFh) is not code-protected
+        CONFIG  CP2 = OFF             ; Block 2 (004000-005FFFh) is not code-protected
+        CONFIG  CP3 = OFF             ; Block 3 (006000-007FFFh) is not code-protected
+        CONFIG  CPB = OFF             ; Boot block (000000-0007FFh) is not code-protected
+        CONFIG  CPD = OFF             ; Data EEPROM is not code-protected
+        CONFIG  WRT0 = OFF            ; Block 0 (000800-001FFFh) is not write-protected
+        CONFIG  WRT1 = OFF            ; Block 1 (002000-003FFFh) is not write-protected
+        CONFIG  WRT2 = OFF            ; Block 2 (004000-005FFFh) is not write-protected
+        CONFIG  WRT3 = OFF            ; Block 3 (006000-007FFFh) is not write-protected
+        CONFIG  WRTC = OFF            ; Configuration registers (300000-3000FFh) are not write-protected
+        CONFIG  WRTB = OFF            ; Boot block (000000-0007FFh) is not write-protected
+        CONFIG  WRTD = OFF            ; Data EEPROM is not write-protected
+        CONFIG  EBTR0 = OFF           ; Block 0 (000800-001FFFh) is not protected from table reads executed in other blocks
+        CONFIG  EBTR1 = OFF           ; Block 1 (002000-003FFFh) is not protected from table reads executed in other blocks
+        CONFIG  EBTR2 = OFF           ; Block 2 (004000-005FFFh) is not protected from table reads executed in other blocks
+        CONFIG  EBTR3 = OFF           ; Block 3 (006000-007FFFh) is not protected from table reads executed in other blocks
+        CONFIG  EBTRB = OFF           ; Boot block (000000-0007FFh) is not protected from table reads executed in other blocks
+    #endconfig
+    TRISA = 0
+    TRISB = %00010100
+    TRISC = %10010110
+    OSCCON = %1110010
+    ADCON0 = 0
+    ADCON1 = %00001111
+    'ADCON2 =      
+#else
+    #if __PROCESSOR__ = "16F688"
+        #config
+            __config _INTRC_OSC_NOCLKOUT & _WDT_OFF & _MCLRE_ON & _CP_OFF
+        #endconfig
+        
+        ANSEL = %10000000
+        ADCON0 = %11011101
+        TRISC = %00001000
+        OSCCON = %1110111   
+    #else
+        #error "Program does not support " + __PROCESSOR__
+    #endif
+#endif
+
+define OSC 8
+define CHAR_PACING 1000
+define ADC_BITS 10
+define ADC_SAMPLEUS 50
+
+
+
+baud con N1200
+baud_300 con 3313 | %0100000000000000
+baud_600 con 1646 | %0100000000000000
+baud_1200 con 813 | %0100000000000000
+
+i var word
+j var byte
+n_bits var byte
+receive var byte  
+serial_out var PORTC.4
+tx_out var PORTC.4
+
+serout serial_out, baud, ["Hello world"]
+
+mainloop:
+    for i = 1 to 9999
+        if i > 9 then
+            n_bits = 2
+        else
+            n_bits = 1
+        endif
+        serout2 tx_out, baud_300, ["UUUUUUUU"]'UUUUU"]
+        pause 5
+        serout2 serial_out, baud_1200, ["m ", dec4 i, 10]
+        'serout tx_out, baud, ["UUUUUUUUl ", #n_bits, " m 000", #i]
+       ' pause 1000
+        'serout tx_out, baud, ["m ", #i]
+        pause 10
+        'serout tx_out, N1200, [#i]
+        'serout tx_out, N300, ["liver 1"]
+        'serout tx_out, N300, ["liver", #i]
+        'pause 10
+        'serin PORTC.3, N300, receive
+        'pause 1
+        'serout serial_out, N1200, [#i, " ", #receive, 10]
+        'pause 1
+        
+        'for j = 1 to 10
+         '   serout2 tx_out, baud_300, ["U"]
+          '  pause 100
+        'next j
+        
+    next i
+   
+goto mainloop
+
+end    

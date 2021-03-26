@@ -127,3 +127,37 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+
+.idea/*
+Liver Probe/*
+Michaelmas Presentation/*
+Risk Assessments/*
+Series RLC/*
+Shapes/*
+Technical Milestone Report/*
+Wireless Charger/*
+
+*.pdf
+*.docx
+*.asc
+*.fft
+*.imp
+*.raw
+*.png
+*.PNG
+*.rar
+*.xlsx
+*.ASM
+*.ERR
+*.HEX
+*.LST
+*.MAC
+*.O
+*.map
+*.mcp
+*.mcw
+*.gz
+*.jpg
+*.jpeg

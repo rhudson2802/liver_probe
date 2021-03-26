@@ -1,0 +1,139 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2021 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 22/02/2021                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+include "modedefs.bas"
+
+define OSC 8
+define CHAR_PACING 1000
+
+'*******************LCD CONNECTED WRONGLY DB7 LCDOUT WONT WORK******************
+' Set LCD Data port
+DEFINE LCD_DREG PORTC
+' Set starting Data bit (0 or 4) if 4-bit bus
+DEFINE LCD_DBIT 0
+' Set LCD Register Select port
+DEFINE LCD_RSREG PORTC
+' Set LCD Register Select bit
+DEFINE LCD_RSBIT 5
+' Set LCD Enable port
+DEFINE LCD_EREG PORTA
+' Set LCD Enable bit
+DEFINE LCD_EBIT 0
+' Set LCD bus size (4 or 8 bits)
+DEFINE LCD_BITS 4
+' Set number of lines on LCD
+DEFINE LCD_LINES 4
+' Set command delay time in us
+DEFINE LCD_COMMANDUS 1500
+' Set data delay time in us
+DEFINE LCD_DATAUS 44
+
+
+wireless_rx var PORTA.6
+wireless_tx var PORTB.2
+rs232_out var PORTC.6
+rs232_in var PORTC.7
+
+enable_charger var PORTA.1
+pwm_sig var PORTB.3
+
+sw_menu var PORTA.2
+sw_ok var PORTA.3
+sw_up var PORTA.4
+sw_down var PORTA.5  
+
+nSHDN var PORTB.4
+
+
+
+
+baud con N300
+baud_300 con 3313 | %0100000000000000
+baud_600 con 1646 | %0100000000000000
+baud_1200 con 813 | %0100000000000000
+MESSAGE_REPEATS con 3
+READING_DELAY con 1000
+
+
+messages var byte[MESSAGE_REPEATS * 2] 
+readings var word[MESSAGE_REPEATS]
+current_data var word
+checksums var byte[MESSAGE_REPEATS]
+different_readings var byte    
+num_messages_received var byte
+i var byte
+
+
+
+init:
+    ADCON0 = 0
+    ADCON1 = 0
+    CMCON = 0
+    TRISA = %01111100
+    TRISB = %11000000
+    TRISC = %01000000
+    OSCCON = %01110110
+    
+    
+mainloop:
+    gosub take_reading
+goto mainloop
+
+
+take_reading:
+    num_messages_received = 0
+    for i = 0 to (MESSAGE_REPEATS - 1)
+        'Read in message from wireless receiver
+        serin2 wireless_rx, baud_300, 100, reading_timeout, [wait("m "), dec2 messages[2*i], dec2 messages[(2*i)+1], checksums[i]]
+        
+        'Keep track of number of messages received
+        num_messages_received = num_messages_received + 1    
+        
+                
+        'serin2 skips here if it timesout.
+        'Will timeout if we don't receive another packet within the time we are expecting one
+        'num_messages_received isn't incremented, so we can check this and exit the loop
+        reading_timeout:
+        if num_messages_received != (i + 1) then
+            exit
+        endif
+    next i
+    
+    different_readings = 0
+    for i = 0 to (num_messages_received - 1)
+        'Convert 2 byte message to word
+        '************CHECK IF WE CAN USE DEC4 TO GET READING DIRECTLY**********
+        current_data = messages[2*i] * 100 + messages[(2*i)+1]
+        
+        ' Check the checksum we calculate is what we recieved
+        if checksums[i] == (current_data.byte0 ^ current_data.byte1) then
+            if different_readings == 0 then
+                readings[different_readings] = current_data
+                different_readings = different_readings + 1
+            else
+            ' Check that the repeated data is the same as the first reading,
+            ' Otherwise we have received two different readings
+            ' Save both of these as we don't know which one is wrong
+            '**************ERROR CORRECTION????*********************************
+                if current_data != different_readings then
+                    readings[different_readings] = current_data
+                    different_readings = different_readings + 1
+                endif
+            endif
+        endif
+    next i
+    
+    'gosub get_time
+    'gosub save_data
+return
+    
+    
+get_time:
+save_data: 

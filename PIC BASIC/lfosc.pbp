@@ -1,0 +1,39 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2021 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 04/03/2021                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+define OSC 8
+
+ANSEL = %00000000
+TRISA = %00000000
+TRISC = %00000000
+OSCCON = %01110111
+
+sig var PORTA.2
+i var byte
+
+mainloop:
+OSCCON = %01110111
+    for i = 1 to 255
+    high sig
+    pause 1
+    low sig
+    pause 1
+    next i
+    
+    OSCCON = %00000001
+    for i = 1 to 10
+    high sig
+    pause 1
+    low sig
+    pause 1
+    next i
+    
+goto mainloop
+    

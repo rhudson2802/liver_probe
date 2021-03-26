@@ -1,0 +1,32 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2020 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 02/11/2020                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+define OSC 8
+ANSEL = %00000000
+ADCON0 = %11011101
+ADCON1 = %00110000
+TRISC = %00000000
+OSCCON = %1110111
+CMCON0 = %00000000
+
+mainloop:
+low PORTC.4
+high PORTC.2
+'high PORTC.1
+'high PORTA.2
+high PORTC.0
+pause 10
+'low PORTC.1
+'low PORTA.2
+low PORTC.0
+low PORTC.2
+pause 10
+goto mainloop
+end

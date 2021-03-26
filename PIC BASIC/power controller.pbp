@@ -1,0 +1,58 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2020 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 22/11/2020                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+define OSC 8
+
+ANSEL = %00000000
+TRISA = %00000000
+TRISC = %00000000
+OSCCON = %1110111
+
+DELAY_LOOPS con 6
+
+sig var PORTA.2
+n_sig var PORTC.1 
+counter var byte 
+
+mainloop:
+asm  
+ 
+Start
+
+    bsf _sig
+    bcf _n_sig
+
+    call Delay
+
+
+
+	bcf _sig
+	bsf _n_sig
+	
+	call Delay
+	
+	goto Start
+
+
+Delay
+    movlw _DELAY_LOOPS
+    movwf _counter
+Delay_Loop
+    decfsz _counter
+    goto Delay_Loop
+    return
+
+
+endasm
+
+
+goto mainloop
+
+end

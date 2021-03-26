@@ -1,0 +1,26 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2020 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 26/11/2020                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+'define OSC 8
+
+ANSEL = %00000000
+TRISA = %00000000
+TRISC = %00000000
+OSCCON = %1110111
+OSCTUNE = %0
+
+sig var PORTA.2
+
+asm
+Main
+    bsf _sig
+    bcf _sig
+    goto Main
+endasm

@@ -1,0 +1,61 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2021 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 24/02/2021                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+include "modedefs.bas"
+
+define OSC 8
+define CHAR_PACING 1000
+define ADC_BITS 10
+define ADC_SAMPLEUS 50
+define ADC_CLOCK 3
+
+ANSEL = %00100000
+ADCON0 = %10010101
+ADCON1 = %00110000
+TRISC = %00001010
+OSCCON = %1110111
+CMCON0 = %00000000
+
+current var word
+i var byte
+
+red_led var PORTC.0
+battery con 5       'Analogue port used as input
+serial_out var PORTC.4
+baud con N300
+baud_300 con 3313 | %0100000000000000
+baud_600 con 1646 | %0100000000000000
+baud_1200 con 813 | %0100000000000000
+
+
+
+mainloop:
+    low red_led
+    adcin battery, current
+
+    serout2 serial_out, baud_300, ["UUUUUUUU"]
+    pause 5
+    serout2 serial_out, baud_1200, [" m ", dec4 current]
+
+    pause 1000
+    
+    low red_led
+    high serial_out
+    pause 100
+    adcin battery, current
+    low serial_out
+
+    serout2 serial_out, baud_300, ["UUUUUUUU"]
+    pause 5
+    serout2 serial_out, baud_1200, [" m ", dec4 current]
+    pause 1000
+
+goto mainloop
+end

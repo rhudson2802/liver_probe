@@ -1,0 +1,323 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2021 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 06/02/2021                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+include "modedefs.bas"
+
+
+#if __PROCESSOR__ = "18F2550"
+    #config
+        CONFIG  PLLDIV = 5            ; Divide by 5 (20 MHz oscillator input)
+        CONFIG  CPUDIV = OSC1_PLL2    ; [Primary Oscillator Src: /1][96 MHz PLL Src: /2]
+        CONFIG  USBDIV = 2            ; USB clock source comes from the 96 MHz PLL divided by 2
+        CONFIG  FOSC = INTOSCIO_EC       ; HS oscillator, PLL enabled (HSPLL)
+        CONFIG  FCMEN = OFF           ; Fail-Safe Clock Monitor disabled
+        CONFIG  IESO = OFF            ; Oscillator Switchover mode disabled
+        CONFIG  PWRT = OFF            ; PWRT disabled
+        CONFIG  BOR = ON              ; Brown-out Reset enabled in hardware only (SBOREN is disabled)
+        CONFIG  BORV = 3              ; Minimum setting
+        CONFIG  VREGEN = ON           ; USB voltage regulator enabled
+        CONFIG  WDT = OFF             ; WDT disabled
+        CONFIG  WDTPS = 512           ; 1:512
+        CONFIG  CCP2MX = OFF          ; CCP2 input/output is multiplexed with RB3
+        CONFIG  PBADEN = OFF          ; PORTB<4:0> pins are configured as digital I/O on Reset
+        CONFIG  LPT1OSC = OFF         ; Timer1 configured for higher power operation
+        CONFIG  MCLRE = ON            ; MCLR pin enabled; RE3 input pin disabled
+        CONFIG  STVREN = ON           ; Stack full/underflow will cause Reset
+        CONFIG  LVP = OFF             ; Single-Supply ICSP disabled
+        CONFIG  XINST = OFF           ; Instruction set extension and Indexed Addressing mode disabled (Legacy mode)
+        CONFIG  DEBUG = OFF           ; Background debugger disabled, RB6 and RB7 configured as general purpose I/O pins
+        CONFIG  CP0 = OFF             ; Block 0 (000800-001FFFh) is not code-protected
+        CONFIG  CP1 = OFF             ; Block 1 (002000-003FFFh) is not code-protected
+        CONFIG  CP2 = OFF             ; Block 2 (004000-005FFFh) is not code-protected
+        CONFIG  CP3 = OFF             ; Block 3 (006000-007FFFh) is not code-protected
+        CONFIG  CPB = OFF             ; Boot block (000000-0007FFh) is not code-protected
+        CONFIG  CPD = OFF             ; Data EEPROM is not code-protected
+        CONFIG  WRT0 = OFF            ; Block 0 (000800-001FFFh) is not write-protected
+        CONFIG  WRT1 = OFF            ; Block 1 (002000-003FFFh) is not write-protected
+        CONFIG  WRT2 = OFF            ; Block 2 (004000-005FFFh) is not write-protected
+        CONFIG  WRT3 = OFF            ; Block 3 (006000-007FFFh) is not write-protected
+        CONFIG  WRTC = OFF            ; Configuration registers (300000-3000FFh) are not write-protected
+        CONFIG  WRTB = OFF            ; Boot block (000000-0007FFh) is not write-protected
+        CONFIG  WRTD = OFF            ; Data EEPROM is not write-protected
+        CONFIG  EBTR0 = OFF           ; Block 0 (000800-001FFFh) is not protected from table reads executed in other blocks
+        CONFIG  EBTR1 = OFF           ; Block 1 (002000-003FFFh) is not protected from table reads executed in other blocks
+        CONFIG  EBTR2 = OFF           ; Block 2 (004000-005FFFh) is not protected from table reads executed in other blocks
+        CONFIG  EBTR3 = OFF           ; Block 3 (006000-007FFFh) is not protected from table reads executed in other blocks
+        CONFIG  EBTRB = OFF           ; Boot block (000000-0007FFh) is not protected from table reads executed in other blocks
+    #endconfig
+    
+    ' Set LCD Data port
+    DEFINE LCD_DREG PORTA
+    ' Set starting Data bit (0 or 4) if 4-bit bus
+    DEFINE LCD_DBIT 0
+    ' Set LCD Register Select port
+    DEFINE LCD_RSREG PORTA
+    ' Set LCD Register Select bit
+    DEFINE LCD_RSBIT 5
+    ' Set LCD Enable port
+    DEFINE LCD_EREG PORTA
+    ' Set LCD Enable bit
+    DEFINE LCD_EBIT 4
+    
+    DEFINE CCP2_REG PORTB 'Channel-2 port
+    DEFINE CCP2_BIT 3 'Channel-2 bit
+    
+    PORTA = 0
+    PORTB = 0
+    PORTC = 0
+    TRISA = 0
+    TRISB = %00010100
+    TRISC = %10010110
+    OSCCON = %1110010
+    ADCON0 = 0
+    ADCON1 = %00001111
+    'ADCON2 = 
+    T1CON = 0           'Turn off secondary oscillator
+    T3CON = 0
+    UCON = 0'%10        'Turn off USB
+    UCFG = %00001000
+    UIE = 0
+    UEIE = 0
+    
+    
+    ' Set up PWM to run in hardware
+    PR2 = 19
+    CCPR2L = %00001010
+    CCP2CON.5 = 0
+    CCP2CON.4 = 0
+    TRISB.3 = 0
+    T2CON = %00000100
+    CCP2CON = %00001111
+    
+#else
+    #if __PROCESSOR__ = "16F688"
+        #config
+            __config _INTRC_OSC_NOCLKOUT & _WDT_OFF & _MCLRE_ON & _CP_OFF
+        #endconfig
+    #else
+        #error "Program does not support " + __PROCESSOR__
+    #endif
+    
+    
+    ' Set LCD Data port
+    DEFINE LCD_DREG PORTC
+    ' Set starting Data bit (0 or 4) if 4-bit bus
+    DEFINE LCD_DBIT 0
+    ' Set LCD Register Select port
+    DEFINE LCD_RSREG PORTC
+    ' Set LCD Register Select bit
+    DEFINE LCD_RSBIT 4
+    ' Set LCD Enable port
+    DEFINE LCD_EREG PORTC
+    ' Set LCD Enable bit
+    DEFINE LCD_EBIT 5
+    
+    ANSEL = %00000000
+    TRISA = %00000000
+    TRISC = %00000000
+    OSCCON = %1110111
+#endif
+
+
+
+define OSC 8
+define CHAR_PACING 1000
+define ADC_BITS 10
+define ADC_SAMPLEUS 50
+define ADC_CLOCK 3
+
+
+
+' Set LCD bus size (4 or 8 bits)
+DEFINE LCD_BITS 4
+' Set number of lines on LCD
+DEFINE LCD_LINES 4
+' Set command delay time in us
+DEFINE LCD_COMMANDUS 1500
+' Set data delay time in us
+DEFINE LCD_DATAUS 44
+
+
+LCD_DELAY con 1
+
+
+'lcd_db4 var PORTC.0
+'lcd_db5 var PORTC.1
+'lcd_db6 var PORTC.2
+'lcd_db7 var PORTC.3
+'lcd_rs var PORTC.4
+'lcd_en var PORTC.5
+
+
+
+lcd_to_write var byte
+menu_option var byte
+menu_option = 0
+i var word
+i = 1000
+
+
+pause 500    'Need 10 second delay for LCD to boot
+LCDOUT $FE, 1, $FE, $C0+6, "Welcome" ' Clear display move cursor to 2nd line
+pause LCD_DELAY
+LCDOUT $FE, $94+4, "Liver Probe" ' Jump to third line
+pause 5000
+lcdout $FE, 1
+pause LCD_DELAY
+
+mainloop:
+    goto menu
+goto mainloop
+
+
+take_readings:
+    lcdout $FE, 1
+    pause LCD_DELAY
+    gosub write_time
+    
+    lcdout $FE, $C0, "READING: ", dec i                     'Write reading
+    pause LCD_DELAY
+    
+    lcdout $FE, $94                                         'Move cursor to 3rd line
+    pause LCD_DELAY
+    if i // 2 == 0 then
+        lcdout "GOOD LIVER"
+    else   
+        lcdout "BAD LIVER"
+    endif
+    pause LCD_DELAY
+    
+    lcdout $FE, $D4, "TEMPERATURE: ", dec i                 'Write temperature
+    
+    pause 1000
+    i = i+1
+
+goto take_readings
+
+
+menu:
+    lcdout $FE, 1
+    pause LCD_DELAY
+    lcdout $FE, $80, "MENU"
+    
+    lcdout $FE, $C0+2, "Take readings"
+    pause LCD_DELAY
+    
+    lcdout $FE, $94+2, "View memory"
+    pause LCD_DELAY
+    
+    lcdout $FE, $D4+2, "Delete all memory"
+    pause LCD_DELAY
+    
+    menu_loop:
+    gosub write_time
+    
+    if menu_option == 0 then
+        lcdout $FE, $C0, $7E
+        lcdout $FE, $94, " "
+        lcdout $FE, $D4, " "
+    elseif menu_option == 1 then
+        lcdout $FE, $C0, " "
+        lcdout $FE, $94, $7E
+        lcdout $FE, $D4, " "
+    else
+        lcdout $FE, $C0, " "
+        lcdout $FE, $94, " "
+        lcdout $FE, $D4, $7E
+    endif
+    
+    pause 1000
+    i = i + 1
+    menu_option = (menu_option + 1) // 3
+goto menu_loop
+
+
+delete_menu:
+    lcdout $FE, 1
+    pause LCD_DELAY
+    lcdout $FE, $80, "WARNING - This will"
+    pause LCD_DELAY
+    lcdout $FE, $C0+1, "delete ALL memory"
+    pause LCD_DELAY
+    lcdout $FE, $94, "Press OK to continue"
+    pause LCD_DELAY
+    lcdout $FE, $D4+6, "MENU to cancel"
+    pause LCD_DELAY
+    
+    'Check option and goto menu or delete
+    pause 1000
+goto delete_menu
+
+
+
+delete:
+    lcdout $FE, 1
+    pause LCD_DELAY
+    
+    lcdout $FE, $C0+1, "Deleting readings"
+    pause LCD_DELAY
+    
+    'Clear EEPROM
+    
+    lcdout $FE, 1
+    pause LCD_DELAY
+    lcdout $FE, $C0+4, "All readings"
+    pause LCD_DELAY
+    lcdout $FE, $94+6, "deleted"      
+    pause LCD_DELAY
+
+    pause 5000
+goto menu
+
+
+
+
+view_readings:
+    lcdout $FE, 1
+    pause LCD_DELAY    
+    
+    lcdout $FE, $C0+19, $7E
+    pause LCD_DELAY
+    lcdout $FE, $94+19, $7F
+    pause LCD_DELAY
+    
+    'get reading
+    lcdout $FE, $80, dec4 i, " ", dec2 i, "/", dec2 i, " ", dec2 i, ":", dec2 i 'Write 4 digit ID, month/day hour:min
+    pause LCD_DELAY
+    lcdout $FE, $C0+4, "READING: ", dec4 i
+    pause LCD_DELAY
+    
+    'get reading
+    lcdout $FE, $94, dec4 i, " ", dec2 i, "/", dec2 i, " ", dec2 i, ":", dec2 i 'Write 4 digit ID, month/day hour:min
+    pause LCD_DELAY
+    lcdout $FE, $D4+4, "READING: ", dec4 i
+    pause LCD_DELAY
+    
+    
+    pause 1000
+    i = i+1
+goto view_readings
+    
+    
+    
+    
+
+
+
+
+write_time:
+    lcdout $FE, $80 + 12, dec2 i, ":", dec2 i, ":", dec2 i    'Write time   rep " "\12
+    pause LCD_DELAY
+return
+
+
+
+
+

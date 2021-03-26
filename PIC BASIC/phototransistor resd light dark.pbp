@@ -1,0 +1,82 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2020 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 04/11/2020                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+include "modedefs.bas"
+
+define OSC 8
+define CHAR_PACING 1000
+define ADC_BITS 10
+define ADC_SAMPLEUS 50
+define ADC_CLOCK 3
+
+ANSEL = %10000000
+ADCON0 = %11011101
+ADCON1 = %00110000
+TRISC = %00001000
+OSCCON = %1110111
+CMCON0 = %00000000
+
+reading var word
+dark var word
+light var word
+N var byte
+i var byte
+
+ir_led var PORTC.2
+red_led var PORTC.0
+phototransistor con 7       'Analogue port used as input
+serial_out var PORTC.4
+baud con N300
+baud_300 con 3313 | %0100000000000000
+baud_600 con 1646 | %0100000000000000
+baud_1200 con 813 | %0100000000000000
+
+N = 50
+
+high ir_led
+
+mainloop:
+reading = 0
+dark = 0
+light = 0
+
+low red_led
+
+for i = 1 to N
+    low ir_led
+    pause 1
+    adcin phototransistor, light  'read in light data
+    high ir_led
+    pause 1
+    adcin phototransistor, dark   'read in dark data
+    
+    ' Add current readings to sum
+    ' Dark should be > light if measurement variation is due to our probe
+    if dark >= light then
+        reading = reading + (dark - light)
+    else
+        reading = reading + (light - dark)
+    ' Check we won't overflow reading before performing subtraction
+    'elseif reading > (light - dark) then 
+        'reading = reading - (light - dark)
+    endif
+    'serout serial_out, baud, ["Light: ", #light, "    Dark: ", #dark, "    Diff: ", #(dark - light), "    Reading: ", #reading, 10]
+next i  
+
+'Compute mean
+reading = reading / N
+'serout serial_out, N300, ["UUUUUUUm 0000"]
+serout2 serial_out, baud_300, ["UUUUUUUUU", " m ", dec4 reading, " m ", dec4 reading, " m ", dec4 reading]
+
+high red_led
+pause 1000
+
+goto mainloop
+end

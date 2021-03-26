@@ -1,0 +1,81 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2020 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 05/11/2020                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+include "modedefs.bas"
+
+define OSC 8
+define CHAR_PACING 1000
+define ADC_BITS 10
+define ADC_SAMPLEUS 50
+
+MAX_STRING_LENGTH con 20
+
+ANSEL = %10000000
+ADCON0 = %11011101
+TRISC = %00001000
+OSCCON = %1110111
+            
+led var PORTC.1
+             
+message_length var byte
+x var byte[MAX_STRING_LENGTH]
+i var byte
+
+
+
+
+serout PORTC.4, N2400, ["hello world", 10]
+
+mainloop:
+high led
+gosub fetch_message
+gosub send_message
+'serout2 PORTC.4, 16780, [str x, 10]
+
+'Echo serial input
+'serin PORTC.5, N2400, x
+'low PORTC.1
+'pause 100
+'serout PORTC.4, N2400, [x, 10]
+'pause 100
+goto mainloop
+
+
+
+' Fetches message of unknown length 
+fetch_message:
+    low led
+    i = 0
+    while i < MAX_STRING_LENGTH
+        serin PORTC.5, N2400, x[i]
+        serout PORTC.4, N2400, ["i = ", #i, 10]
+        serout PORTC.4, N2400, ["This is letter input ", #i, " ", x[i], 10]
+        'serout PORTC.4, N2400, [x[i],10]
+        if x[i] == 10 then
+            message_length = i
+            i = MAX_STRING_LENGTH
+        endif
+    wend
+    serout PORTC.4, N2400, ["Message length is ", #message_length]
+    high led
+return  
+
+
+' Sends message of length message_length
+send_message: 
+    low led
+    for i = 0 to message_length
+        serout PORTC.4, N2400, ["This is letter output", #i, " ", x[i], 10]
+    next i
+    serout PORTC.4, N2400, [10]
+    high led
+return
+
+end

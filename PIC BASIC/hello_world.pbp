@@ -1,0 +1,50 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2020 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 30/10/2020                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+include "modedefs.bas"
+'define ADC_BITS 8
+'define ADC_CLOCK 3
+'define ADC_SAMPLEUS 50
+define OSC 8
+define CHAR_PACING 1000
+
+ANSEL = %00000000
+TRISC = %00000000
+TRISA = %11111111
+OSCCON = %1110111
+
+'x var byte
+'x = 50
+
+low PORTC.0
+low PORTC.1
+low PORTC.2
+low PORTC.3
+low PORTC.4
+low PORTC.5
+
+mainloop:
+
+serout PORTC.4, N2400, ["hello world", 10]
+
+'high PORTC.2
+'adcin 10, x
+
+'pause 50
+
+'low PORTC.2
+
+pause 500
+
+'x = (x+1)//100
+
+goto mainloop
+
+end 

@@ -1,0 +1,95 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2021 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 24/02/2021                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+
+include "modedefs.bas"
+
+define OSC 8
+define CHAR_PACING 1000
+define ADC_BITS 10
+define ADC_SAMPLEUS 50
+define ADC_CLOCK 3
+
+
+
+ANSEL = %00000000
+TRISA = %00000000
+TRISC = %00000000
+OSCCON = %1110111
+
+
+lcde var PORTC.5 '<---- LCD Enable
+lcdrs var PORTC.4'<---- LCD R/S
+lcd7 var PORTC.3 '<---- LCD DATA 7
+lcd6 var PORTC.2 '<---- LCD DATA 6
+lcd5 var PORTC.1 '<---- LCD DATA 5
+lcd4 var PORTC.0 '<---- LCD DATA 4 *notice this is one portB*
+B1 var byte '<---- HOLDS LCD CHARACTER ASCII DATA BYTES
+
+
+LCD3: 'lcd subroutine
+lcdrS = 1 'ascii mode
+FOR X = 0 TO 7 ' Count from 0 to 7 (8 character per line on lcd)
+LOOKUP X,["EYE DLY "],B1 ' Get character number B0 from string to variable B1
+
+lcd7 = B1.7 'puts top half of ascii data on pins 7-4
+lcd6 = B1.6
+lcd5 = B1.5
+lcd4 = B1.4
+gosub lcdtog 'toggle the e line
+lcd7 = B1.3 'puts bottom half of ascii data on pins 7-4
+lcd6 = B1.2
+lcd5 = B1.1
+lcd4 = B1.0
+gosub lcdtog 'toggle the e line
+
+NEXT X ' Do next character
+Return
+
+
+lcdtog:
+pause 1
+High Lcde 'set lcd enable line high
+pause 1
+Low Lcde 'set lcd enable line low
+pause 1
+Return
+
+
+lcdinit:
+'-----------------------
+Pause 35 'wait at least 35ms
+lcdrS = 0 'instruction mode
+
+pause 50
+lcd7 = 0
+lcd6 = 0
+lcd5 = 1
+lcd4 = 0 'initialize the lcd
+gosub lcdtog 'Toggle E line
+
+'---------------------------
+FOR X = 0 TO 4 ' Count from 0 to 4 (5 commands to be sent)
+LOOKUP X,[$28,$0C,$0C,$06,$01],B1 ' Get character number B0 from string to variable B1
+
+lcd7 = B1.7
+lcd6 = B1.6
+lcd5 = B1.5
+lcd4 = B1.4
+gosub lcdtog
+lcd7 = B1.3
+lcd6 = B1.2
+lcd5 = B1.1
+lcd4 = B1.0
+gosub lcdtog
+pause 30
+NEXT X ' Do next character
+'----------------------------
+Return
