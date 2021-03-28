@@ -31,7 +31,7 @@
 \usepackage{multirow}
 %\usepackage{pgfplotstable}
 \usepackage{subcaption}
-\usepackage{siunitx}
+\usepackage[binary-units=true]{siunitx}
 %\usepackage{tcolorbox}
 %\usepackage{textgreek}
 \usepackage{url}
