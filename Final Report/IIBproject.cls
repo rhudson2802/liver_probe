@@ -28,6 +28,7 @@
 %\usepackage{float}
 %\usepackage{listings}
 %\usepackage{multicol}
+\usepackage{multirow}
 %\usepackage{pgfplotstable}
 \usepackage{subcaption}
 \usepackage{siunitx}

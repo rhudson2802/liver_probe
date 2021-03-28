@@ -1,0 +1,62 @@
+\section{Hardware Design}
+
+A Peripheral Interface Controller (PIC) was chosen as the microcontroller for both the base and remote unit. PICs are versatile, with highly configurable pin assignments, which was suitable for the different types of sub-system which would be used in the product. Furthermore, they are easy to program in PICBASIC using the MicroCode Studio and MPLAB IDE software packages. PICBASIC provides a high level way to access the PIC's instruction set, with commands available which combine many complex assemble code instructions. The free version of MicroCode Studio limits the range of devices which can be programmed, so the PIC16F688 \cite{pic16f688} was chosen for the remote unit and the PIC18F2550 \cite{pic18f2550} for the base unit. These had the right number of I/O pins for their respective unit, as well as some special features which will be discussed in later sections. PICs are also relatively cheap, which is a good property for the disposable remote unit.\\
+
+\subsection{Measurement System}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{measurement.PNG}
+	\caption{Circuit schematic of diffuse reflectance measurement system}
+	\label{fig: measurement schematic}
+\end{figure}
+
+Figure \ref{fig: measurement schematic} illustrates the circuit used to perform the backscatter measurements on the liver. Fundamentally, this circuit shines an LED at the liver, then produces an output voltage proportional to the amount of light reflected back. The left hand side circuit of figure \ref{fig: measurement system} provides a constant current to the LED. This is essential to ensure the measurements are repeatable, as the brightness of an LED is proportional to its current. The operation of the circuit will now be discussed. First consider the case where MOSFET Q1 has its gate driven low, so it is off. This means that negligible current will flow through the MOSFET, so the op-amp U1A has \SI{2.5}{\volt} at its non-inverting input. Assuming the op-amp is ideal (which means it has infinite gain and input impedance, and zero output impedance), the voltage at the inverting input will also be \SI{2.5}{\volt}. This means there is a constant \SI{2.5}{\volt} across R2, so it draws a constant \SI{11.4}{\milli\ampere}. Because the op-amp is assumed to be ideal, no current can go into the input pins, so the full \SI{11.4}{\milli\ampere} must be sourced from the op-amp output pin and hence pass through the LED D5. This creates a constant current source for the LED, assuming a constant \SI{2.5}{\volt} rail and that the ideal op-amp assumption is valid. When the MOSFET gate is driven high it turns on. This leads to the MOSFET having a very low impedance, so the non-inverting input is effectively tied to ground. Therefore R2 has no volts across it, and hence no current, so the LED turns off.\\
+
+The MCP6002-I/SN \cite{mcp6002} was selected as the op-amp. This has a short circuit output current of \SI{23}{\milli\ampere}, so will comfortably be able to provide the desired \SI{11.4}{\milli\ampere}. Its input offset voltage is $\pm\SI{4.5}{\milli\volt}$, which leads to a potential current error of \SI{20}{\micro\ampere} (or 0.17\%), which is a negligible error. The input voltage noise density is \SI{28}{\nano\volt\per\sqrt{\hertz}} and the gain-bandwidth product is \SI{1}{\mega\hertz} so the worst case bandwidth is \SI{1}{\mega\hertz} (which assumes unity gain). This leads to an input noise voltage of \SI{28}{\micro\volt}, which again is negligible. The current source was tested for its invariance to temperature. When exposed to the heat fro ma hairdryer, the LED current only changed by 0.85\%, so there is confidence that the current source will be stable over the operating temperatures.\\
+
+The light transmitted by the LED is then reflected off the target liver, and the received light is collected by phototransistor Q2. This produces a current proportional to the input light power. A transimpedance amplifier is used convert this to a readable voltage signal. Again assuming op-amp U1B is ideal implies that the voltage at the input pins are equal, and no current enters the pins. The phototransistor current $i_f$ therefore passes through the resistor R3, which leads to an output voltage signal $v_0 = 2.5 - i_fR_f$. The \SI{2.5}{\volt} rail at the non-inverting input acts to bias the op-amp, and was selected as half the voltage rails to ensure that the op-amp output signal could have maximum voltage swing before clipping at the supply rails.\\
+
+\begin{table}[h]
+	\centering
+	\caption{Results for feedback resistor calibration experiments. The peak to peak signal is the difference between the output voltage when the LED was on and off, and the minimum signal is the output voltage when the LED was on.}
+	\label{tab: tia feedback resistor}
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		LED Current (mA) & Feedback Resistor (\si{\kilo\ohm}) & Peak to Peak Signal (V) & Minimum Signal (V)\\
+		\hline
+		\multirow{4}{*}{10}	&	2.2	&	0.93	&	1.20\\
+						\cline{2-4}
+						&	3.3	&	1.20	&	1.06\\
+						\cline{2-4}
+						&	4.7	&	1.60	&	0.62\\
+						\cline{2-4}
+						&	6.8	&	2.22	&	0.00\\
+		\hline
+		\multirow{4}{*}{20}	&	1.2	&	0.84	&	1.42\\
+						\cline{2-4}
+						&	1.5	&	1.07	&	1.15\\
+						\cline{2-4}
+						&	2.7	&	1.9	&	0.25\\
+						\cline{2-4}
+						&	3.3	&	2.09	&	0.00\\
+		\hline
+	\end{tabular}
+\end{table}
+
+The feedback resistor $R_f$ needed to be chosen to ensure good output characteristics. If it was too small, then the PIC's ADC would not be able to discriminate between changes in the light intensity.  The PIC16F688 uses a 10-bit ADC, so the maximum voltage resolution is \SI{4.88}{\milli\volt} when operated at \SI{5}{\volt}. The feedback resistor also cannot be too large, as this could lead to the op-amp saturating at the ground supply rail. Table \ref{tab: tia feedback resistor} shows the results of an experiment carried out to investigate the signal levels with different feedback resistors. The circuit was constructed on breadboard, with the LED and phototransistor soldered to stripboard to ensure they remained at a fixed distance of \SI{7.62}{\milli\metre}. This was then shone at a piece of A4 paper at a distance which led to the largest signal. The peak to peak signal is the difference between the transimpedance amplifier output voltage when the LED was on and off, and the minimum signal is the output voltage when the LED was on. Whenever the minimum signal was \SI{0}{\volt}, the amplifier had saturated so these values of $R_f$ are unsuitable. Therefore, the optimum $R_f = \SI{4.7}{\kilo\ohm}$, as this had the largest peak to peak signal without saturating. The system was tested using an LED current of \SI{20}{\milli\ampere} as well, but it was decided that this was too close to the op-amp output current limit to be a reliable, stable current source.\\
+
+%LTSpice simulation
+
+The transimpedance amplifier is a notoriously unstable circuit due to the phototransistor's junction capacitance. This can be stabilised by adding the capacitor C1 \cite{tia_stability}, which adds a zero into the feedback factor, compensating for the pole created by the phototransistor capacitance \cite{tia_stability}. The capacitor value was selected to be \SI{470}{\pico\farad}, as this gave a bandwidth of \SI{72}{\kilo\hertz} which is well above the required bandwidth of the circuit (which is \SI{10}{\kilo\hertz} at most), but is well below the gain-bandwidth product of \SI{1}{\mega\hertz} so it avoids the stability problems.\\
+
+A button also needed to be designed for the probe, so the surgeon could indicate that they wanted to take a measurement. A standard push button could not be used because the remote unit had to be hermetically sealed. Therefore, a non-contact means of sensing a button press had to be devised. This could either be capacitive, sensing the finger like the touch screen on a mobile phone, or optical, by measuring light reflected back from the finger. It was found that the liver backscatter measurement system (figure \ref{fig: measurement schematic}) was discriminated well between the presence or absence of a finger at a range of a few centimetres, so this circuit was included twice within the remote unit to be used as a button. The downside to this method is that it is an active sensing system, requiring power to be supplied to the LED and phototransistor. This will limit the time the remote unit can operate over one full charge. \\
+
+
+
+\subsection{Communications}
+
+\subsection{Wireless Charging}
+
+\subsection{Remote Unit}
+
+\subsection{Base Unit}
