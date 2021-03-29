@@ -45,6 +45,7 @@
 \sisetup{
   round-mode          = places, % Rounds numbers
   round-precision     = 2, % to 2 places
+  separate-uncertainty = true, %show pm uncertainty
 }
 %\lstset{
 %  basicstyle=\fontsize{10}{10}\ttfamily,

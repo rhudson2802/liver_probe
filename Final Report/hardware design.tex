@@ -3,7 +3,7 @@
 A Peripheral Interface Controller (PIC) was chosen as the microcontroller for both the base and remote unit. PICs are versatile, with highly configurable pin assignments, which was suitable for the different types of sub-system which would be used in the product. Furthermore, they are easy to program in PICBASIC using the MicroCode Studio and MPLAB IDE software packages. PICBASIC provides a high level way to access the PIC's instruction set, with commands available which combine many complex assemble code instructions. The free version of MicroCode Studio limits the range of devices which can be programmed, so the PIC16F688 \cite{pic16f688} was chosen for the remote unit and the PIC18F2550 \cite{pic18f2550} for the base unit. These had the right number of I/O pins for their respective unit, as well as some special features which will be discussed in later sections. PICs are also relatively cheap, which is a good property for the disposable remote unit.\\
 
 \subsection{Measurement System}
-\begin{figure}[h]
+\begin{figure}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{measurement.PNG}
 	\caption{Circuit schematic of diffuse reflectance measurement system}
@@ -18,7 +18,7 @@ The MCP6002-I/SN \cite{mcp6002} was selected as the op-amp. This has a short cir
 
 The light transmitted by the LED is then reflected off the target liver, and the received light is collected by phototransistor Q2. This produces a current proportional to the input light power. A transimpedance amplifier is used convert this to a readable voltage signal. Again assuming op-amp U1B is ideal implies that the voltage at the input pins are equal, and no current enters the pins. The phototransistor current $i_f$ therefore passes through the resistor R3, which leads to an output voltage signal $v_0 = 2.5 - i_fR_f$. The \SI{2.5}{\volt} rail at the non-inverting input acts to bias the op-amp, and was selected as half the voltage rails to ensure that the op-amp output signal could have maximum voltage swing before clipping at the supply rails.\\
 
-\begin{table}[h]
+\begin{table}[htbp]
 	\centering
 	\caption{Results for feedback resistor calibration experiments. The peak to peak signal is the difference between the output voltage when the LED was on and off, and the minimum signal is the output voltage when the LED was on.}
 	\label{tab: tia feedback resistor}
@@ -64,10 +64,27 @@ The remote unit was designed to run from a \SI{5}{\volt} supply. \SI{3.3}{\volt}
 
 A power converter then needed to be selected to drop the \SI{7.2}{\volt} battery voltage to the required \SI{5}{\volt} rail. A Low-Dropout (LDO) voltage regulator was deemed suitable for this application, as it would provide a stable voltage rail. The advantage over a buck converter is the smaller device size and design simplicity, but this comes at the cost of worse efficiency. The MCP1702T-5002E/CB \cite{mcp1702} in a SOT-23A package was suitable. This was a \SI{5}{\volt} regulator with a rated output current of \SI{250}{\milli\ampere}. This was well above the \SI{50}{\milli\ampere} maximum current required by the remote unit (see section \ref{power budget}). The quiescent current was \SI{2}{\micro\ampere}, which is negligible compared with the remainder of the circuit, so the regulator will not affect the battery lifetime. The regulator will dissipate a maximum of $\SIrange{7.2}{5}{\volt}\times\SI{50}{\milli\ampere}=\SI{110}{\milli\watt}$. The SOT-23A package has a junction to air thermal resistance of \SI{336}{\celsius\per\watt}, so the maximum temperature increase is \SI{37}{\celsius}. In fact, the device will rarely operate at \SI{50}{\milli\ampere}, so the regulator will remain at ambient temperature.\\
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{h bridge charger.PNG}
+	\caption{Circuit schematic for H-Bridge inductive wireless charger. The left hand side circuit is included in the base unit, and the right hand side circuit is included in the remote unit.}
+	\label{fig: charger schematic}
+\end{figure}
+	
 
+Inductive charging was selected as an appropriate method of recharging the batteries. This involved placing two air-cored coils in close proximity, applying an AC voltage to the primary and rectifying the voltage across the secondary. Figure \ref{fig: charger schematic} shows the circuit schematic, which uses two PMOS and NMOS pairs in a H-bridge arrangement to generate the AC voltage. The MOSFETs are arranged in a CMOS inverter structure, so when the input gate voltage is high, their output is low, and when the gate is low their output is high. The two half bridges are driven with inverted signals, so the voltage across the load alternates between \SI{\pm 5}{\volt}. The series capacitor is used to create a resonant circuit with the inductor, which increases the voltage across the primary coil and smooths the square wave input voltage waveform to a sinusoid across the inductor. The capacitor is designed to give the circuit a resonant frequency equal to the drive frequency, to get the maximum gain possible. The series resistor is included to limit the current through the circuit. An ideal series LC circuit has zero impedance at resonance, so it will look like a short circuit to the external circuit. The PMOS transistors had a current rating of \SI{230}{\milli\ampere}, so using a series resistance of \SI{22}{\ohm} will limit the current to \SI{227}{\milli\ampere}, with the channel resistance of the MOSFETs and parasitic LC resistances acting to reduce it further.\\
 
+The primary coil will generate an alternating magnetic field due to the sinusoidal voltage across it. This couples with the secondary coil to induce an alternating voltage. The coupling of air-cored transformers is very poor, so a large voltage will be required across the primary coil to ensure the secondary coil receives enough volts. The resonant circuit aids this. The secondary coil's alternating voltage is then rectified to a DC voltage by a diode bridge. The NSR05F20NXT5G Schottky barrier diode \cite{original_diode} was used in the diode bridge. These were chosen because of their very low forward voltage, \SI{0.2}{\volt}, which would make sure that the required secondary voltage was kept as small as possible. A larger diode drop would mean a larger secondary voltage was required, which could cause problems under the low coupling conditions of the air-cored transformer. Their reverse leakage was \SI{2}{\micro\ampere}, which was also good. They were rated to \SI{20}{\volt} and \SI{500}{\milli\ampere}, which were well below the expected operating conditions of \SI{10}{\volt} and \SI{10}{\milli\ampere}. The battery voltage was \SI{7.2}{\volt}, so the total required voltage across the secondary including the two diode drops was \SI{7.6}{\volt}.\\
 
-Inductive charging was selected as an appropriate 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{circular coupling.PNG}
+	\caption{The experimentally derived coupling coefficient of circular coils as a function of coil separation. 100 turns were used on the primary coil, and 160 turns were used on the secondary coil.}
+	\label{fig: circular coupling}
+%*******************REPLOT********************
+\end{figure}
+
+ 
 
 %2.5V rail
 %Battery voltage sensor
