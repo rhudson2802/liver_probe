@@ -57,10 +57,30 @@ A button also needed to be designed for the probe, so the surgeon could indicate
 
 
 \subsection{Communications}
-The Quasar QAM-TX3 \cite{qam-tx} and QAM-RX10-433 \cite{qam-rx} transmitter/receiver modules were used to implement the wireless link. These had all the amplification, demodulation, filtering, and other signal processing required for a radio link fully integrated. Fully integrated modules were selected because they were cheap and simplified the design greatly, as the design only had to focus on low frequencies and not the complex effects associated with RF electronics. The Quasar modules allowed the raw data to be input to the data pin in baseband, then modulated this onto a \SI{433}{\mega\hertz} carrier using on-off keying (OOK). The transmitter then sent this modulated signal to its antenna, and was received by the receiver which demodulated the signal and output the baseband signal at its data pin. The modules could work up to \SI{3}{\kilo\bit\per\second}, which is a suitable speed for the small packets of data which will need to be sent by the remote unit. They operate in the \SI{433}{\mega\hertz} band, which is an unlicensed ISM band in the UK \cite{ism_band} so there should be no regulatory issues using this frequency.\\
+The Quasar QAM-TX3 \cite{qam-tx} and QAM-RX10-433 \cite{qam-rx} transmitter/receiver modules were used to implement the wireless link. These had all the amplification, demodulation, filtering, and other signal processing required for a radio link fully integrated. Fully integrated modules were selected because they were cheap and simplified the design greatly, as the design only had to focus on low frequencies and not the complex effects associated with RF electronics. The Quasar modules allowed the raw data to be input to the data pin in baseband, then modulated this onto a \SI{433}{\mega\hertz} carrier using on-off keying (OOK). The transmitter then sent this modulated signal to its antenna, and was received by the receiver which demodulated the signal and output the baseband signal at its data pin. The modules could work up to \SI{3}{\kilo\bit\per\second}, which is a suitable speed for the small packets of data which will need to be sent by the remote unit. They operate in the \SI{433}{\mega\hertz} band, which is an unlicensed ISM band in the UK \cite{ism_band} so there should be no regulatory issues using this frequency. A \SI{100}{\pico\farad} decoupling capacitor was used between the power rails of both modules, to smooth out any ripple in the power supply to ensure a reliable RF stage.\\
 
-\subsection{Wireless Charging}
+\subsection{Power and Wireless Charging}
+The remote unit was designed to run from a \SI{5}{\volt} supply. \SI{3.3}{\volt} was not suitable as the LEDs had a forward voltage of \SI{1.5}{\volt}, so a \SI{3.3}{\volt} supply would potentially be too small for the current source designed in figure \ref{fig: measurement schematic}. Therefore, a set of batteries had to be selected which would provide this voltage. The batteries had to be small to ensure the overall remote unit design was small enough to fit in the surgeon's hand, and needed to be rechargeable because of the hermetic seal. Two different chemistries were available from RS Components \cite{rs} in a small, rechargeable package: lithium ion (Li-ion) and Nickel Metal Hydride (NiMH). The NiMH chemistry was more suitable due to the increased safety. Li-ion batteries are highly sensitive to over/under-voltage and high temperatures, and can blow up if these limits are exceeded \cite{batteries}. This requires complex protection circuitry and may mean that the battery will not survive being placed in an autoclave. NiMH are much more resilient to over and under charging, so are much safer than Li-ion. They also have a higher energy density \cite{batteries}. Nevertheless, they are lower voltage so more cells will be required to provide the desired \SI{5}{\volt}, have a long charging time, and they have a high self-discharge rate \cite{batteries}. This is not such an issue for this application, as the remote unit can remain charging until it is required for an operation, and then it will only be used for a short time before being placed on charge again. A \SI{2.4}{\volt} \SI{80}{\milli\ampere\hour} RS-Pro NiMH button cell \cite{rs_pro_batteries} was selected as suitable. Three of these were used to give a nominal \SI{7.2}{\volt} supply, which gave a margin of 44\% for when the cells started to discharge.\\
+
+A power converter then needed to be selected to drop the \SI{7.2}{\volt} battery voltage to the required \SI{5}{\volt} rail. A Low-Dropout (LDO) voltage regulator was deemed suitable for this application, as it would provide a stable voltage rail. The advantage over a buck converter is the smaller device size and design simplicity, but this comes at the cost of worse efficiency. The MCP1702T-5002E/CB \cite{mcp1702} in a SOT-23A package was suitable. This was a \SI{5}{\volt} regulator with a rated output current of \SI{250}{\milli\ampere}. This was well above the \SI{50}{\milli\ampere} maximum current required by the remote unit (see section \ref{power budget}). The quiescent current was \SI{2}{\micro\ampere}, which is negligible compared with the remainder of the circuit, so the regulator will not affect the battery lifetime. The regulator will dissipate a maximum of $\SIrange{7.2}{5}{\volt}\times\SI{50}{\milli\ampere}=\SI{110}{\milli\watt}$. The SOT-23A package has a junction to air thermal resistance of \SI{336}{\celsius\per\watt}, so the maximum temperature increase is \SI{37}{\celsius}. In fact, the device will rarely operate at \SI{50}{\milli\ampere}, so the regulator will remain at ambient temperature.\\
+
+
+
+
+Inductive charging was selected as an appropriate 
+
+%2.5V rail
+%Battery voltage sensor
+%Battery current sensor
 
 \subsection{Remote Unit}
+%Temperature sensor
+%PicKit programmer
+%Power budget
 
 \subsection{Base Unit}
+%Memory 
+%RTC
+%LCD
+%switches
+%power budget
