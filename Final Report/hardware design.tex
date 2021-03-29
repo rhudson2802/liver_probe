@@ -54,15 +54,25 @@ The transimpedance amplifier is a notoriously unstable circuit due to the photot
 
 A button also needed to be designed for the probe, so the surgeon could indicate that they wanted to take a measurement. A standard push button could not be used because the remote unit had to be hermetically sealed. Therefore, a non-contact means of sensing a button press had to be devised. This could either be capacitive, sensing the finger like the touch screen on a mobile phone, or optical, by measuring light reflected back from the finger. It was found that the liver backscatter measurement system (figure \ref{fig: measurement schematic}) was discriminated well between the presence or absence of a finger at a range of a few centimetres, so this circuit was included twice within the remote unit to be used as a button. The downside to this method is that it is an active sensing system, requiring power to be supplied to the LED and phototransistor. This will limit the time the remote unit can operate over one full charge. \\
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{2-5v rail.PNG}
+	\caption{Op-amp unity buffer used to generate \SI{2.5}{\volt} rail.}
+	\label{fig: 2.5v rail}
+\end{figure}
+
+The measurement system used a \SI{2.5}{\volt} reference rail. This rail had to be stable as it provided the reference signal for the LED current source and transimpedance amplifier, so any variations in the \SI{2.5}{\volt} signal would lead to measurement errors. An op-amp unity buffer circuit (figure \ref{fig: 2.5v rail}) was used to generate this signal from a potential divider reference. This is more stable than directly using a potential divider, as any loading of the potential divider will decrease the reference voltage it provides. Because an op-amp draws negligible current, the resulting output voltage will be much more stable. The output will only remain stable the circuits it is connected to do not draw more than the op-amp's rated output current. The \SI{2.5}{\volt} rail is only used to supply current to a \SI{10}{\kilo\ohm} resistor (\SI{250}{\micro\ampere}) and op-amp input (negligible current), so the op-amp will not have to provide significant current. Additionally, the output will only be a fixed \SI{2.5}{\volt} reference if the \SI{5}{\volt} supply also remains stable, which is ensured by using a voltage regulator (see section \ref{power}).\\
+
 
 
 \subsection{Communications}
 The Quasar QAM-TX3 \cite{qam-tx} and QAM-RX10-433 \cite{qam-rx} transmitter/receiver modules were used to implement the wireless link. These had all the amplification, demodulation, filtering, and other signal processing required for a radio link fully integrated. Fully integrated modules were selected because they were cheap and simplified the design greatly, as the design only had to focus on low frequencies and not the complex effects associated with RF electronics. The Quasar modules allowed the raw data to be input to the data pin in baseband, then modulated this onto a \SI{433}{\mega\hertz} carrier using on-off keying (OOK). The transmitter then sent this modulated signal to its antenna, and was received by the receiver which demodulated the signal and output the baseband signal at its data pin. The modules could work up to \SI{3}{\kilo\bit\per\second}, which is a suitable speed for the small packets of data which will need to be sent by the remote unit. They operate in the \SI{433}{\mega\hertz} band, which is an unlicensed ISM band in the UK \cite{ism_band} so there should be no regulatory issues using this frequency. A \SI{100}{\pico\farad} decoupling capacitor was used between the power rails of both modules, to smooth out any ripple in the power supply to ensure a reliable RF stage.\\
+%AM vs FM
 
-\subsection{Power and Wireless Charging}
+\subsection{Power and Wireless Charging} \label{power}
 The remote unit was designed to run from a \SI{5}{\volt} supply. \SI{3.3}{\volt} was not suitable as the LEDs had a forward voltage of \SI{1.5}{\volt}, so a \SI{3.3}{\volt} supply would potentially be too small for the current source designed in figure \ref{fig: measurement schematic}. Therefore, a set of batteries had to be selected which would provide this voltage. The batteries had to be small to ensure the overall remote unit design was small enough to fit in the surgeon's hand, and needed to be rechargeable because of the hermetic seal. Two different chemistries were available from RS Components \cite{rs} in a small, rechargeable package: lithium ion (Li-ion) and Nickel Metal Hydride (NiMH). The NiMH chemistry was more suitable due to the increased safety. Li-ion batteries are highly sensitive to over/under-voltage and high temperatures, and can blow up if these limits are exceeded \cite{batteries}. This requires complex protection circuitry and may mean that the battery will not survive being placed in an autoclave. NiMH are much more resilient to over and under charging, so are much safer than Li-ion. They also have a higher energy density \cite{batteries}. Nevertheless, they are lower voltage so more cells will be required to provide the desired \SI{5}{\volt}, have a long charging time, and they have a high self-discharge rate \cite{batteries}. This is not such an issue for this application, as the remote unit can remain charging until it is required for an operation, and then it will only be used for a short time before being placed on charge again. A \SI{2.4}{\volt} \SI{80}{\milli\ampere\hour} RS-Pro NiMH button cell \cite{rs_pro_batteries} was selected as suitable. Three of these were used to give a nominal \SI{7.2}{\volt} supply, which gave a margin of 44\% for when the cells started to discharge.\\
 
-A power converter then needed to be selected to drop the \SI{7.2}{\volt} battery voltage to the required \SI{5}{\volt} rail. A Low-Dropout (LDO) voltage regulator was deemed suitable for this application, as it would provide a stable voltage rail. The advantage over a buck converter is the smaller device size and design simplicity, but this comes at the cost of worse efficiency. The MCP1702T-5002E/CB \cite{mcp1702} in a SOT-23A package was suitable. This was a \SI{5}{\volt} regulator with a rated output current of \SI{250}{\milli\ampere}. This was well above the \SI{50}{\milli\ampere} maximum current required by the remote unit (see section \ref{power budget}). The quiescent current was \SI{2}{\micro\ampere}, which is negligible compared with the remainder of the circuit, so the regulator will not affect the battery lifetime. The regulator will dissipate a maximum of $\SIrange{7.2}{5}{\volt}\times\SI{50}{\milli\ampere}=\SI{110}{\milli\watt}$. The SOT-23A package has a junction to air thermal resistance of \SI{336}{\celsius\per\watt}, so the maximum temperature increase is \SI{37}{\celsius}. In fact, the device will rarely operate at \SI{50}{\milli\ampere}, so the regulator will remain at ambient temperature.\\
+A power converter then needed to be selected to drop the \SI{7.2}{\volt} battery voltage to the required \SI{5}{\volt} rail. A Low-Dropout (LDO) voltage regulator was deemed suitable for this application, as it would provide a stable voltage rail. The advantage over a buck converter is the smaller device size and design simplicity, but this comes at the cost of worse efficiency. Furthermore, the output voltage will not have the high frequency ripple associated with switch-mode converters, which is desirable to create a stable analogue rail to ensure that there is no measurement errors. The MCP1702T-5002E/CB \cite{mcp1702} in a SOT-23A package was suitable. This was a \SI{5}{\volt} regulator with a rated output current of \SI{250}{\milli\ampere}. This was well above the \SI{50}{\milli\ampere} maximum current required by the remote unit (see section \ref{power budget}). The quiescent current was \SI{2}{\micro\ampere}, which is negligible compared with the remainder of the circuit, so the regulator will not affect the battery lifetime. The regulator will dissipate a maximum of $\SIrange{7.2}{5}{\volt}\times\SI{50}{\milli\ampere}=\SI{110}{\milli\watt}$. The SOT-23A package has a junction to air thermal resistance of \SI{336}{\celsius\per\watt}, so the maximum temperature increase is \SI{37}{\celsius}. In fact, the device will rarely operate at \SI{50}{\milli\ampere}, so the regulator will remain at ambient temperature.\\
 
 \begin{figure}[htbp]
 	\centering
@@ -78,12 +88,45 @@ The primary coil will generate an alternating magnetic field due to the sinusoid
 
 \begin{figure}[htbp]
 	\centering
+	\includegraphics[width=\linewidth]{coil inductance.png}
+	\caption{Measured coil inductance for different numbers of coil turns}
+	\label{fig: coil inductance}
+\end{figure}
+
+The inductance of a solenoid is given by 
+\begin{equation}\label{eq: solenoid}
+L = \frac{\mu_0 N^2 A}{l}
+\end{equation}
+where $\mu_0$ is the permeability of free space, $N$ is the number of turns, $A$ is the cross-sectional area of the solenoid and $l$ is the length of the solenoid. The circular coils constructed for the wireless charger had an inner diameter of \SI{5}{\centi\metre}, and an average length of \SI{0.5}{\centi\metre} (this varied depending on the number of turns). Substituting these geometry parameters in equation \ref{eq: solenoid} implies that $L=\num{4.93e-7}N^2$. The coil inductance was then experimentally determined by measuring the resonant frequency of an LC circuit with known capacitance. The signal was a sinusoid generated from a PicoScope 2204A \cite{picoscope} with a series resistor at the output. The frequency was varied until the maximum output voltage across a parallel LC tank was measured. After this, the capacitance required for the circuit to be resonant at \SI{100}{\kilo\hertz} was calculated, by $C = 1/L(2\pi f_\text{res})^2$. Figure \ref{fig: coil inductance} shows the variation of coil inductance with the number of turns. The inductance follows a quadratic dependence on the number of turns, as is to be expected from equation \ref{eq: solenoid}. However, the coefficient is 10x smaller than equation \ref{eq: solenoid} predicts. This could be because equation \ref{eq: solenoid} assumes the flux within the solenoid is uniform, which may not be the case for the circular planar coil as the short length may lead to lots of fringing effects, which could influence the flux distribution. Furthermore, the construction of the coils meant that there was not a uniform distribution of the coil turns and there was significant overlap of the turns, which could also influence the measured inductance.\\
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{coil experiment.png}
+	\caption{Setup for coil experiments}
+	\label{fig: coil experiment setup}
+\end{figure}
+\begin{figure}[htbp]
+	\centering
 	\includegraphics[width=\linewidth]{circular coupling.PNG}
-	\caption{The experimentally derived coupling coefficient of circular coils as a function of coil separation. 100 turns were used on the primary coil, and 160 turns were used on the secondary coil.}
+	\caption{The experimentally derived coupling coefficient of circular coils as a function of coil separation. The legend gives the turns ratio for the different experiments.}
 	\label{fig: circular coupling}
 %*******************REPLOT********************
 \end{figure}
 
+The performance of the proposed charging circuit was investigated. First, the coupling coil was determined as a function of the separation between the coils. The experiment was performed using two planar circular coils, where the primary coil had 100 turns and the secondary coil had 160 turns. The coils were centred on the same out-of-plane axis. Figure \ref{fig: coil experiment setup} illustrates the experiment setup. The primary coil was driven by the H-bridge circuit in figure \ref{fig: charger schematic}, and the secondary coil had its open circuit voltage measured. If the transformer were ideal, the secondary coil's voltage should be $V_2 = V_1 \times N_2 / N_1$ where $V_1$ is the voltage across the primary coil, and $N_2 / N_1$ is the secondary to primary turns ratio. To account for the poor coupling in an air-cored transformer, a coupling coefficient $k$ is introduced, so $V_2 = k \times V_1 \times N_2 / N_1$. The reduction in coupling is because the air core has a low permeability, so the flux from the primary is not strongly linked to the secondary, leading to a large leakage flux. The experiment was repeated for different turns ratios, all giving similar values of the coupling coefficient.. The experimentally determined coupling coefficients are plotted in figure \ref{fig: circular coupling}, which shows a coupling coefficient of 0.28 at a separation of \SI{10}{\milli\metre}.\\
+
+%Coil inductance calculations
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{charger simulation.PNG}
+	\caption{LTspice simulation of charger circuit}
+	\label{fig: charger simulation}
+\end{figure}
+
+The circuit was simulated in LTspice \cite{ltspice}, with the circuit schematic shown in figure \ref{fig: charger simulation}. A voltage source with series resistance was used to model the H-bridge output. The circuit was tested on breadboard, so the surface mount NSR05F20NXT5G diodes could not be used. Instead, a through-hole diode was selected for testing purposes (Vishay UF4001-E3/54 \cite{tht_diode}), and this diode was modelled in the LTspice simulation, so the results could be compared with the experimental results. The coupling between the coils was set to 0.28, to model \SI{1}{cm} coil separation. The inductors and batteries had an equivalent series resistance modelled as well. The simulation suggested that the primary coil should have an RMS voltage of \SI{44.4}{\volt}, and the secondary coil should have an RMS voltage of \SI{8.24}{\volt}. This led to an average battery charging current of \SI{13.1}{\milli\ampere}, which would be suitable to recharge the remote unit. %************EXPERIMENT RESULTS**************\\
+
+%Coil combinations
  
 
 %2.5V rail
