@@ -27,7 +27,7 @@
 %\usepackage{booktabs}
 %\usepackage{float}
 %\usepackage{listings}
-%\usepackage{multicol}
+\usepackage{multicol}
 \usepackage{multirow}
 %\usepackage{pgfplotstable}
 \usepackage{subcaption}
@@ -43,8 +43,10 @@
 \graphicspath{{figures/}}
 \captionsetup{justification=centering}
 \sisetup{
-  round-mode          = places, % Rounds numbers
-  round-precision     = 2, % to 2 places
+  %round-mode          = places, % Rounds numbers
+  %round-precision     = 2, % to 2 places
+  range-phrase = -,
+  range-units = single,
   separate-uncertainty = true, %show pm uncertainty
 }
 %\lstset{
