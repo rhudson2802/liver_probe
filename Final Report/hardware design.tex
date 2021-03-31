@@ -1,12 +1,24 @@
 \section{Hardware Design}
 
+\subsection{Microcontroller}
 A Peripheral Interface Controller (PIC) was chosen as the microcontroller for both the base and remote unit. PICs are versatile, with highly configurable pin assignments, which was suitable for the different types of sub-system which would be used in the product. Furthermore, they are easy to program in PICBASIC using the MicroCode Studio and MPLAB IDE software packages. PICBASIC provides a high level way to access the PIC's instruction set, with commands available which combine many complex assemble code instructions. The free version of MicroCode Studio limits the range of devices which can be programmed, so the PIC16F688 \cite{pic16f688} was chosen for the remote unit and the PIC18F2550 \cite{pic18f2550} for the base unit. These had the right number of I/O pins for their respective unit, as well as some special features which will be discussed in later sections. PICs are also relatively cheap, which is a good property for the disposable remote unit.\\
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{pickit3.PNG}
+	\caption{PIC connected to PICkit 3 programmer with external circuitry \cite{pickit3}.}
+	\label{fig: pickit3}
+\end{figure}
+
+The PICkit 3 \cite{pickit3} was used to program the PICs. Figure \ref{fig: pickit3} shows the relevant connections required for programming. A \SI{10}{\kilo\ohm} pull-up resistor was selected for the $\overline{\text{MCLR}}$ line. This is required because the PIC resets whenever $\overline{\text{MCLR}}$ is low, so it needs to be pulled high in normal operation. \\
+
+
 
 \subsection{Measurement System}
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{measurement.PNG}
-	\caption{Circuit schematic of diffuse reflectance measurement system}
+	\caption{Circuit schematic of diffuse reflectance measurement system.}
 	\label{fig: measurement schematic}
 \end{figure}
 
@@ -65,9 +77,15 @@ The measurement system used a \SI{2.5}{\volt} reference rail. This rail had to b
 
 
 
+
+
 \subsection{Communications}
 The Quasar QAM-TX3 \cite{qam-tx} and QAM-RX10-433 \cite{qam-rx} transmitter/receiver modules were used to implement the wireless link. These had all the amplification, demodulation, filtering, and other signal processing required for a radio link fully integrated. Fully integrated modules were selected because they were cheap and simplified the design greatly, as the design only had to focus on low frequencies and not the complex effects associated with RF electronics. The Quasar modules allowed the raw data to be input to the data pin in baseband, then modulated this onto a \SI{433}{\mega\hertz} carrier using on-off keying (OOK). The transmitter then sent this modulated signal to its antenna, and was received by the receiver which demodulated the signal and output the baseband signal at its data pin. The modules could work up to \SI{3}{\kilo\bit\per\second}, which is a suitable speed for the small packets of data which will need to be sent by the remote unit. They operate in the \SI{433}{\mega\hertz} band, which is an unlicensed ISM band in the UK \cite{ism_band} so there should be no regulatory issues using this frequency. A \SI{100}{\pico\farad} decoupling capacitor was used between the power rails of both modules, to smooth out any ripple in the power supply to ensure a reliable RF stage.\\
 %AM vs FM
+
+
+
+
 
 \subsection{Power and Wireless Charging} \label{power}
 The remote unit was designed to run from a \SI{5}{\volt} supply. \SI{3.3}{\volt} was not suitable as the LEDs had a forward voltage of \SI{1.5}{\volt}, so a \SI{3.3}{\volt} supply would potentially be too small for the current source designed in figure \ref{fig: measurement schematic}. Therefore, a set of batteries had to be selected which would provide this voltage. The batteries had to be small to ensure the overall remote unit design was small enough to fit in the surgeon's hand, and needed to be rechargeable because of the hermetic seal. Two different chemistries were available from RS Components \cite{rs} in a small, rechargeable package: lithium ion (Li-ion) and Nickel Metal Hydride (NiMH). The NiMH chemistry was more suitable due to the increased safety. Li-ion batteries are highly sensitive to over/under-voltage and high temperatures, and can blow up if these limits are exceeded \cite{batteries}. This requires complex protection circuitry and may mean that the battery will not survive being placed in an autoclave. NiMH are much more resilient to over and under charging, so are much safer than Li-ion. They also have a higher energy density \cite{batteries}. Nevertheless, they are lower voltage so more cells will be required to provide the desired \SI{5}{\volt}, have a long charging time, and they have a high self-discharge rate \cite{batteries}. This is not such an issue for this application, as the remote unit can remain charging until it is required for an operation, and then it will only be used for a short time before being placed on charge again. A \SI{2.4}{\volt} \SI{80}{\milli\ampere\hour} RS-Pro NiMH button cell \cite{rs_pro_batteries} was selected as suitable. Three of these were used to give a nominal \SI{7.2}{\volt} supply, which gave a margin of 44\% for when the cells started to discharge.\\
@@ -165,12 +183,39 @@ Figure \ref{fig: battery voltage sensor} shows the circuit used to detect the un
 \end{equation}
 \end{multicols}
 
-R25 was set to \SI{0}{\ohm} so an extra footprint would be placed on the PCB design to allow for fine tuning of the hysteresis, if the original design were found to not be suitable during testing. Diode D7 was included because the PIC pin the circuit was connected to, RA3, was also the $\overline{\text{MCLR}}$ pin used by the PICKit3 programmer. This pin raised to a high voltage during PIC programming. Diode D7 clamps the op-amp output to \SI{5}{\volt} to prevent damage during programming. The \SI{33}{\kilo\ohm} resistor allows the programmer to adjust the pin voltage independent of the op-amp, so the op-amp does not tie it high or low.\\
+R25 was set to \SI{0}{\ohm} so an extra footprint would be placed on the PCB design to allow for fine tuning of the hysteresis, if the original design were found to not be suitable during testing. Diode D7 was included because the PIC pin the circuit was connected to, RA3, was also the $\overline{\text{MCLR}}$ pin used by the PICkit3 programmer. This pin raised to a high voltage during PIC programming. Diode D7 clamps the op-amp output to \SI{5}{\volt} to prevent damage during programming. The \SI{33}{\kilo\ohm} resistor allows the programmer to adjust the pin voltage independent of the op-amp, so the op-amp does not tie it high or low.\\
 
 
-\subsection{Remote Unit}
-%Temperature sensor
-%PicKit programmer
+
+
+
+
+\subsection{Other Features}
+
+\subsubsection{Temperature Sensor}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{temperature sensor.PNG}
+	\caption{Temperature sensor circuit schematic.}
+	\label{fig: temperature sensor}
+\end{figure}
+
+A thermistor based temperature sensor (figure \ref{fig: temperature sensor}) was included with the remote unit. This was to ensure that measurements could be calibrated for any temperature dependent effects which may be observed, and to measure the temperature within the autoclave. Because the remote unit will be packaged in a resin, it is unknown what the internal temperature will be when it is exposed to the heat of the autoclave. The temperature sensor allows this to be measured and to work out if it will cause any issues for the electronics. The Vishay NTCLG100E2103JB \cite{thermistor} thermistor was selected, which had a nominal resistance of \SI{10}{\kilo\ohm} at \SI{25}{\celsius}. This was placed in a Wheatstone bridge arrangement with three fixed \SI{10}{\kilo\ohm} resistors. When the thermistor was at room temperature, the voltage at each leg of the bridge was \SI{2.5}{\volt}, so there was no voltage difference across it. However, when the temperature of the thermistor changed, its resistance also changed leading to a voltage imbalance $\Delta v$ across the bridge. This voltage was fed to a differential amplifier, to yield an output signal which could be read by the PIC's ADC. The differential voltage $\Delta v$ is given by:\\
+
+\begin{equation}
+\Delta v = \frac{\delta R}{4 R}V
+\end{equation}
+
+where $\delta R$ is the change in resistance of the thermistor, and $R=\SI{10}{\kilo\ohm}$. The output voltage $v_o$ can then be calculated by summing the currents at the op-amp inputs, noting that for an ideal op-amp the inputs are at the same voltage. This gives:\\
+
+\begin{equation}
+v_o = 2 \frac{R_1}{R} \Delta v =R_1 \frac{\delta R}{2 R^2}V
+\end{equation}
+
+where $R_1$ is the value of feedback resistors R11 and R12, and $V=\SI{5}{\volt}$ is the supply voltage. Note that a \SI{2.5}{\volt} rail is used as a pseudo-ground for the non-inverting input. This is to allow the output to swing about \SI{2.5}{\volt}, which means that positive and negative $\Delta v$ will be amplified correctly.\\
+
+The sensor was designed to have a range of \SIrange{5}{150}{\celsius}, to cover the minimum operating temperature of just below room temperature \SI{20}{\celsius} up to the maximum temperature of the autoclave, \SI{134}{\celsius} \cite{nhs_autoclave}. Using \SI{6.8}{\kilo\ohm} feedback resistors gave an output voltage of \SI{5}{\volt} at \SI{5}{\celsius} and \SI{0.831}{\volt} at \SI{150}{\celsius}. At the high range, the thermistor only gives a very small change in $\delta R$ per degree of temperature change, so the sensor will not have a large resolution at these temperatures. For example, the output voltage at \SI{145}{\celsius} is \SI{0.835}{\volt}. The PIC's ADC only has 10-bit resolution, so when operated from a \SI{5}{\volt} supply it will have a minimum voltage resolution of \SI{4.88}{\milli\volt}. This means that the temperature resolution will be just larger than \SI{5}{\celsius}. As the high range is used to understand the thermal properties of the device and not to calibrate the measurements, this resolution will be acceptable. In comparison, at room temperature the resolution is much greater (for example a \SI{0.423}{\volt} change as temperature decreases from \SIrange{25}{20}{\celsius}, giving a temperature resolution of \SI{0.058}{\celsius}).\\
+
 %Power budget
 
 \subsection{Base Unit}
