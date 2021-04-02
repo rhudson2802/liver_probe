@@ -145,10 +145,34 @@ The performance of the proposed charging circuit was investigated. First, the co
 The circuit was simulated in LTspice \cite{ltspice}, with the circuit schematic shown in figure \ref{fig: charger simulation}. A voltage source with series resistance was used to model the H-bridge output. The circuit was tested on breadboard, so the surface mount NSR05F20NXT5G diodes could not be used. Instead, a through-hole diode was selected for testing purposes (Vishay UF4001-E3/54 \cite{tht_diode}), and this diode was modelled in the LTspice simulation, so the results could be compared with the experimental results. The coupling between the coils was set to 0.28, to model \SI{1}{cm} coil separation. The inductors and batteries had an equivalent series resistance modelled as well. The simulation suggested that the primary coil should have an RMS voltage of \SI{44.4}{\volt}, and the secondary coil should have an RMS voltage of \SI{8.24}{\volt}. This led to an average battery charging current of \SI{13.1}{\milli\ampere}, which would be suitable to recharge the remote unit. %************EXPERIMENT RESULTS**************\\
 
 %Coil combinations
-%12V charger
-%MOSFET drivers
-% New diodes
+
+
+The initial tests indicated that the charger would not deliver sufficient current to charge the batteries quickly. Therefore, the supply voltage was stepped up to \SI{12}{\volt}, as this would mean that there would be more volts at the secondary side, so a greater current would flow. The circuit in figure \ref{fig: charger schematic} needed to be adapted to the \SI{12}{\volt} supply. A gate driver needed to be designed for the PMOS to provide it with a \SI{12}{\volt} signal rather than the \SI{5}{\volt} signal the PIC provides. Because the PMOS gate voltage is referred to the \SI{12}{\volt} rail, if a \SI{5}{\volt} signal were applied to the gate then it would remain on, as the gate-source voltage (\SI{7}{\volt}) will be greater than the threshold voltage. This will result in a large shoot-through current when the corresponding NMOS is on, as it will look like a short to ground to the supply. This will damage the MOSFETs and the supply, as well as not allowing the charger to operate properly. 
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{mcp1407.PNG}
+	\caption{Schematic of MCP1406/07 MOSFET driver internal circuitry \cite{mcp1407}}
+	\label{fig: mcp1407}
+\end{figure}
+
+To avoid this problem, two MOSFET driver ICs (Microchip's MCP1406 and MCP1407 \cite{mcp1407}) were selected to replace the H-bridge. These ICs were designed to drive the gate of a power MOSFET, but are suitable for this application because they supply a large current (up to \SI{6}{\ampere}) and large voltage (up to \SI{18}{\volt}). Figure \ref{fig: mcp1407} demonstrates that the internal circuitry of the MCP1406/07 takes an input CMOS/TTL signal (at signal levels the PIC can provide), and uses this to drive a push-pull CMOS inverter. Therefore, the H-bridge MOSFETs can be replaced by these ICs, as they take care of the gate drive. The drivers come in two varieties: the inverting MCP1406 and the non-inverting MCP1407. Choosing one of each (for the different sides of the H-bridge) means only one input signal is required from the PIC, freeing up an I/O pin for other uses. The propagation times for both devices are the same (\SI{40}{\nano\second}), so there is no risk of dangerous shoot-through currents, assuming they are placed close enough together on the PCB that the delay time in the PCB traces is negligible.\\
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{mosfet drivers charger.PNG}
+	\caption{Circuit schematic showing the primary side of the charging circuit using the MCP1406/07 MOSFET drivers.}
+	\label{fig: mosfet drivers charger}
+\end{figure}
+
+%EXPERIMENTS *************Performance of 12V charger*******************
  
+The schematic for the primary side is shown in figure \ref{fig: mosfet drivers charger}. The inclusion of the three capacitors C9, C22 and C23 is so that the resonant circuit can be tuned to \SI{100}{\kilo\hertz} more accurately. The circuit provided \SI{XX}{\milli\ampere} of charging current to the three \SI{2.4}{\volt} batteries when tested on breadboard with the coils separated by \SI{10}{\milli\metre}. This was reflective of the real use conditions, and the \SI{XX}{\milli\ampere} charging current was suitable. The batteries' recommended charging current is \SI{8}{\milli\ampere}, so while the current is a little high this will not be a large problem. Alternatively, the current could be reduced by changing the frequency of the drive circuit away from the resonant frequency, which will lower the gain. The \SI{XX}{\milli\ampere} current will charge the \SI{80}{\milli\ampere\hour} batteries in \SI{YY}{\hour}.\\
+
+Using the \SI{12}{\volt} supply voltage resulted in \SI{XX}{\volt} across the primary coil, and \SI{YY}{\volt} across the secondary (under open circuit conditions). This was greater than the NSR05F20NXT5G voltage rating \SI{20}{\volt}, so new diodes were selected for the bridge rectifier to handle the higher voltage. The NXP PMEG10020ELRX Schottky barrier diode \cite{new_diode} was rated to \SI{100}{\volt} and \SI{2}{\ampere}, so was suitable for the application. It also had a low forward voltage of \SI{0.4}{\volt}, which was larger than the original diode, but because of the much larger secondary coil voltage this will not be a problem. It also has a very low reverse current of \SI{10}{\nano\ampere} at \SI{25}{\celsius}, which will lead to good off-state performance.\\
+
+
+
 
 \begin{figure}[htbp]
 	\centering
@@ -216,11 +240,48 @@ where $R_1$ is the value of feedback resistors R11 and R12, and $V=\SI{5}{\volt}
 
 The sensor was designed to have a range of \SIrange{5}{150}{\celsius}, to cover the minimum operating temperature of just below room temperature \SI{20}{\celsius} up to the maximum temperature of the autoclave, \SI{134}{\celsius} \cite{nhs_autoclave}. Using \SI{6.8}{\kilo\ohm} feedback resistors gave an output voltage of \SI{5}{\volt} at \SI{5}{\celsius} and \SI{0.831}{\volt} at \SI{150}{\celsius}. At the high range, the thermistor only gives a very small change in $\delta R$ per degree of temperature change, so the sensor will not have a large resolution at these temperatures. For example, the output voltage at \SI{145}{\celsius} is \SI{0.835}{\volt}. The PIC's ADC only has 10-bit resolution, so when operated from a \SI{5}{\volt} supply it will have a minimum voltage resolution of \SI{4.88}{\milli\volt}. This means that the temperature resolution will be just larger than \SI{5}{\celsius}. As the high range is used to understand the thermal properties of the device and not to calibrate the measurements, this resolution will be acceptable. In comparison, at room temperature the resolution is much greater (for example a \SI{0.423}{\volt} change as temperature decreases from \SIrange{25}{20}{\celsius}, giving a temperature resolution of \SI{0.058}{\celsius}).\\
 
-%Power budget
 
-\subsection{Base Unit}
-%Memory 
-%RTC
-%LCD
-%switches
-%power budget
+
+\subsubsection{LCD}
+\begin{figure}[htbp]
+	\includegraphics[width=\linewidth]{lcd.PNG}
+	\caption{LCD interface circuitry.}
+	\label{fig: lcd schematic}
+\end{figure}
+
+
+
+\subsubsection{Real Time Clock}
+\begin{figure}[htbp]
+	\includegraphics[width=\linewidth]{rtc.PNG}
+	\caption{RTC interface circuitry.}
+	\label{fig: rtc schematic}
+\end{figure}
+
+The Microchip MCP7940N-I/SN \cite{rtc} was selected as the RTC module for the base unit. The circuit in figure \ref{fig: rtc schematic} was laid out according to the data sheet \cite{rtc} recommendations. A \SI{3}{\volt} CR2032 battery was used as a backup power supply for the module, to ensure the clock would continue timing even if the base power were removed. The module communicates over an I\textsuperscript{2}C interface, so it was connected to the PIC's SDA and SCL lines. The MFP output is not used.
+
+
+
+\subsubsection{Memory}
+\begin{figure}[htbp]
+	\includegraphics[width=\linewidth]{memory.PNG}
+	\caption{EEPROM interface circuitry.}
+	\label{fig: memory schematic}
+\end{figure}
+
+The EEPROM was designed to store a minimum of 1000 readings. Each reading had several components: the reading ID (1B), month (1B), day (1B), hour (1B), minute (1B), measurement value (2B), temperature reading (2B). This led to a total reading size of 9 bytes. This meant the memory required to store 1000 readings was $\SI{9}{\kilo\byte}=\SI{72}{\kilo\bit}$. The Microchip 24F128-I/MS \cite{memory} was a \SI{128}{\kilo\bit} EEPROM chip which was selected. This will allow 1777 readings to be stored. The circuit in figure \ref{fig: memory schematic} was designed according to the data sheet \cite{memory} recommendations. The device communicated over an I\textsuperscript{2}C interface so it was connected to the PIC's SDA and SCL lines. It could have one of two addresses, which were set by the address pin A2. A \SI{10}{\kilo\ohm} pull-down resistor (R10) was used to pull this pin low. The resistor R9 is not placed, and is used to place an extra footprint on the PCB which would allow A2 to be pulled high if the designer desired.\\
+
+
+
+\subsubsection{Switches}
+
+
+
+
+
+\subsection{Power Budgets}
+\subsubsection{Remote Unit}
+
+
+
+\subsubsection{Base Unit}
