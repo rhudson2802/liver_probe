@@ -3,9 +3,65 @@
 %TRIS/ANSEL bits
 
 \subsection{Measurements Algorithm}
+The system would give different readings depending on the background lighting conditions, as these would appear as an offset in the phototransistor current. To add resilience to background light, each measurement was the difference between the phototransistor reading when the LED was on (which gives information about the target liver and the background light) and the reading when the LED was off (which gives information about the background light). Assuming the phototransistor has a linear incident light intensity-current response, this difference will leave just the information about the liver with no dependence on background light. A series of readings was made (N=50) and the average taken, to further increase the resilience to noise. The PICBASIC code is given below.
+\begin{verbatim}
+ir_led var PORTC.2
+red_led var PORTC.0
+phototransistor con 7       '' Analogue port used as input
+
+reading var word
+dark var word
+light var word
+N var byte
+i var byte
+
+mainloop:
+reading = 0
+dark = 0
+light = 0
+
+low red_led
+
+for i = 1 to N
+    low ir_led
+    pause 1
+    adcin phototransistor, light      '' read in light data
+    high ir_led
+    pause 1
+    adcin phototransistor, dark      '' read in dark data
+    
+    '' Add current readings to sum
+    '' Dark should be > light if measurement variation is due to our probe
+    if dark >= light then
+        reading = reading + (dark - light)
+    else
+        reading = 0
+    endif
+next i  
+
+'' Compute mean
+reading = reading / N
+
+goto mainloop
+\end{verbatim}
+
+
+
+
+
 
 
 \subsection{Communications Algorithm}
+The wireless transceiver modules took an input bitstream, transmitted it over an RF link, then output a bitstream at the receiver. The simplest way to input/output data to the PIC was to use the \verb|serin2| and \verb|serout2| command. These use the RS-232 communications protocol. RS-232 is an asynchronous serial communication standard, originally designed to communicate between computers and modems \cite{rs232}. . A RS-232 connection was also used for the serial link with the PC. Only three signal wires were used for this: Tx, Rx and GND. The full protocol uses many signal wires for timing and data control, but these were not implemented in this simple application. The RS-232 protocol was designed before TTL and CMOS logic became ubiquitous, so doesn't use the standard \SI{0}{\volt} and \SI{5}{\volt} TTL signal levels. Instead, a logic `1' is defined as being between -15 and -3 V, and logic `0' is in the range 3 to 15 V, defined relative to a common ground pin \cite{rs232}. The PIC generates a 0 to 5 V signal, which was fine for the wireless modules because these use standard TTL signal levels. In order to communicate with the PC, a RS-232 to USB was used to convert the PIC signals to a signal which could be read by a PC from a USB port.\\
+
+Each RS-232 data packet starts with a `0' start bit, which is followed by the 8 data bits, a parity bit, and finally an optional 2 stop bits \cite{rs232}. For this system, no parity bit was sent and 1 stop bit was used: following the `8N1' format. The \verb|serin2|/\verb|serout2| commands can be used in many modes depending on the application. These are set in the `Mode' argument. Bits 0-12 set the baud rate, which in this case was set to 1200 baud (corresponding to \verb|Mode<12:0> = 813| \cite{picbasic pro}). Bit 13 sets the parity. This was set to `0' to indicate no parity bit. Bit 14 selects whether the PIC outputs signals in true form or inverted form. The use of true form requires the use of external RS-232 drivers, so the inverted mode was selected. Therefore, bit 14 was set to `1'. Bit 15 was set to `0' to ensure that the data pin was always driven.\\
+
+%Insert code
+%Explain protocol (Us, checksum, repeats)
+
+
+
+
 
 \subsection{Wireless Charging Algorithm}
 The wireless charger requires a PWM signal with frequency $f=\SI{100}{\kilo\hertz}$ and duty cycle $D=0.5$. The PIC18F2550 has a built-in Capture/Compare/PWM (CCP) module \cite{pic18f2550}. This allows the PWM signal to be generated in hardware, rather than having to worry about precisely timing the software. A software implementation would have been difficult, as the PIC must do many other tasks as well as the PWM signal generation (such as listening for any incoming messages on the receiver), which would result in a variable delay time before the PWM could next be toggled. This is clearly undesirable, as it would not produce the desired constant frequency and duty ratio signal. The CCP pin could be set up as PWM at the beginning of the program and would continue to generate the signal regardless of what the rest of the program was doing.\\
@@ -24,4 +80,18 @@ where $T_\text{osc}$ is the oscillator period, so for a \SI{8}{\mega\hertz} cloc
 \text{PWM Duty Cycle} = (\text{CCPR2L:CCP2CON\textless5:4\textgreater}) \times T_\text{osc} \times (\text{TMR2 Prescale Value}) \label{eq: duty cycle}
 \end{equation}
 
-Where CCPR2L is the CCP2 register low byte and CCP2CON\textless5:4\textgreater are bits 5 and 4 of the CCP2 control register which define the lower two bits of the duty cycle period. Equation \ref{eq: duty cycle} $(\text{CCPR2L:CCP2CON\textless5:4\textgreater}) = \num{4e6}$, so 0x0A was written to CCPR2L and 00 was written to CCP2CON\textless5:4\textgreater. After this was done, TRISB.3 was cleared to set the pin to a digital output. The TMR2 prescaler was set to x1 and Timer2 was enabled by writing 0x04 to T2CON (Timer2 control register). Finally, CCP2CON\textless3:2\textgreater was set to 11, to set CCP2 to PWM mode. This generated a stable \SI{100}{\kilo\hertz} square wave.\\
+Where CCPR2L is the CCP2 register low byte and CCP2CON\textless5:4\textgreater are bits 5 and 4 of the CCP2 control register which define the lower two bits of the duty cycle period. Equation \ref{eq: duty cycle} $(\text{CCPR2L:CCP2CON\textless5:4\textgreater}) = \num{4e6}$, so 0x0A was written to CCPR2L and 00 was written to CCP2CON\textless5:4\textgreater. After this was done, TRISB.3 was cleared to set the pin to a digital output. The TMR2 prescaler was set to x1 and Timer2 was enabled by writing 0x04 to T2CON (Timer2 control register). Finally, CCP2CON\textless3:2\textgreater was set to 11, to set CCP2 to PWM mode. This generated a stable \SI{100}{\kilo\hertz} square wave. The PICBASIC code is given below.
+\begin{verbatim}
+#config
+    CONFIG CCP2MX = OFF
+#endconfig
+
+'' Set up PWM to run in hardware at 100kHz, D = 0.5
+PR2 = 19
+CCPR2L = %00001010
+CCP2CON.5 = 0
+CCP2CON.4 = 0
+TRISB.3 = 0
+T2CON = %00000100
+CCP2CON = %00001111
+\end{verbatim}

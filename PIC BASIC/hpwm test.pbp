@@ -91,7 +91,7 @@
     CCPR2L = %00001010
     CCP2CON.5 = 0
     CCP2CON.4 = 0
-    TRISB.3 = 0
+    TRISB.3 = 0                                     
     T2CON = %00000100
     CCP2CON = %00001111
     

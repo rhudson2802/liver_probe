@@ -62,7 +62,7 @@ for i = 1 to N
     if dark >= light then
         reading = reading + (dark - light)
     else
-        reading = reading + (light - dark)
+        reading = 0 'reading + (light - dark)
     ' Check we won't overflow reading before performing subtraction
     'elseif reading > (light - dark) then 
         'reading = reading - (light - dark)
