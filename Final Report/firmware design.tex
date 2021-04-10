@@ -54,7 +54,63 @@ goto mainloop
 \subsection{Communications Algorithm}
 The wireless transceiver modules took an input bitstream, transmitted it over an RF link, then output a bitstream at the receiver. The simplest way to input/output data to the PIC was to use the \verb|serin2| and \verb|serout2| command. These use the RS-232 communications protocol. RS-232 is an asynchronous serial communication standard, originally designed to communicate between computers and modems \cite{rs232}. . A RS-232 connection was also used for the serial link with the PC. Only three signal wires were used for this: Tx, Rx and GND. The full protocol uses many signal wires for timing and data control, but these were not implemented in this simple application. The RS-232 protocol was designed before TTL and CMOS logic became ubiquitous, so doesn't use the standard \SI{0}{\volt} and \SI{5}{\volt} TTL signal levels. Instead, a logic `1' is defined as being between -15 and -3 V, and logic `0' is in the range 3 to 15 V, defined relative to a common ground pin \cite{rs232}. The PIC generates a 0 to 5 V signal, which was fine for the wireless modules because these use standard TTL signal levels. In order to communicate with the PC, a RS-232 to USB was used to convert the PIC signals to a signal which could be read by a PC from a USB port.\\
 
-Each RS-232 data packet starts with a `0' start bit, which is followed by the 8 data bits, a parity bit, and finally an optional 2 stop bits \cite{rs232}. For this system, no parity bit was sent and 1 stop bit was used: following the `8N1' format. The \verb|serin2|/\verb|serout2| commands can be used in many modes depending on the application. These are set in the `Mode' argument. Bits 0-12 set the baud rate, which in this case was set to 1200 baud (corresponding to \verb|Mode<12:0> = 813| \cite{picbasic pro}). Bit 13 sets the parity. This was set to `0' to indicate no parity bit. Bit 14 selects whether the PIC outputs signals in true form or inverted form. The use of true form requires the use of external RS-232 drivers, so the inverted mode was selected. Therefore, bit 14 was set to `1'. Bit 15 was set to `0' to ensure that the data pin was always driven.\\
+Each RS-232 data packet starts with a `0' start bit, which is followed by the 8 data bits, a parity bit, and finally an optional 2 stop bits \cite{rs232}. For this system, no parity bit was sent and 1 stop bit was used: following the `8N1' format. The \verb|serout2| commands uses the syntax:
+\verb|SEROUT2 DataPin, Mode, [Data List]|
+The \verb|DataPin| argument sets which PIC pin the data will be transmitted from. \verb|serout2| can be used in many different modes depending on the application. These are set in the \verb|Mode| argument. Bits 0-12 set the baud rate, which in this case was set to 1200 baud (corresponding to \verb|Mode<12:0> = 813| \cite{picbasic_pro}). Bit 13 sets the parity. This was set to `0' to indicate no parity bit. Bit 14 selects whether the PIC outputs signals in true form or inverted form. The use of true form requires the use of external RS-232 drivers, so the inverted mode was selected. Therefore, bit 14 was set to `1'. Bit 15 was set to `0' to ensure that the data pin was always driven. Finally, the data which will be sent is specified in square brackets. This can be: the raw value of a variable, the value of the variable converted to decimal, binary or hexadecimal, or a string.\\
+
+It was found in preliminary tests that several measures needed to be employed to improve the reliability of the wireless transmission. When no data was being transmitted, the dynamic threshold of the receiver reset to the background noise level, which meant that there was a short delay time before the threshold was re-established to ensure that it was at the right level to demodulate the signal properly. Therefore, a series of `U' characters were transmitted. The ASCII value of the letter `U' is \verb|`0b01010101'|, so this toggles between the high and low state to set the threshold properly. The number of `U's required will be determined experimentally to see the minimum number required for reliable signal reception. The \SI{433}{\mega\hertz} is used for a number of devices (for example car key-fobs \cite{qam-rx10}), so the receiver may pick up spurious transmissions which do not contain the liver probe data. The receiver was always listening, so to ensure that noise or interference was not picked up and decoded, a string was prefixed to the data. The receiver would wait until it received this prefix before starting to save data, as only then would it be sure that the signal was coming from the remote unit. For initial tests, the string \verb|`liver'| was prefixed to the data. Then, the data was sent. 
+
+The relevant data was the liver reflectance measurement and the temperature. These were sent as four-digit decimal numbers in ASCII, as the maximum ADC reading was 1024. To add resilience to decoding errors, a checksum was included with the data. Three checksum functions were proposed:
+\begin{enumerate}
+\item \label{check: binary xor} \textbf{Binary XOR} - Split the data word into two bytes (upper and lower), and perform an exclusive or operation between the two bytes to give a one byte checksum.
+\item \label{check: decimal xor} \textbf{Decimal XOR} - Split the four-digit decimal representation into two two-digit numbers (i.e. $X_4X_3X_2X_1$ becomes $X_4X_3$ and $X_2X_1$). Perform an exclusive or operation between the binary representation of these two-digit decimal numbers.
+\item \label{check: decimal sum} \textbf{Decimal Sum} - Sum the four decimal digits.
+\end{enumerate}
+
+\begin{table}[htbp]
+	\begin{center}
+	\caption{Mean and variance of the three checksum functions, assuming a uniform distribution for the data value between $[0,1023]$.}
+	\label{tab: checksums}
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		\textbf{Function} & \textbf{Mean} & \textbf{Variance} & \textbf{Average number of repeated sums}\\
+		\hline
+		\ref{check: binary xor} - Binary XOR & 127.5 & 5461 & 4.0\\
+		\ref{check: decimal xor} - Decimal XOR & 48.8 & 857 & 9.5\\
+		\ref{check: decimal sum} - Decimal Sum & 13.3 & 26 & 36.6\\
+		\hline
+	\end{tabular}
+	\end{center}
+\end{table}
+%REWRITE
+The three functions had their mean and variance computed using a Python script, with results presented in table \ref{tab: checksums}. In this application, checksums are used to detect errors but not for error correction. Therefore, the checksum should ideally assign a different output for each input argument, as this means that there will be fewer matching inputs for any checksum so the error is more likely to be detected. The binary XOR clearly has the best performance. It has a mean equal to the mean of all the possible checksum outputs so is centred, and has a very large variance. In fact, it uses all possible values in the range of $[0,255]$. It also only assigns each checksum value to an average of 4 possible input values, making it more likely that an error can be detected. This good performance is because the binary operation naturally uses all 8 bits of the output byte. The decimal operations are biased towards the smaller byte values, with the decimal sum being the worst as it can only access a range of $[0,36]$. The binary XOR was selected as the checksum. The data was also repeated to ensure that if the receiver accidentally missed a packet, then it was not lost. The full transmitter command is given below:\\
+
+\begin{verbatim}
+''  Constant to define serout mode 8N1 at 1200 baud
+baud_1200 con 813 | %0100000000000000
+wireless_tx var PORTC.4                            ''  Set up an alias for transmitter pin
+reading var word                                       ''  Liver reflectance measurement
+temperature var word                                ''  Temperature measurement
+checksum var byte
+
+checksum = (reading / 256) ^ (reading // 256)        ''  Bitwise XOR between upper and lower byte of reading
+
+serout2 wireless_tx, baud_1200, [rep ``U''\10, ``liver '', dec4 reading, checksum, dec4 temperature, dec4 reading, checksum, dec4 temperature]
+\end{verbatim}
+
+The \verb|dec4| modifier outputs the value stored in the variable as a four digit decimal number, and the \verb|rep| modifier sends a repeated character \\n times. The base unit used the \verb|serin2| command in a similar fashion, with the main difference being the \verb|wait(``x'')| modifier will wait until it receives the string ``x'' before saving data to the following variables. The code is given below:
+
+\begin{verbatim}
+wireless_rx var PORTA.6                            ''  Set up an alias for receiver pin
+
+serin2 wireless_rx, baud_1200, [wait(``liver''), dec4 reading, checksum, temperature]
+
+''  Compare the received checksum to the checksum calculated from the reading. Error handling should go here.
+if ((reading / 256) ^ (reading // 256)) != checksum then
+    reading = 0
+endif
+\end{verbatim}
+
 
 %Insert code
 %Explain protocol (Us, checksum, repeats)
@@ -66,7 +122,7 @@ Each RS-232 data packet starts with a `0' start bit, which is followed by the 8 
 \subsection{Wireless Charging Algorithm}
 The wireless charger requires a PWM signal with frequency $f=\SI{100}{\kilo\hertz}$ and duty cycle $D=0.5$. The PIC18F2550 has a built-in Capture/Compare/PWM (CCP) module \cite{pic18f2550}. This allows the PWM signal to be generated in hardware, rather than having to worry about precisely timing the software. A software implementation would have been difficult, as the PIC must do many other tasks as well as the PWM signal generation (such as listening for any incoming messages on the receiver), which would result in a variable delay time before the PWM could next be toggled. This is clearly undesirable, as it would not produce the desired constant frequency and duty ratio signal. The CCP pin could be set up as PWM at the beginning of the program and would continue to generate the signal regardless of what the rest of the program was doing.\\
 
-PICBASIC contains a built-in command to access the CCP pins, HPWM (hardware PWM). This allows PWM to be set up simply by specifying the output pin, frequency and duty cycle \cite{picbasic pro}. However, because the free version of MicroCode Studio does not support the long data type, the highest frequency it can deliver is \SI{32.767}{\kilo\hertz}. The wireless charger was designed to run at \SI{100}{\kilo\hertz}, so the PWM signal needed to be faster than HPWM would allow. Therefore, a series of register writes were programmed to set up the CCP pin. The hardware was designed to use CCP module 2 on pin 24, which was multiplexed to PORTB.3. CCP2 could be multiplexed to either PORTC.1 (the default) or PORTB.3. Therefore, the appropriate CONFIG bit was set. In PICBASIC, this was \verb|CONFIG CCP2MX = OFF|.\\
+PICBASIC contains a built-in command to access the CCP pins, HPWM (hardware PWM). This allows PWM to be set up simply by specifying the output pin, frequency and duty cycle \cite{picbasic_pro}. However, because the free version of MicroCode Studio does not support the long data type, the highest frequency it can deliver is \SI{32.767}{\kilo\hertz}. The wireless charger was designed to run at \SI{100}{\kilo\hertz}, so the PWM signal needed to be faster than HPWM would allow. Therefore, a series of register writes were programmed to set up the CCP pin. The hardware was designed to use CCP module 2 on pin 24, which was multiplexed to PORTB.3. CCP2 could be multiplexed to either PORTC.1 (the default) or PORTB.3. Therefore, the appropriate CONFIG bit was set. In PICBASIC, this was \verb|CONFIG CCP2MX = OFF|.\\
 
 The PIC18F2550 data sheet \cite{pic18f2550} detailed the required register writes to set up CCP2 as a PWM pin. First, the PWM period was written to the PR2 register (Timer2 period register). The PWM period is given by the equation:
 

@@ -5,7 +5,7 @@ A Peripheral Interface Controller (PIC) was chosen as the microcontroller for bo
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\linewidth]{pickit3.PNG}
+	\includegraphics[width=0.8\linewidth]{pickit3.PNG}
 	\caption{PIC connected to PICkit 3 programmer with external circuitry \cite{pickit3}.}
 	\label{fig: pickit3}
 \end{figure}
@@ -68,7 +68,7 @@ A button also needed to be designed for the probe, so the surgeon could indicate
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.6\linewidth]{2-5v rail.PNG}
+	\includegraphics[width=0.4\linewidth]{2-5v rail.PNG}
 	\caption{Op-amp unity buffer used to generate \SI{2.5}{\volt} rail.}
 	\label{fig: 2.5v rail}
 \end{figure}
@@ -106,7 +106,7 @@ The primary coil will generate an alternating magnetic field due to the sinusoid
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\linewidth]{coil inductance.png}
+	\includegraphics[width=0.8\linewidth]{coil inductance.png}
 	\caption{Measured coil inductance for different numbers of coil turns}
 	\label{fig: coil inductance}
 \end{figure}
@@ -119,13 +119,13 @@ where $\mu_0$ is the permeability of free space, $N$ is the number of turns, $A$
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.6\linewidth]{coil experiment.png}
+	\includegraphics[width=0.4\linewidth]{coil experiment.png}
 	\caption{Setup for coil experiments}
 	\label{fig: coil experiment setup}
 \end{figure}
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\linewidth]{circular coupling.PNG}
+	\includegraphics[width=0.8\linewidth]{circular coupling.PNG}
 	\caption{The experimentally derived coupling coefficient of circular coils as a function of coil separation. The legend gives the turns ratio for the different experiments.}
 	\label{fig: circular coupling}
 %*******************REPLOT********************
@@ -137,7 +137,7 @@ The performance of the proposed charging circuit was investigated. First, the co
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\linewidth]{charger simulation.PNG}
+	\includegraphics[width=0.6\linewidth]{charger simulation.PNG}
 	\caption{LTspice simulation of charger circuit}
 	\label{fig: charger simulation}
 \end{figure}
@@ -151,7 +151,7 @@ The initial tests indicated that the charger would not deliver sufficient curren
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\linewidth]{mcp1407.PNG}
+	\includegraphics[width=0.8\linewidth]{mcp1407.PNG}
 	\caption{Schematic of MCP1406/07 MOSFET driver internal circuitry \cite{mcp1407}}
 	\label{fig: mcp1407}
 \end{figure}
@@ -176,7 +176,7 @@ Using the \SI{12}{\volt} supply voltage resulted in \SI{000}{\volt} across the p
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\linewidth]{battery current sensor.PNG}
+	\includegraphics[width=0.8\linewidth]{battery current sensor.PNG}
 	\caption{Battery current sensor.}
 	\label{fig: battery current sensor}
 \end{figure}
@@ -219,7 +219,7 @@ R25 was set to \SI{0}{\ohm} so an extra footprint would be placed on the PCB des
 \subsubsection{Temperature Sensor}
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\linewidth]{temperature sensor.PNG}
+	\includegraphics[width=0.6\linewidth]{temperature sensor.PNG}
 	\caption{Temperature sensor circuit schematic.}
 	\label{fig: temperature sensor}
 \end{figure}
@@ -244,7 +244,8 @@ The sensor was designed to have a range of \SIrange{5}{150}{\celsius}, to cover 
 
 \subsubsection{LCD}
 \begin{figure}[htbp]
-	\includegraphics[width=\linewidth]{lcd.PNG}
+	\centering
+	\includegraphics[width=0.6\linewidth]{lcd.PNG}
 	\caption{LCD interface circuitry.}
 	\label{fig: lcd schematic}
 \end{figure}
@@ -253,7 +254,8 @@ The sensor was designed to have a range of \SIrange{5}{150}{\celsius}, to cover 
 
 \subsubsection{Real Time Clock}
 \begin{figure}[htbp]
-	\includegraphics[width=\linewidth]{rtc.PNG}
+	\centering
+	\includegraphics[width=0.5\linewidth]{rtc.PNG}
 	\caption{RTC interface circuitry.}
 	\label{fig: rtc schematic}
 \end{figure}
@@ -264,7 +266,8 @@ The Microchip MCP7940N-I/SN \cite{rtc} was selected as the RTC module for the ba
 
 \subsubsection{Memory}
 \begin{figure}[htbp]
-	\includegraphics[width=\linewidth]{memory.PNG}
+	\centering
+	\includegraphics[width=0.4\linewidth]{memory.PNG}
 	\caption{EEPROM interface circuitry.}
 	\label{fig: memory schematic}
 \end{figure}
