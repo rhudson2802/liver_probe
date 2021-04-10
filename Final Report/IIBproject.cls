@@ -23,7 +23,7 @@
 
 \usepackage{amsfonts}
 \usepackage{amsmath}
-%\usepackage{appendix}
+\usepackage{appendix}
 %\usepackage{booktabs}
 %\usepackage{float}
 %\usepackage{listings}
