@@ -26,13 +26,13 @@
 \usepackage{appendix}
 %\usepackage{booktabs}
 %\usepackage{float}
-%\usepackage{listings}
+\usepackage{listings}
 \usepackage{multicol}
 \usepackage{multirow}
 %\usepackage{pgfplotstable}
 \usepackage{subcaption}
 \usepackage[binary-units=true]{siunitx}
-%\usepackage{tcolorbox}
+\usepackage{tcolorbox}
 %\usepackage{textgreek}
 \usepackage{url}
 
@@ -49,13 +49,13 @@
   range-units = single,
   separate-uncertainty = true, %show pm uncertainty
 }
-%\lstset{
-%  basicstyle=\fontsize{10}{10}\ttfamily,
-%  columns=fullflexible,
-%  frame=single,
-%  breaklines=true,
-%  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
-%}
+\lstset{
+  basicstyle=\fontsize{10}{10}\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
 
 
 

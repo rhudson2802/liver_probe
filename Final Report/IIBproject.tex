@@ -5,6 +5,8 @@
 % Use documentclass[wide]{IIBproject} to have narrower margins
 \usepackage{setspace}
 
+
+
 \bibliographystyle{ieeetr}
 \pagestyle{empty}
 % The next line sets 1.5 spacing
@@ -22,6 +24,7 @@
 \maketitle
 \thispagestyle{empty}
 
+\input{titlepage.tex}
 
 \pagenumbering{roman}
 % Summary
@@ -47,13 +50,24 @@ No more than 100 words.
 \input{system architecture.tex}
 
 
-\input{hardware design.tex}
+\input{measurement system.tex}
 
 
-\subsection{PCB Design}
+\input{wireless charger.tex}
 
 
-\input{firmware design.tex}
+\input{communications.tex}
+
+
+\input{other features.tex}
+
+%\input{hardware design.tex}
+
+
+\section{PCB Design}
+
+
+%\input{firmware design.tex}
 
 
 \section{System Evaluation}
