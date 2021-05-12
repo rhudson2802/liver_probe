@@ -58,7 +58,7 @@ include "modedefs.bas"
     ' Set starting Data bit (0 or 4) if 4-bit bus
     DEFINE LCD_DBIT 0
     ' Set LCD Register Select port
-    DEFINE LCD_RSREG PORTA
+    DEFINE LCD_RSREG PORTC
     ' Set LCD Register Select bit
     DEFINE LCD_RSBIT 5
     ' Set LCD Enable port
@@ -81,20 +81,20 @@ include "modedefs.bas"
     'ADCON2 = 
     T1CON = 0           'Turn off secondary oscillator
     T3CON = 0
-    UCON = 0'%10        'Turn off USB
+    UCON = 2'%10        'Turn off USB
     UCFG = %00001000
     UIE = 0
     UEIE = 0
     
     
     ' Set up PWM to run in hardware
-    PR2 = 19
-    CCPR2L = %00001010
-    CCP2CON.5 = 0
-    CCP2CON.4 = 0
-    TRISB.3 = 0
-    T2CON = %00000100
-    CCP2CON = %00001111
+    'PR2 = 19
+    'CCPR2L = %00001010
+    'CCP2CON.5 = 0
+    'CCP2CON.4 = 0
+    'TRISB.3 = 0
+    'T2CON = %00000100
+    'CCP2CON = %00001111
     
 #else
     #if __PROCESSOR__ = "16F688"
@@ -107,17 +107,17 @@ include "modedefs.bas"
     
     
     ' Set LCD Data port
-    DEFINE LCD_DREG PORTC
+    DEFINE LCD_DREG PORTA
     ' Set starting Data bit (0 or 4) if 4-bit bus
     DEFINE LCD_DBIT 0
     ' Set LCD Register Select port
-    DEFINE LCD_RSREG PORTC
+    DEFINE LCD_RSREG PORTA
     ' Set LCD Register Select bit
-    DEFINE LCD_RSBIT 4
+    DEFINE LCD_RSBIT 5
     ' Set LCD Enable port
-    DEFINE LCD_EREG PORTC
+    DEFINE LCD_EREG PORTA
     ' Set LCD Enable bit
-    DEFINE LCD_EBIT 5
+    DEFINE LCD_EBIT 4
     
     ANSEL = %00000000
     TRISA = %00000000
@@ -148,13 +148,7 @@ DEFINE LCD_DATAUS 44
 LCD_DELAY con 1
 
 
-'lcd_db4 var PORTC.0
-'lcd_db5 var PORTC.1
-'lcd_db6 var PORTC.2
-'lcd_db7 var PORTC.3
-'lcd_rs var PORTC.4
-'lcd_en var PORTC.5
-
+lcd_power var PORTB.4
 
 
 lcd_to_write var byte
@@ -163,6 +157,7 @@ menu_option = 0
 i var word
 i = 1000
 
+high lcd_power
 
 pause 500    'Need 10 second delay for LCD to boot
 LCDOUT $FE, 1, $FE, $C0+6, "Welcome" ' Clear display move cursor to 2nd line
@@ -173,6 +168,7 @@ lcdout $FE, 1
 pause LCD_DELAY
 
 mainloop:
+high lcd_power
     goto menu
 goto mainloop
 
@@ -233,7 +229,7 @@ menu:
         lcdout $FE, $D4, $7E
     endif
     
-    pause 1000
+    pause 10
     i = i + 1
     menu_option = (menu_option + 1) // 3
 goto menu_loop

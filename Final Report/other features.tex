@@ -38,7 +38,7 @@ The sensor was designed to have a range of \SIrange{5}{150}{\celsius}, to cover 
 
 PICBASIC had a built-in command \verb|lcdout| which could be used to control an LCD with a Hitachi 44780 controller \cite{picbasic_pro}. To this end, an LCD module with an equivalent controller was selected. A 4x20 character matrix was desired to enable the screen to display all the information it required. The Displaytech 204-A-CC-BC-3LP \cite{lcd}. This used the Samsung KS0076B driver, which has an equivalent instruction set to the Hitachi 44780, meaning it can be controlled using the \verb|lcdout| command. Figure \ref{fig: lcd schematic} shows the LCD interface circuitry. The R/$\overline{\text{W}}$ pin was tied to ground, as the LCD only needed to be written to. $V_o$ set the operating voltage for the LCD, which in turn controlled the contrast of the display. The LCD datasheet recommended biasing this at \SI{0.2}{\volt}, but experimental results showed that the best contrast was achieved when $V_o$ was biased close to ground. Therefore, the optimum experimental bias voltage was implemented by a potential divider using the two closest standard resistor values, to give a bias of \SI{0.045}{\volt}. The remaining pins were data signals which were connected to PIC pins. The LCD could operate using either a 4- or 8-bit parallel interface \cite{picbasic_pro}. In this application, the 4-bit interface was selected to minimise the number of PIC pins which would be used by the LCD. The \verb|lcdout| command required that these 4 data signals were connected to either the upper or lower nybble of a single I/O port. Only PORTA\textless0:3\textgreater was suitable, as all the remaining ports had pins which were required for other functions, or unimplemented bits in the PORT.\\
 
-The \verb|lcdout| command allowed simple control of the LCD. First, several \verb|define|s were set to configure the compiler. Then, commands could be written to the LCD by sending the byte \verb|$FE| before the corresponding command in the PICBASIC manual \cite{picbasic_pro} or LCD datasheet \cite{lcd}. Characters could be written by looking up the character code in the LCD's character map (specified in the datasheet \cite{lcd}) or by simply providing PICBASIC with the required string. A delay was required between each write operation to ensure the LCD was ready to receive another instruction, otherwise an error would occur. A simple program is included below:
+The \verb|lcdout| command allowed simple control of the LCD. First, several \verb|define|s were set to configure the compiler. Then, commands could be written to the LCD by sending the byte \verb|$FE| before the corresponding command in the PICBASIC manual \cite{picbasic_pro} or LCD datasheet \cite{lcd}. Characters could be written by looking up the character code in the LCD's character map (specified in the datasheet \cite{lcd}) or by simply providing PICBASIC with the required string. A delay was required between each write operation to ensure the LCD was ready to receive another instruction, otherwise an error would occur. A simple program is included below, and the output is shown in figure \ref{fig: lcd}.
 
 \begin{lstlisting}
 ' Set LCD bus size (4 or 8 bits)
@@ -49,6 +49,18 @@ DEFINE LCD_LINES 4
 DEFINE LCD_COMMANDUS 1500
 ' Set data delay time in us
 DEFINE LCD_DATAUS 44
+' Set LCD Data port
+DEFINE LCD_DREG PORTA
+' Set starting Data bit (0 or 4) if 4-bit bus
+DEFINE LCD_DBIT 0
+' Set LCD Register Select port
+DEFINE LCD_RSREG PORTC
+' Set LCD Register Select bit
+DEFINE LCD_RSBIT 5
+' Set LCD Enable port
+DEFINE LCD_EREG PORTA
+' Set LCD Enable bit
+DEFINE LCD_EBIT 4
 
 LCD_DELAY con 1
 
@@ -61,6 +73,12 @@ pause LCD_DELAY
 LCDOUT $FE, $94+4, "Liver Probe"                
 \end{lstlisting}
 
+%\begin{figure}[htbp]
+%	\centering
+%	\includegraphics[width=\linewidth]{}
+%	\caption{LCD welcome screen}
+%	\label{fig: lcd}
+%\end{figure}
 
 
 
@@ -74,9 +92,9 @@ LCDOUT $FE, $94+4, "Liver Probe"
 	\label{fig: memory schematic}
 \end{figure}
 
-The EEPROM was designed to store a minimum of 1000 readings. Each reading had several components: the reading ID (1B), month (1B), day (1B), hour (1B), minute (1B), measurement value (2B), temperature reading (2B). This led to a total reading size of 9 bytes. This meant the memory required to store 1000 readings was $\SI{9}{\kilo\byte}=\SI{72}{\kilo\bit}$. The Microchip 24FC256-I/ST \cite{memory} was a \SI{256}{\kilo\bit} EEPROM chip which was selected. This will allow 3555 readings to be stored. The circuit in figure \ref{fig: memory schematic} was designed according to the data sheet \cite{memory} recommendations. The device communicated over an I\textsuperscript{2}C interface so it was connected to the PIC's SDA and SCL lines. It could have one of two addresses, which were set by the address pin A2. A \SI{10}{\kilo\ohm} pull-down resistor (R10) was used to pull this pin low. The resistor R9 is not placed, and is used to place an extra footprint on the PCB which would allow A2 to be pulled high if the designer desired.\\
+The base unit required some non-volatile memory to store measurements for the surgeon before they could download them to a computer. The EEPROM was designed to store a minimum of 1000 readings. Each reading had several components: the reading ID (1B), month (1B), day (1B), hour (1B), minute (1B), measurement value (2B), temperature reading (2B). This led to a total reading size of 9 bytes. This meant the memory required to store 1000 readings was $\SI{9}{\kilo\byte}=\SI{72}{\kilo\bit}$. The Microchip 24FC256-I/ST \cite{memory} was a \SI{256}{\kilo\bit} EEPROM chip which was selected. This will allow 3555 readings to be stored. The circuit in figure \ref{fig: memory schematic} was designed according to the data sheet \cite{memory} recommendations. The device communicated over an I\textsuperscript{2}C interface so it was connected to the PIC's SDA and SCL lines. It could have one of two addresses, which were set by the address pin A2. A \SI{10}{\kilo\ohm} pull-down resistor (R10) was used to pull this pin low. The resistor R9 is not placed, and is used to place an extra footprint on the PCB which would allow A2 to be pulled high if the designer desired.\\
 
-The EEPROM chip was accessed using the PICBASIC \verb|i2cread| and \verb|i2cwrite| commands. The EEPROM allowed for sequential reads, so multiple bytes of data could be read out from one I\textsuperscript{2}C instruction, with the data saved in an array.\\
+The EEPROM chip was accessed using the PICBASIC \verb|i2cread| and \verb|i2cwrite| commands. The EEPROM allowed for sequential reads, so multiple bytes of data could be read out from one I\textsuperscript{2}C instruction, with the data saved in an array. To ensure the correct EEPROM address is used a counter is stored in the PIC's EEPROM to record how many readings are stored in the external EEPROM. This is required because when the base unit powers on, it needs to know how many readings are already in EEPROM otherwise they will be overwritten.\\
 
 
 
