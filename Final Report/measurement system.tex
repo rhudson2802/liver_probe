@@ -106,3 +106,33 @@ reading = reading / N
 
 goto mainloop
 \end{lstlisting}
+
+
+
+
+
+
+\subsection{Testing}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{old probe comparison.png}
+	\caption{Comparison of old and new probe readings when aimed at a sheet of A4 paper, at a separation of 1, 2, 3, 4 and 5 cm. The red line indicates the boundary between high- and low-fat livers measured by the old probe in clinical trials. Plotted on a log-log scale.}
+	\label{fig: old probe comparison}
+\end{figure}
+
+The measurement system was first tested to measure the correlation between readings taken with the old probe and those taken with the new design. This was important, because the new design's readings need to be highly correlated with the old probe to ensure that the new probe will have the same predictive power in clinical trials. The probes give an output in arbitrary units which is simply the ADC output of the PIC. These are arbitrary units, and will be different for the two designs due to different component selection and circuit design. The two probes had their correlation tested by measuring the output at fixed distances from a sheet of A4 paper. This will give different intensities of backscattered light, so can be used for calibration. Figure \ref{fig: old probe comparison} shows the outcome of this experiment. The R\textsuperscript{2} correlation coefficient is 0.9859, so the probes are highly correlated as desired. \\
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{liquids.png}
+	\caption{Measurements made by the probe on different liquids, with a liquid depth of \SI{2}{\centi\metre} and probe range of \SI{3}{\centi\metre}.}
+	\label{fig: liquids}
+\end{figure}
+
+The measurement system was then tested to determine its response to lipid concentration. Readings were taken from shining the probe at water, semi-skimmed milk (2\% fat), and full-fat milk (4\% fat). The milk will have suspended lipid droplets which can be used as a proof-of-concept to model probe's response to fat concentration. It will also include other biological molecules such as proteins. Figure \ref{fig: liquids} shows that the probe reading does increase for the liquids with higher fat concentration.
+
+
+
+
+
+
