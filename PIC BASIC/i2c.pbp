@@ -140,34 +140,60 @@ rs232_out var PORTC.6
 baud_1200 con 813 | %0100000000000000
 eeprom_address var byte         'EEPROM I2C address
 eeprom_address = %10100000
-addr var word                   'Memory address to write/read to (needs to be word length)
+rtc_addr var byte               ' RTC I2C address
+rtc_addr = %11011110
+addr var word                   'Memory addr to write/read to (needs to be word length)
 addr = 0
-x var byte[8]  
+x var byte[8]
 i var byte
               
 pause 10
 serout2 rs232_out, baud_1200, [10, 10, "hello world", 10]
-'i2cwrite sda, scl, eeprom_address, addr, ["this is a IIB project"], i2c_failed
-pause 10
-addr = 10
-i2cread sda, scl, eeprom_address, addr, [str x\8]
-serout2 rs232_out, baud_1200, [str x\8]
+'i2cwrite sda, scl, eeprom_addr, addr, ["this is a IIB project"], i2c_failed
+'pause 10
+'addr = 10
+'i2cread sda, scl, eeprom_addr, addr, [str x\8]
+'serout2 rs232_out, baud_1200, [str x\8]
 'for i = 1 to 8  
 '    pause 10
-'    i2cread sda, scl, eeprom_address, [x]
+'    i2cread sda, scl, eeprom_addr, [x]
 '    pause 10
 '    serout2 rs232_out, baud_1200, [x]
 'next i
     
-serout2 rs232_out, baud_1200, [10, "I2C succeeded", 10]
+'serout2 rs232_out, baud_1200, [10, "I2C succeeded", 10]
 
+
+' Write time to rtc
+'i2cwrite sda, scl, rtc_addr, $00, %00000000 'Seconds
+'i2cwrite sda, scl, rtc_addr, $01, %01000101 'Minutes
+'i2cwrite sda, scl, rtc_addr, $02, %00010010 'Hours
+i2cwrite sda, scl, rtc_addr, $03, %00001001 'Weekday
+'i2cwrite sda, scl, rtc_addr, $04, %00010000 'Day
+'i2cwrite sda, scl, rtc_addr, $05, %00000101 'Month
+'i2cwrite sda, scl, rtc_addr, $06, %00100001 'Year (tens and units)
+i2cwrite sda, scl, rtc_addr, $0D, %11001011  ' Output square wave on MFP
+i2cwrite sda, scl, rtc_addr, $00, %10000000, i2c_failed
+
+i2cread sda, scl, rtc_addr, $00, [x[0]]
+serout2 rs232_out, baud_1200, ["0 ", bin8 x[0], 10, 10]
+
+pause 2000
+
+i2cread sda, scl, rtc_addr, $00, [str x\8]
 
 
 mainloop:
+    i2cread sda, scl, rtc_addr, $00, [str x\8], i2c_failed
+    for i = 0 to 7
+        serout2 rs232_out, baud_1200, [dec i, " ", bin8 x[i], 10]
+    next i
+    serout2 rs232_out, baud_1200, [10]
+    
     high led
-    pause 100
+    pause 500
     low led
-    pause 100
+    pause 500
     
 goto mainloop
 

@@ -23,6 +23,7 @@ liver_pt con 7          'Analogue port used as input for liver phototransistor
 button_led var PORTA.2
 button_pt con 3         'Analogue port used as input for button phototransistor
 serial_out var PORTC.4
+tx_power var PORTA.0
 
 baud con N300
 baud_300 con 3313 | %0100000000000000
@@ -32,7 +33,7 @@ N con 50
 NUM_U con 5
 BUTTON_THRESHOLD con 100
 BUTTON_DELAY con 100
-READING_DELAY con 1000
+READING_DELAY con 100
 
 button_request var byte
 reading var word
@@ -42,13 +43,22 @@ light var word
 i var byte
 
 init:
-    ANSEL = %10001000
-    ADCON0 = %11011101
-    ADCON1 = %00110000
-    TRISA = %00010000
-    TRISC = %00001000
-    OSCCON = %1110111
-    CMCON0 = %00000000
+    'ANSEL = %10001000
+    'ADCON0 = %11011101
+    'ADCON1 = %00110000
+    'TRISA = %00010000
+    'TRISC = %00001000
+    'OSCCON = %1110111
+    'CMCON0 = %00000000
+ANSEL = %10001000
+ADCON0 = %11011101
+ADCON1 = %00110000
+TRISA = %00011011
+TRISC = %00101000
+OSCCON = %1110111
+CMCON0 = %00000000
+
+low tx_power
 
 
 mainloop:
@@ -65,7 +75,6 @@ mainloop:
         gosub take_measurement
         pause READING_DELAY
     endif
-    
 goto mainloop
 
 
@@ -75,7 +84,7 @@ read_button:
     dark = 0
     light = 0
     
-    for i = 1 to N
+    for i = 1 to 10
         low button_led
         pause 1
         adcin button_pt, light  'read in light data
@@ -91,7 +100,7 @@ read_button:
     next i  
     
     'Compute mean
-    reading = reading / N
+    reading = reading / 10
     
     if reading > BUTTON_THRESHOLD then
         button_request = 1
@@ -129,6 +138,6 @@ take_measurement:
     checksum = reading.byte1 ^ reading.byte0
     
     serout2 serial_out, baud_300, [rep "U"\NUM_U]
-    serout2 serial_out, baud_1200, [" m ", dec4 reading, checksum, " m ", dec4 reading, checksum, " m ", dec4 reading, checksum]
+    serout2 serial_out, baud_1200, [" m ", dec4 reading]', checksum, " m ", dec4 reading, checksum, " m ", dec4 reading, checksum]
 
 return

@@ -16,10 +16,11 @@ define ADC_BITS 10
 define ADC_SAMPLEUS 50
 define ADC_CLOCK 3
 
-ANSEL = %10000000
+ANSEL = %10001000
 ADCON0 = %11011101
 ADCON1 = %00110000
-TRISC = %00001000
+TRISA = %00011011
+TRISC = %00101000
 OSCCON = %1110111
 CMCON0 = %00000000
 
@@ -61,8 +62,8 @@ for i = 1 to N
     ' Dark should be > light if measurement variation is due to our probe
     if dark >= light then
         reading = reading + (dark - light)
-    else
-        reading = 0 'reading + (light - dark)
+    'else
+        'reading = 0 'reading + (light - dark)
     ' Check we won't overflow reading before performing subtraction
     'elseif reading > (light - dark) then 
         'reading = reading - (light - dark)
@@ -73,10 +74,10 @@ next i
 'Compute mean
 reading = reading / N
 'serout serial_out, N300, ["UUUUUUUm 0000"]
-serout2 serial_out, baud_300, ["UUUUUUUUU", " m ", dec4 reading, " m ", dec4 reading, " m ", dec4 reading]
+serout2 serial_out, baud_1200, [rep "U"\50, " m ", dec4 reading, " m ", dec4 reading, " m ", dec4 reading]
 
 high red_led
-pause 1000
+pause 100
 
 goto mainloop
 end

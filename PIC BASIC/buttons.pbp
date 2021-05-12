@@ -142,15 +142,15 @@ baud_2400 con 396 | %0100000000000000
 'goto_menu var byte
 
 menu var PORTB.2
-ok var PORTB.6
+ok var PORTB.7
 up var PORTC.2
-down var PORTB.7
+down var PORTB.6
 serial_out var PORTC.6
                   
 'goto_menu = 0
                                    
                                    
-serout2 serial_out, baud_2400, ["Hello World", 10]
+serout2 serial_out, baud_2400, [10, 10, "Hello World", 10]
 
 goto mainloop
 
@@ -184,7 +184,7 @@ mainloop:
 
     serout2 serial_out, baud_2400, ["Mainloop", 10]
     'if menu = 0 then
-    '     serout2 serial_out, baud_2400, ["Menu button pressed", 10]
+         'serout2 serial_out, baud_2400, ["Menu button pressed", 10]
     'endif
     if ok = 0 then
         serout2 serial_out, baud_2400, ["Ok button pressed", 10]
@@ -195,7 +195,7 @@ mainloop:
     if down = 0 then
         serout2 serial_out, baud_2400, ["Down button pressed", 10]
     endif
-    pause 10
+    pause 1000
 goto mainloop
 
 

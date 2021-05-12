@@ -122,7 +122,7 @@ MAX_STRING_LENGTH con 20
             
 'led var PORTC.0
 serial_out var PORTC.6
-serial_in var PORTC.0
+serial_in var PORTA.6
 baud con N1200
 baud_1200 con 813 | %0100000000000000
 baud_600 con 1646 | %0100000000000000
