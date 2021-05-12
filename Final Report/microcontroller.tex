@@ -1,0 +1,11 @@
+\section{Microcontroller}
+A Peripheral Interface Controller (PIC) was chosen as the microcontroller for both the base and remote unit. PICs are versatile, with highly configurable pin assignments, which was suitable for the different types of sub-system which would be used in the product. Furthermore, they are easy to program in PICBASIC using the MicroCode Studio and MPLAB IDE software packages. PICBASIC provides a high level way to access the PIC's instruction set, with commands available which combine many complex assemble code instructions. The free version of MicroCode Studio limits the range of devices which can be programmed, so the PIC16F688 \cite{pic16f688} was chosen for the remote unit and the PIC18F2550 \cite{pic18f2550} for the base unit. These had the right number of I/O pins for their respective unit, as well as some special features which will be discussed in later sections. PICs are also relatively cheap, which is a good property for the disposable remote unit.\\
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.8\linewidth]{pickit3.PNG}
+	\caption{PIC connected to PICkit 3 programmer with external circuitry \cite{pickit3}.}
+	\label{fig: pickit3}
+\end{figure}
+
+The PICkit 3 \cite{pickit3} was used to program the PICs. Figure \ref{fig: pickit3} shows the relevant connections required for programming. A \SI{10}{\kilo\ohm} pull-up resistor was selected for the $\overline{\text{MCLR}}$ line. This is required because the PIC resets whenever $\overline{\text{MCLR}}$ is low, so it needs to be pulled high in normal operation. \\
