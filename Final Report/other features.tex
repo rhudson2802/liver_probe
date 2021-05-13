@@ -96,6 +96,8 @@ The base unit required some non-volatile memory to store measurements for the su
 
 The EEPROM chip was accessed using the PICBASIC \verb|i2cread| and \verb|i2cwrite| commands. The EEPROM allowed for sequential reads, so multiple bytes of data could be read out from one I\textsuperscript{2}C instruction, with the data saved in an array. To ensure the correct EEPROM address is used a counter is stored in the PIC's EEPROM to record how many readings are stored in the external EEPROM. This is required because when the base unit powers on, it needs to know how many readings are already in EEPROM otherwise they will be overwritten.\\
 
+\SI{2.2}{\kilo\ohm} pull-up resistors were used on the I\textsuperscript{2}C lines, as this allowed the I\textsuperscript{2}C to run up to \SI{400}{\kilo\hertz} \cite{memory}.
+
 
 
 

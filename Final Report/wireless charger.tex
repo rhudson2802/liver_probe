@@ -42,12 +42,10 @@ where $\mu_0$ is the permeability of free space, $N$ is the number of turns, $A$
 	\includegraphics[width=0.8\linewidth]{circular coupling.PNG}
 	\caption{The experimentally derived coupling coefficient of circular coils as a function of coil separation. The legend gives the turns ratio for the different experiments.}
 	\label{fig: circular coupling}
-%*******************REPLOT********************
 \end{figure}
 
 The performance of the proposed charging circuit was investigated. First, the coupling coil was determined as a function of the separation between the coils. The experiment was performed using two planar circular coils, where the primary coil had 100 turns and the secondary coil had 160 turns. The coils were centred on the same out-of-plane axis. Figure \ref{fig: coil experiment setup} illustrates the experiment setup. The primary coil was driven by the H-bridge circuit in figure \ref{fig: charger schematic}, and the secondary coil had its open circuit voltage measured. If the transformer were ideal, the secondary coil's voltage should be $V_2 = V_1 \times N_2 / N_1$ where $V_1$ is the voltage across the primary coil, and $N_2 / N_1$ is the secondary to primary turns ratio. To account for the poor coupling in an air-cored transformer, a coupling coefficient $k$ is introduced, so $V_2 = k \times V_1 \times N_2 / N_1$. The reduction in coupling is because the air core has a low permeability, so the flux from the primary is not strongly linked to the secondary, leading to a large leakage flux. The experiment was repeated for different turns ratios, all giving similar values of the coupling coefficient.. The experimentally determined coupling coefficients are plotted in figure \ref{fig: circular coupling}, which shows a coupling coefficient of 0.28 at a separation of \SI{10}{\milli\metre}.\\
 
-%Coil inductance calculations
 
 \begin{figure}[htbp]
 	\centering
@@ -81,7 +79,7 @@ To avoid this problem, two MOSFET driver ICs (Microchip's MCP1406 and MCP1407 \c
 
 %EXPERIMENTS *************Performance of 12V charger*******************
  
-The schematic for the primary side is shown in figure \ref{fig: mosfet drivers charger}. The inclusion of the three capacitors C9, C22 and C23 is so that the resonant circuit can be tuned to \SI{100}{\kilo\hertz} more accurately. The circuit provided \SI{000}{\milli\ampere} of charging current to the three \SI{2.4}{\volt} batteries when tested on breadboard with the coils separated by \SI{10}{\milli\metre}. This was reflective of the real use conditions, and the \SI{000}{\milli\ampere} charging current was suitable. The batteries' recommended charging current is \SI{8}{\milli\ampere}, so while the current is a little high this will not be a large problem. Alternatively, the current could be reduced by changing the frequency of the drive circuit away from the resonant frequency, which will lower the gain. The \SI{000}{\milli\ampere} current will charge the \SI{80}{\milli\ampere\hour} batteries in \SI{000}{\hour}.\\
+The schematic for the primary side is shown in figure \ref{fig: mosfet drivers charger}. The inclusion of the three capacitors C9, C22 and C23 is so that the resonant circuit can be tuned to \SI{100}{\kilo\hertz} more accurately. A \SI{22}{\ohm} resistor was used again to limit the current to \SI{500}{\milli\ampere}, as this was the maximum current the power supply could provide. The circuit provided \SI{000}{\milli\ampere} of charging current to the three \SI{2.4}{\volt} batteries when tested on breadboard with the coils separated by \SI{10}{\milli\metre}. This was reflective of the real use conditions, and the \SI{000}{\milli\ampere} charging current was suitable. The batteries' recommended charging current is \SI{8}{\milli\ampere}, so while the current is a little high this will not be a large problem. Alternatively, the current could be reduced by changing the frequency of the drive circuit away from the resonant frequency, which will lower the gain. The \SI{000}{\milli\ampere} current will charge the \SI{80}{\milli\ampere\hour} batteries in \SI{000}{\hour}.\\
 
 Using the \SI{12}{\volt} supply voltage resulted in \SI{000}{\volt} across the primary coil, and \SI{000}{\volt} across the secondary (under open circuit conditions). This was greater than the NSR05F20NXT5G voltage rating \SI{20}{\volt}, so new diodes were selected for the bridge rectifier to handle the higher voltage. The NXP PMEG10020ELRX Schottky barrier diode \cite{new_diode} was rated to \SI{100}{\volt} and \SI{2}{\ampere}, so was suitable for the application. It also had a low forward voltage of \SI{0.4}{\volt}, which was larger than the original diode, but because of the much larger secondary coil voltage this will not be a problem. It also has a very low reverse current of \SI{10}{\nano\ampere} at \SI{25}{\celsius}, which will lead to good off-state performance.\\
 
@@ -122,6 +120,10 @@ Figure \ref{fig: battery voltage sensor} shows the circuit used to detect the un
 \end{multicols}
 
 R25 was set to \SI{0}{\ohm} so an extra footprint would be placed on the PCB design to allow for fine tuning of the hysteresis, if the original design were found to not be suitable during testing. Diode D7 was included because the PIC pin the circuit was connected to, RA3, was also the $\overline{\text{MCLR}}$ pin used by the PICkit3 programmer. This pin raised to a high voltage during PIC programming. Diode D7 clamps the op-amp output to \SI{5}{\volt} to prevent damage during programming. The \SI{33}{\kilo\ohm} resistor allows the programmer to adjust the pin voltage independent of the op-amp, so the op-amp does not tie it high or low.\\
+
+Once the PIC detects an under-voltage condition, it will turn off all of the outputs which consume power. It is important that the circuit does not continue to draw current, as this may drain the batteries too much so they can no longer be recharged. The wireless transmitter module was designed with a PMOS switch at its Vcc rail so that it could be fully switched off by the PIC (as it consumes some power even when it is not transmitting, for instance to power the local oscillator). The PIC then transitions to its low frequency oscillator mode, which uses a \SI{31}{\kilo\hertz} clock rather than the standard \SI{8}{\kilo\hertz} clock. This reduces the quiescent current from \SI{2}{\milli\ampere} to \SI{30}{\micro\ampere}. Periodically, the PIC will perform a read operation to see if the battery voltage has been restored, and if it has then it will turn the device back on.\\
+
+
 
 
 
@@ -170,7 +172,18 @@ CCP2CON = %00001111
 	\label{fig: rectangular coupling}
 \end{figure}
 
+
 The charger was tested at \SI{100}{\kilo\hertz} using a 100 turn rectangular coil for the primary and a 150 turn rectangular coil for the secondary. The coils measured \SI{70 x 35}{\milli\metre}. Rectangular coils were required to maximise the coil area for the probe casing geometry. Figure \ref{fig: rectangular coupling} demonstrates that the coupling between the rectangular coils was identical to the circular coils used in the breadboard tests, so the results for the circular coils will have the same order of magnitude when repeated with rectangular coils.\\
+
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{secondary current.PNG}
+	\caption{Charging current supplied to the batteries at \SI{100}{\kilo\hertz} and a separation of \SI{10}{\milli\metre}.}
+	\label{fig: secondary current}
+\end{figure}
+
+
 
 \begin{figure}[htbp]
 	\centering
@@ -179,7 +192,7 @@ The charger was tested at \SI{100}{\kilo\hertz} using a 100 turn rectangular coi
 	\label{fig: current distance}
 \end{figure}
 
-The charging system was first tested to measure the current delivered to the \SI{7.2}{\volt} battery load at different coil separations. A \SI{3.2}{\pico\farad} capacitor was used to ensure the primary coil (with \SI{840}{\micro\henry} inductance) operated near resonance at \SI{100}{\kilo\hertz}. Figure \label{fig: current distance} shows the results of this experiment, demonstrating the current-distance characteristics have a similar trend to the coupling-distance characteristics, as might be expected. The recommended charging current for the batteries is \SI{8}{\milli\ampere} \cite{rs_pro_batteries}, which is exceeded at distances greater than \SI{28}{\milli\metre}. The expected minimum coil separation is \SI{10}{\milli\metre}, which takes into account the plastic casing surrounding the coils.\\
+The charging system was first tested to measure the current delivered to the \SI{7.2}{\volt} battery load at different coil separations. A \SI{3.2}{\pico\farad} capacitor was used to ensure the primary coil (with \SI{840}{\micro\henry} inductance) operated near resonance at \SI{100}{\kilo\hertz}. Figure \ref{fig: secondary current} shows that the current waveforms observed in the batteries is the expected rectified sinusoid. Figure \label{fig: current distance} shows the results of this experiment, demonstrating the current-distance characteristics have a similar trend to the coupling-distance characteristics, as might be expected. The recommended charging current for the batteries is \SI{8}{\milli\ampere} \cite{rs_pro_batteries}, which is exceeded at distances greater than \SI{28}{\milli\metre}. The expected minimum coil separation is \SI{10}{\milli\metre}, which takes into account the plastic casing surrounding the coils.\\
 
 \begin{figure}[htbp]
 	\centering
