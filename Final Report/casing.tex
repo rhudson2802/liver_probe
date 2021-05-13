@@ -1,0 +1,34 @@
+\section{Casing Design}
+
+\subsection{Remote Unit}
+The remote unit would have the PCB enclosed in a resin cast, which would provide a hermetic seal. The resin must be a biocompatible material to ensure the device is safe to use in vivo and that it will be approved by the regulator. There are lots of adverse affects an improper material could have on a patient depending on the chemical and physical properties of the material, so extensive testing must be performed on a material to determine if it is safe to use in contact with the body \cite{biocompatible_tests}. Luckily, there are many commercially available biocompatible resins, as they are commonly used in fields like dentistry which commonly uses PMMA for casts \cite{biocompatible_resin}. The resin cast needs to have two transparent ``windows'' built in on the two ends, to allow light to pass to and from the LEDs and phototransistors. If a transparent resin is used, this will not be a problem. If a opaque resin is used, then a transparent glass screen should be included to allow the transmission of light. This will also result in an air gap needed around the LEDs and phototransistors.\\
+
+\begin{figure}[htbp]
+	\centering
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{cuboid.png}
+		\caption{Cuboid}
+		\label{fig: cuboid}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{cylinder.png}
+		\caption{Cylinder}
+		\label{fig: cylinder}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{half cylinder.png}
+		\caption{Half Cylinder}
+		\label{fig: half cylinder}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{final design.png}
+		\caption{Final Design}
+		\label{fig: final design}
+	\end{subfigure}
+	\caption{3D renders of potential casing designs produced using SketchUp \cite{sketchup}}
+	\label{fig: casings}
+\end{figure}
+
+The design of the casing shape underwent several iterations to improve the user experience. The iterations were rendered in CAD (see figure \ref{fig: casings}) and modelled using Play-Doh to see how they felt to hold. The first design was a simple cuboid shape (figure \ref{fig: cuboid}), with dimensions large enough to enclose the PCB (which measured \SI{80x40x35}{\milli\metre}). This felt cumbersome to hold, and the corners were uncomfortable. The design was therefore changed to a cylinder (figure \ref{fig: cylinder}), to make the edges smooth. This did feel more comfortable, but the cylindrical shape could lead to issues with the wireless charger. Maximum power is transferred when the charging coils are parallel, and zero power is transferred when they are perpendicular. Due to the rotational symmetry of the cylinder, it will not be clear which orientation the surgeon should place the remote unit on the charging pad, and it could possibly roll over and misalign. Thus, a new half cylinder design (figure \ref{fig: half cylinder}) was made. The flat surface on the bottom makes it clear which side should be placed against the charging pad. Furthermore, if the half cylinder is placed on its curved side, gravity will rotate the device so the flat surface is pointing upwards, so the coils will still be parallel albeit at a greater separation. One problem noted with this design (and all the previous ones) was that it was not clear which side of the device should be placed against the liver and which side has the ``take measurement'' button. Therefore, the final design (figure \ref{fig: final design}) included an extrusion on the front of the device which should be held against the liver. The device should be held like a syringe, and the surgeon uses their thumb to press the button on the back. It was also noted that in order to house the PCB, the half cylinder design needed to have a diameter of \SI{70}{\milli\metre}, which was too big. The final design used a more circular shape to reduce the overall radius, but still included a flat edge on the bottom.\\
+
+%REAL LIFE MODEL
