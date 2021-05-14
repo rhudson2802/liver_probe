@@ -138,22 +138,25 @@ rs232_in var PORTC.7
 rs232_out var PORTC.6
 
 baud_1200 con 813 | %0100000000000000
-eeprom_address var byte         'EEPROM I2C address
-eeprom_address = %10100000
+eeprom_addr var byte         'EEPROM I2C address
+eeprom_addr = %10100000
 rtc_addr var byte               ' RTC I2C address
 rtc_addr = %11011110
 addr var word                   'Memory addr to write/read to (needs to be word length)
 addr = 0
-x var byte[8]
+x var byte[32]
 i var byte
+time var byte[7]
+flag var byte
+flag = $FF
               
 pause 10
 serout2 rs232_out, baud_1200, [10, 10, "hello world", 10]
 'i2cwrite sda, scl, eeprom_addr, addr, ["this is a IIB project"], i2c_failed
 'pause 10
-'addr = 10
-'i2cread sda, scl, eeprom_addr, addr, [str x\8]
-'serout2 rs232_out, baud_1200, [str x\8]
+addr = 10
+i2cread sda, scl, eeprom_addr, addr, [str x\8]
+serout2 rs232_out, baud_1200, [str x\8, 10, 10]
 'for i = 1 to 8  
 '    pause 10
 '    i2cread sda, scl, eeprom_addr, [x]
@@ -164,26 +167,63 @@ serout2 rs232_out, baud_1200, [10, 10, "hello world", 10]
 'serout2 rs232_out, baud_1200, [10, "I2C succeeded", 10]
 
 
+
+time[0] = $00    'Seconds
+time[1] = $45    'Minutes
+time[2] = $12    'Hours
+time[3] = $01    'Weekday
+time[4] = $10    'Day
+time[5] = $05    'Month
+time[6] = $21    'Year
+        
+
+
+
+
+i2cread sda, scl, rtc_addr, $03, [x[0]]
+serout2 rs232_out, baud_1200, [bin8 x[0], 10, 10]
+
+
 ' Write time to rtc
-'i2cwrite sda, scl, rtc_addr, $00, %00000000 'Seconds
-'i2cwrite sda, scl, rtc_addr, $01, %01000101 'Minutes
+
+i2cwrite sda, scl, rtc_addr, $07, %01000011  ' Output square wave on MFP
+
+'addr = $00
+i2cwrite sda, scl, rtc_addr, $00, %00000000 'Seconds
+pause 1000
+
+'addr = $03
+while flag.5 == 1
+    high led
+    i2cread sda, scl, rtc_addr, $03, [flag]
+wend
+
+'addr = $00
+i2cwrite sda, scl, rtc_addr, $00, [str time\7]
+    
+
+'i2cwrite sda, scl, rtc_addr, $01, [%01000101, %00010010, %00000001, %00010000, %00000101 ,%00100001]'Minutes
 'i2cwrite sda, scl, rtc_addr, $02, %00010010 'Hours
-i2cwrite sda, scl, rtc_addr, $03, %00001001 'Weekday
+'i2cwrite sda, scl, rtc_addr, $03, %00000001 'Weekday
 'i2cwrite sda, scl, rtc_addr, $04, %00010000 'Day
 'i2cwrite sda, scl, rtc_addr, $05, %00000101 'Month
 'i2cwrite sda, scl, rtc_addr, $06, %00100001 'Year (tens and units)
-i2cwrite sda, scl, rtc_addr, $0D, %11001011  ' Output square wave on MFP
-i2cwrite sda, scl, rtc_addr, $00, %10000000, i2c_failed
 
-i2cread sda, scl, rtc_addr, $00, [x[0]]
+'addr = $00
+i2cwrite sda, scl, rtc_addr, $00, %10000000, i2c_failed
+'addr = $07
+i2cwrite sda, scl, rtc_addr, $07, %01001011  ' Output square wave on MFP
+pause 1000
+
+'addr = $03                          
+i2cread sda, scl, rtc_addr, $03, [x[0]]
 serout2 rs232_out, baud_1200, ["0 ", bin8 x[0], 10, 10]
 
 pause 2000
 
-i2cread sda, scl, rtc_addr, $00, [str x\8]
-
 
 mainloop:
+    'addr = $00
     i2cread sda, scl, rtc_addr, $00, [str x\8], i2c_failed
     for i = 0 to 7
         serout2 rs232_out, baud_1200, [dec i, " ", bin8 x[i], 10]

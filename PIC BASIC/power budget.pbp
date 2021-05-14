@@ -36,11 +36,11 @@ CMCON0 = %00000000
 high tx_power
 
 mainloop:
-OSCCON = %00000001
+'OSCCON = %00000001
     high red_led
     high liver_led
     high button_led
-    high tx_out
+    low tx_out
     high tx_power
     pause 10000
     
