@@ -19,7 +19,7 @@ sig var PORTA.2
 i var byte
 
 mainloop:
-OSCCON = %01110111
+'OSCCON = %01110111
     for i = 1 to 255
     high sig
     pause 1

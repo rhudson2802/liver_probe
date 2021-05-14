@@ -17,7 +17,7 @@ define ADC_SAMPLEUS 50
 define ADC_CLOCK 3
 
 
-red_led var PORTC.0
+red_led var PORTA.5
 liver_led var PORTC.2
 liver_pt con 7          'Analogue port used as input for liver phototransistor
 button_led var PORTA.2

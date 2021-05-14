@@ -1,0 +1,47 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2021 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 13/05/2021                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+include "modedefs.bas"
+
+define OSC 8
+define CHAR_PACING 1000
+define ADC_BITS 10
+define ADC_SAMPLEUS 50
+define ADC_CLOCK 3
+
+
+red_led var PORTA.5
+liver_led var PORTC.2
+liver_pt con 7          'Analogue port used as input for liver phototransistor
+button_led var PORTA.2
+button_pt con 3         'Analogue port used as input for button phototransistor
+tx_out var PORTC.4
+tx_power var PORTA.0
+
+ANSEL = %10001000
+ADCON0 = %11011101
+ADCON1 = %00110000
+TRISA = %00011011
+TRISC = %00101000
+OSCCON = %1110111
+CMCON0 = %00000000
+
+high tx_power
+
+mainloop:
+OSCCON = %00000001
+    high red_led
+    high liver_led
+    high button_led
+    high tx_out
+    high tx_power
+    pause 10000
+    
+goto mainloop
