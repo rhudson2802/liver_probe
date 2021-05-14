@@ -1,21 +1,21 @@
 \section{Background}
 
-The liver is a vital organ within the body, responsible for metabolic processes, blood detoxification, and parts of the immune system [1]. It is impossible to survive without, therefore patients with faulty livers require a liver transplant, with the NHS carrying out 922 transplants in the year 2019-20 [2]. This project concerns the design of a probe to assess the quality of potential donor organs and evaluate if they are suitable to be used as a transplant.
+The liver is a vital organ within the body, responsible for metabolic processes, blood detoxification, and parts of the immune system \cite{liver_background}. It is impossible to survive without, therefore patients with faulty livers require a liver transplant, with the NHS carrying out 922 transplants in the year 2019-20 \cite{nhs_transplants}. This project concerns the design of a probe to assess the quality of potential donor organs and evaluate if they are suitable to be used as a transplant.
 
 
 \subsection{Liver Transplants}
-One risk factor key to the survival of liver transplant patients is hepatic steatosis or in other words the quantity of fat present in the liver. Macrovesicular steatosis occurs when a hepatocyte’s (liver cell’s) vacuole (made up of fat) takes up the majority of the cell cytoplasm, squeezing the nucleus to the periphery [3]. Figure \ref{fig: livers} shows a comparison of fatty and non-fatty liver tissue. The white voids in image B are fat deposits, and the rest of the cell is constrained to a very small volume. Macrosteatosis is a benign disease in the donor patient [3], and will not cause them much harm. Causes can include alcohol abuse, obesity and diabetes [3].\\
+One risk factor key to the survival of liver transplant patients is hepatic steatosis or in other words the quantity of fat present in the liver. Macrovesicular steatosis occurs when a hepatocyte’s (liver cell’s) vacuole (made up of fat) takes up the majority of the cell cytoplasm, squeezing the nucleus to the periphery \cite{Imber2002}. Figure \ref{fig: livers} shows a comparison of fatty and non-fatty liver tissue. The white voids in image B are fat deposits, and the rest of the cell is constrained to a very small volume. Macrosteatosis is a benign disease in the donor patient \cite{Imber2002}, and will not cause them much harm. Causes can include alcohol abuse, obesity and diabetes \cite{Imber2002}.\\
 
 \begin{figure}[htbp]
 	\centering
 	\begin{subfigure}[b]{0.4\linewidth}
 		\includegraphics[width=\linewidth]{lean liver.PNG}
-		\caption{Lean liver CITE}
+		\caption{Lean liver \cite{Bruno2008}}
 		\label{}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.4\linewidth}
 		\includegraphics[width=\linewidth]{fatty liver.PNG}
-		\caption{Fatty liver CITE}
+		\caption{Fatty liver \cite{Bruno2008}}
 		\label{}
 	\end{subfigure}
 	\caption{Comparison of the lean liver (A) to fatty liver (B). The white voids in B are fat deposits, showing that the rest of the cell is constrained to a small volume.}
@@ -23,9 +23,36 @@ One risk factor key to the survival of liver transplant patients is hepatic stea
 \end{figure}	
 
 
-Issues arise however when steatotic livers are transplanted. Whilst the exact mechanisms are not fully understood, the cold preservation process is linked with damage to the liver tissue, making it likely to fail in the recipient [3]. Moderate to high levels of steatosis are associated with unacceptably high rates of primary non-function (PNF, defined as “an aggravated form of reperfusion injury resulting in irreversible graft failure without detectable technical or immunological problems” [5]) and early allograft dysfunction (EAD, defined as marginal function after transplantation [6]). Both PNF and EAD are key causes of mortality in liver transplant patients, with patients having a one in three chance of dying if PNF occurs [7]. A 2019 review paper reported that for severe steatosis (>60\% macrovesicular steatosis) the PNF rates were 20-50\%, and EAD rates were 25-80\% [8]. Obviously, the goal of a liver transplant is to save the recipient’s life, so it is unacceptable to transplant organs with such a high failure rate.\\
+Issues arise however when steatotic livers are transplanted. Whilst the exact mechanisms are not fully understood, the cold preservation process is linked with damage to the liver tissue, making it likely to fail in the recipient \cite{Imber2002}. Moderate to high levels of steatosis are associated with unacceptably high rates of primary non-function (PNF, defined as “an aggravated form of reperfusion injury resulting in irreversible graft failure without detectable technical or immunological problems” \cite{Lock2010}) and early allograft dysfunction (EAD, defined as marginal function after transplantation \cite{Deschenes2013}). Both PNF and EAD are key causes of mortality in liver transplant patients, with patients having a one in three chance of dying if PNF occurs \cite{Robertson}. A 2019 review paper reported that for severe steatosis (\textgreater60\% macrovesicular steatosis) the PNF rates were 20-50\%, and EAD rates were 25-80\% \cite{Linares2019}. Obviously, the goal of a liver transplant is to save the recipient’s life, so it is unacceptable to transplant organs with such a high failure rate.\\
 
-It is currently unacceptable to transplant severely steatotic livers due to their high failure rate. Unfortunately, a method to quantify the level of steatosis quickly and accurately does not currently exist. The most common method to assess the quality of a donor liver is the opinion of the surgeon who removes the organ, however this is very subjective, and the surgeon performing the transplant does not know who has assessed the organ, so may want to carry out their own assessment before they are happy to perform the surgery [7]. To gain a quantitative assessment, biopsies can be sent for histological assessment, but this is a slow process. The longer the liver is outside the body, the higher its risk of PNF and EAD, so this is not an ideal method. Previous studies [9] have attempted to assess the fat content of liver tissue using electrical and optical spectroscopy, with the results from the optical spectroscopy leading to the development of a probe [7] which gave a rapid assessment of the liver steatosis. \\
+It is currently unacceptable to transplant severely steatotic livers due to their high failure rate. Unfortunately, a method to quantify the level of steatosis quickly and accurately does not currently exist. The most common method to assess the quality of a donor liver is the opinion of the surgeon who removes the organ, however this is very subjective, and the surgeon performing the transplant does not know who has assessed the organ, so may want to carry out their own assessment before they are happy to perform the surgery \cite{Robertson}. To gain a quantitative assessment, biopsies can be sent for histological assessment, but this is a slow process. The longer the liver is outside the body, the higher its risk of PNF and EAD, so this is not an ideal method. Previous studies \cite{McLaughlin2010} have attempted to assess the fat content of liver tissue using electrical and optical spectroscopy, with the results from the optical spectroscopy leading to the development of a probe \cite{Robertson} which gave a rapid assessment of the liver steatosis. \\
 
 
 \subsection{Original Probe}
+
+\begin{figure}[htbp]
+	\centering
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{original probe.PNG}
+		\caption{Original probe \cite{Robertson}.}
+		\label{fig: original probe}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{probe tip.PNG}
+		\caption{Diagram of tip of original probe \cite{Robertson}.}
+		\label{fig: probe tip}
+	\end{subfigure}
+	\caption{}
+\end{figure}
+
+This project focuses on the development of the original liver probe produced by Robertson et al. \cite{Robertson}. This probe used optical backscatter properties of the liver tissues to assess its fat content. Figure \ref{fig: probe tip} shows a schematic of the tip of the original probe, which was pressed against the liver tissue. Two LEDs (one red, one infrared (IR)) were shone down an optic fibre to illuminate the liver tissue. Some of the light was scattered back towards the probe which was collected by another optic fibre, leading to a photodiode. This generated a photocurrent, so the amount of reflected light could be measured. \\
+
+There are many sources of scattering within biological tissue, such as nuclei and mitochondria. Lipid droplets within the tissue are a major source of scattering, so the more fat in the liver the greater the amount of backscattered light \cite{McLaughlin}. This meant that backscatter measurements could provide an indication of the liver fat content.\\
+
+The probe progressed to clinical trials, where it was found that the correlation between its reading and fat concentration was rather poor (R\textsuperscript{2} = 0.456), but the correlation between the reading and PNF/EAD was strong \cite{Robertson}. The strong predictive power for PNF/EAD was a better result than if it had just predicted the fat content accurately, as it means the probe can give a rapid, quantitative, point-of-surgery test to indicate whether the liver will survive in the new patient. These promising results warranted the further development of the probe.\\
+
+The probe had several issues, which this project aims to resolve. Due to the high-pressure environment of surgery, the surgeons often damaged the probe as they had more important things to concentrate on. Sources of damage included being dropped on the floor and being placed in preservation solution. This project will develop a new iteration of the original probe which is more robust to the stresses of the clinical environment.\\
+
+
+
+
