@@ -258,3 +258,35 @@ The efficiency was then measured. The input voltage was \SI{12}{\volt}dc, and th
 
 
 \subsubsection{Base Unit}
+
+\begin{table}[htbp]
+	\begin{center}
+	\begin{tabular}{|c|c|c|c|}
+	\hline
+	\multicolumn{2}{|c}{\textbf{\SI{5}{\volt} devices}} & \multicolumn{2}{|c|}{\textbf{\SI{3.3}{\volt} devices}}\\
+	\hline
+	\textbf{Component} & \textbf{Worst case current (\si{\milli\ampere})} & \textbf{Component} & \textbf{Worst case current (\si{\milli\ampere})} \\
+	\hline
+	PIC & 6 & LCD backlight & 100 \\
+	\cline{3-4}
+	LCD logic & 4 & \textbf{Total} & 100\\
+	\cline{3-4}
+	LCD & 0.5 & \multicolumn{2}{c}{} \\
+	\cline{3-4}
+	Wireless Rx & 6 &  \multicolumn{2}{c|}{\textbf{\SI{12}{\volt} devices}} \\
+	\cline{3-4}
+	Wireless Tx & 12.5 & \textbf{Component} & \textbf{Worst case current (\si{\milli\ampere})}  \\
+	\cline{3-4}
+	I\textsuperscript{2}C pullups & 4.5 & Wireless charger & 375 \\
+	EEPROM & 3 & \SI{5}{\volt} converter & 37.6 \\
+	RTC & 0.4 & \SI{3.3}{\volt} converter & 100 \\
+	\cline{3-4}
+	Push Buttons & 1 & \textbf{Total} & 512.6  \\
+	\hline
+	\textbf{Total} & 37.9  \\
+	\cline{1-2}
+	\end{tabular}
+	\caption{Current drawn by major components on the base unit.}
+	\label{fig: base current}
+	\end{center}
+\end{table}
