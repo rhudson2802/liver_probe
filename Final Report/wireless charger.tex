@@ -290,3 +290,29 @@ The efficiency was then measured. The input voltage was \SI{12}{\volt}dc, and th
 	\label{fig: base current}
 	\end{center}
 \end{table}
+
+The base unit required two voltage converters to generate a \SI{5}{\volt} and \SI{3.3}{\volt} rail. LDO regulators were selected due to their simplicity and their existing use in the remote unit. Although they will be inefficient, because the base is mains powered this will not be a problem. Table \label{fig: base current} shows the worst case current drawn by each component on the base unit. The main concern with the base power supply was that the \SI{5}{\volt} and \SI{3.3}{\volt} regulators needed to be able to supply all the devices connected to those rails. The large currents and voltage drop in the regulators led to a large power dissipation, which may have led to overheating in some packages.\\
+
+\begin{figure}[htbp]
+	\centering
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{parallel ldos.png}
+		\caption{Parallel topology}
+		\label{fig: parallel ldos}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\includegraphics[width=\linewidth]{series ldos.png}
+		\caption{Series topology}
+		\label{fig: series ldos}
+	\end{subfigure}
+	\caption{Possible base voltage regulator topologies}
+	\label{fig: base ldos}
+\end{figure}
+
+The \SI{3.3}{\volt} rail could be created by stepping down either the \SI{12}{\volt} or \SI{5}{\volt} rail (see figure \ref{fig: base ldos}). Both topologies led to the same total conversion loss of \SI{1.14}{\watt}, but the parallel topology was chosen as the \SI{5}{\volt} converter had a smaller output current. This meant that it was less likely to reach the maximum available output current. In order to prevent overheating, the converters were selected to give a maximum temperature rise of \SI{100}{\celsius} when operating at full output current. This meant that the junction to ambient thermal resistance had to be less than \SI{268}{\celsius\per\watt} for the \SI{5}{\volt} converter and \SI{86.2}{\celsius\per\watt} for the \SI{3.3}{\volt} converter. The MCP1702-5002 \cite{mcp1702} in a TO-92 package had a thermal resistance of \SI{131.9}{\celsius\per\watt} and a maximum output current of \SI{250}{\milli\ampere} so was a suitable \SI{5}{\volt} converter. Additionally, it is the same converter used in the remote unit. This component would operate at \SI{60}{\celsius}, so would feel hot but since the maximum operating temperature was \SI{150}{\celsius} then the device would not be damaged. The MCP1755-3302 \cite{mcp1755} in a SOT-223-5 package had a thermal resistance of \SI{62}{\celsius\per\watt}, so would operate at \SI{79}{\celsius} under the worst case load. Again, this was below the maximum operating temperature of \SI{150}{\celsius}. The maximum output current was \SI{300}{\milli\ampere}, which again was above the expected current.\\
+
+It should be noted that the currents given in this section are the worst case currents for all components, as the converters must be designed to provide up to the worst case before failing. In reality, the currents drawn by the components will be much less, especially the digital logic which has a very low typical quiescent current, and the communications modules which will not be operating in the on-state all the time. Therefore, the total power consumption will be less than that predicted above, and is estimated to be around \SI{2}{\watt}, with \SI{0.66}{\watt} of this wasted in the voltage regulators.\\
+
+
+
+
