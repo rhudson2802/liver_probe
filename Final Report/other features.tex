@@ -9,20 +9,18 @@
 \end{figure}
 
 A thermistor based temperature sensor (figure \ref{fig: temperature sensor}) was included with the remote unit. This was to ensure that measurements could be calibrated for any temperature dependent effects which may be observed, and to measure the temperature within the autoclave. Because the remote unit will be packaged in a resin, it is unknown what the internal temperature will be when it is exposed to the heat of the autoclave. The temperature sensor allows this to be measured and to work out if it will cause any issues for the electronics. The Vishay NTCLG100E2103JB \cite{thermistor} thermistor was selected, which had a nominal resistance of \SI{10}{\kilo\ohm} at \SI{25}{\celsius}. This was placed in a Wheatstone bridge arrangement with three fixed \SI{10}{\kilo\ohm} resistors. When the thermistor was at room temperature, the voltage at each leg of the bridge was \SI{2.5}{\volt}, so there was no voltage difference across it. However, when the temperature of the thermistor changed, its resistance also changed leading to a voltage imbalance $\Delta v$ across the bridge. This voltage was fed to a differential amplifier, to yield an output signal which could be read by the PIC's ADC. The differential voltage $\Delta v$ is given by:\\
-
 \begin{equation}
 \Delta v = \frac{\delta R}{4 R}V
 \end{equation}
 
 where $\delta R$ is the change in resistance of the thermistor, and $R=\SI{10}{\kilo\ohm}$. The output voltage $v_o$ can then be calculated by summing the currents at the op-amp inputs, noting that for an ideal op-amp the inputs are at the same voltage. This gives:\\
-
 \begin{equation}
 v_o = 2 \frac{R_1}{R} \Delta v =R_1 \frac{\delta R}{2 R^2}V
 \end{equation}
 
 where $R_1$ is the value of feedback resistors R11 and R12, and $V=\SI{5}{\volt}$ is the supply voltage. Note that a \SI{2.5}{\volt} rail is used as a pseudo-ground for the non-inverting input. This is to allow the output to swing about \SI{2.5}{\volt}, which means that positive and negative $\Delta v$ will be amplified correctly.\\
 
-The sensor was designed to have a range of \SIrange{5}{150}{\celsius}, to cover the minimum operating temperature of just below room temperature \SI{20}{\celsius} up to the maximum temperature of the autoclave, \SI{134}{\celsius} \cite{nhs_autoclave}. Using \SI{6.8}{\kilo\ohm} feedback resistors gave an output voltage of \SI{5}{\volt} at \SI{5}{\celsius} and \SI{0.831}{\volt} at \SI{150}{\celsius}. At the high range, the thermistor only gives a very small change in $\delta R$ per degree of temperature change, so the sensor will not have a large resolution at these temperatures. For example, the output voltage at \SI{145}{\celsius} is \SI{0.835}{\volt}. The PIC's ADC only has 10-bit resolution, so when operated from a \SI{5}{\volt} supply it will have a minimum voltage resolution of \SI{4.88}{\milli\volt}. This means that the temperature resolution will be just larger than \SI{5}{\celsius}. As the high range is used to understand the thermal properties of the device and not to calibrate the measurements, this resolution will be acceptable. In comparison, at room temperature the resolution is much greater (for example a \SI{0.423}{\volt} change as temperature decreases from \SIrange{25}{20}{\celsius}, giving a temperature resolution of \SI{0.058}{\celsius}).\\
+The sensor was designed to have a range of \SIrange{5}{150}{\celsius}, to cover the minimum operating temperature of just below room temperature \SI{20}{\celsius} up to the maximum temperature of the autoclave, \SI{134}{\celsius} \cite{nhs_autoclave}. Using \SI{6.8}{\kilo\ohm} feedback resistors gave an output voltage of \SI{5}{\volt} at \SI{5}{\celsius} and \SI{0.831}{\volt} at \SI{150}{\celsius}. At the high range, the thermistor only gives a very small change in $\delta R$ per degree of temperature change, so the sensor will not have a large resolution at these temperatures. For example, the output voltage at \SI{145}{\celsius} is \SI{0.835}{\volt}. The PIC's ADC has a minimum voltage resolution of \SI{4.88}{\milli\volt}, which means that the temperature resolution will be just larger than \SI{5}{\celsius} at high temperatures. As the high range is used to understand the thermal properties of the device and not to calibrate the measurements, this resolution will be acceptable. In comparison, at room temperature the resolution is much greater (for example a \SI{0.423}{\volt} change as temperature decreases from \SIrange{25}{20}{\celsius}, giving a temperature resolution of \SI{0.058}{\celsius}).\\
 
 
 
@@ -36,7 +34,7 @@ The sensor was designed to have a range of \SIrange{5}{150}{\celsius}, to cover 
 	\label{fig: lcd schematic}
 \end{figure}
 
-PICBASIC had a built-in command \verb|lcdout| which could be used to control an LCD with a Hitachi 44780 controller \cite{picbasic_pro}. To this end, an LCD module with an equivalent controller was selected. A 4x20 character matrix was desired to enable the screen to display all the information it required. The Displaytech 204-A-CC-BC-3LP \cite{lcd}. This used the Samsung KS0076B driver, which has an equivalent instruction set to the Hitachi 44780, meaning it can be controlled using the \verb|lcdout| command. Figure \ref{fig: lcd schematic} shows the LCD interface circuitry. The R/$\overline{\text{W}}$ pin was tied to ground, as the LCD only needed to be written to. $V_o$ set the operating voltage for the LCD, which in turn controlled the contrast of the display. The LCD datasheet recommended biasing this at \SI{0.2}{\volt}, but experimental results showed that the best contrast was achieved when $V_o$ was biased close to ground. Therefore, the optimum experimental bias voltage was implemented by a potential divider using the two closest standard resistor values, to give a bias of \SI{0.045}{\volt}. The remaining pins were data signals which were connected to PIC pins. The LCD could operate using either a 4- or 8-bit parallel interface \cite{picbasic_pro}. In this application, the 4-bit interface was selected to minimise the number of PIC pins which would be used by the LCD. The \verb|lcdout| command required that these 4 data signals were connected to either the upper or lower nybble of a single I/O port. Only PORTA\textless0:3\textgreater was suitable, as all the remaining ports had pins which were required for other functions, or unimplemented bits in the PORT.\\
+PICBASIC had a built-in command \verb|lcdout| which could be used to control an LCD with a Hitachi 44780 controller \cite{picbasic_pro}. To this end, an LCD module with an equivalent controller was selected. A 4x20 character matrix was desired to enable the screen to display all the information it needed to. The Displaytech 204-A-CC-BC-3LP \cite{lcd} was selected. This used the Samsung KS0076B driver, which had an equivalent instruction set to the Hitachi 44780, meaning it could be controlled using the \verb|lcdout| command. Figure \ref{fig: lcd schematic} shows the LCD interface circuitry. The R/$\overline{\text{W}}$ pin was tied to ground, as the LCD only needed to be written to. $V_o$ set the operating voltage for the LCD, which in turn controlled the contrast of the display. The LCD datasheet recommended biasing this at \SI{0.2}{\volt}, but experimental results showed that the best contrast was achieved when $V_o$ was biased close to ground. Therefore, the optimum experimental bias voltage was implemented by a potential divider using the two closest standard resistor values, to give a bias of \SI{0.045}{\volt}. The remaining pins were data signals which were connected to PIC pins. The LCD could operate using either a 4- or 8-bit parallel interface \cite{picbasic_pro}. In this application, the 4-bit interface was selected to minimise the number of PIC pins which would be used by the LCD. The \verb|lcdout| command required that these 4 data signals were connected to either the upper or lower nybble of a single I/O port. Only PORTA\textless0:3\textgreater was suitable, as all the remaining ports had pins which were required for other functions, or unimplemented bits in the PORT.\\
 
 The \verb|lcdout| command allowed simple control of the LCD. First, several \verb|define|s were set to configure the compiler. Then, commands could be written to the LCD by sending the byte \verb|$FE| before the corresponding command in the PICBASIC manual \cite{picbasic_pro} or LCD datasheet \cite{lcd}. Characters could be written by looking up the character code in the LCD's character map (specified in the datasheet \cite{lcd}) or by simply providing PICBASIC with the required string. A delay was required between each write operation to ensure the LCD was ready to receive another instruction, otherwise an error would occur. A simple program is included below, and the output is shown in figure \ref{fig: lcd}.
 
@@ -64,7 +62,7 @@ DEFINE LCD_EBIT 4
 
 LCD_DELAY con 1
 
-'Need 10 second delay for LCD to boot
+'Need delay for LCD to boot
 pause 500            
 ' Clear display move cursor to 2nd line 6th character
 LCDOUT $FE, 1, $FE, $C0+6, "Welcome"         
@@ -73,12 +71,12 @@ pause LCD_DELAY
 LCDOUT $FE, $94+4, "Liver Probe"                
 \end{lstlisting}
 
-%\begin{figure}[htbp]
-%	\centering
-%	\includegraphics[width=\linewidth]{}
-%	\caption{LCD welcome screen}
-%	\label{fig: lcd}
-%\end{figure}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\linewidth]{welcome.jpg}
+	\caption{LCD welcome screen}
+	\label{fig: lcd}
+\end{figure}
 
 
 
@@ -92,9 +90,9 @@ LCDOUT $FE, $94+4, "Liver Probe"
 	\label{fig: memory schematic}
 \end{figure}
 
-The base unit required some non-volatile memory to store measurements for the surgeon before they could download them to a computer. The EEPROM was designed to store a minimum of 1000 readings. Each reading had several components: the reading ID (1B), month (1B), day (1B), hour (1B), minute (1B), measurement value (2B), temperature reading (2B). This led to a total reading size of 9 bytes. This meant the memory required to store 1000 readings was $\SI{9}{\kilo\byte}=\SI{72}{\kilo\bit}$. The Microchip 24FC256-I/ST \cite{memory} was a \SI{256}{\kilo\bit} EEPROM chip which was selected. This will allow 3555 readings to be stored. The circuit in figure \ref{fig: memory schematic} was designed according to the data sheet \cite{memory} recommendations. The device communicated over an I\textsuperscript{2}C interface so it was connected to the PIC's SDA and SCL lines. It could have one of two addresses, which were set by the address pin A2. A \SI{10}{\kilo\ohm} pull-down resistor (R10) was used to pull this pin low. The resistor R9 is not placed, and is used to place an extra footprint on the PCB which would allow A2 to be pulled high if the designer desired.\\
+The base unit required some non-volatile memory to store measurements for the surgeon before they could download them to a computer. The EEPROM was designed to store a minimum of 1000 readings. Each reading had several components: the reading ID (\SI{1}{\byte}), month (\SI{1}{\byte}), day (\SI{1}{\byte}), hour (\SI{1}{\byte}, minute (\SI{1}{\byte}), measurement value (\SI{2}{\byte}), temperature reading (\SI{2}{\byte}). This led to a total reading size of \SI{9}{\byte}. This meant the memory required to store 1000 readings was $\SI{9}{\kilo\byte}=\SI{72}{\kilo\bit}$. The Microchip 24FC256-I/ST \cite{memory} was a \SI{256}{\kilo\bit} EEPROM chip which was selected. This allowed 3555 readings to be stored. The circuit in figure \ref{fig: memory schematic} was designed according to the data sheet recommendations \cite{memory}. The device communicated over an I\textsuperscript{2}C interface so it was connected to the PIC's SDA and SCL lines. It could have one of two addresses, which were set by the address pin A2. A \SI{10}{\kilo\ohm} pull-down resistor (R10) was used to pull this pin low. The resistor R9 is not placed, and is used to place an extra footprint on the PCB which would allow A2 to be pulled high if the designer desired.\\
 
-The EEPROM chip was accessed using the PICBASIC \verb|i2cread| and \verb|i2cwrite| commands. The EEPROM allowed for sequential reads, so multiple bytes of data could be read out from one I\textsuperscript{2}C instruction, with the data saved in an array. To ensure the correct EEPROM address is used a counter is stored in the PIC's EEPROM to record how many readings are stored in the external EEPROM. This is required because when the base unit powers on, it needs to know how many readings are already in EEPROM otherwise they will be overwritten.\\
+The EEPROM chip was accessed using the PICBASIC \verb|i2cread| and \verb|i2cwrite| commands. The EEPROM allowed for sequential reads, so multiple bytes of data could be read out from one I\textsuperscript{2}C instruction, with the data saved in an array. To ensure the correct EEPROM address was used, a counter was stored in the PIC's internal EEPROM to record how many readings are stored in the external EEPROM. This was required because when the base unit powers on, it needs to know how many readings are already in EEPROM otherwise they will be overwritten.\\
 
 \SI{2.2}{\kilo\ohm} pull-up resistors were used on the I\textsuperscript{2}C lines, as this allowed the I\textsuperscript{2}C to run up to \SI{400}{\kilo\hertz} \cite{memory}.
 
