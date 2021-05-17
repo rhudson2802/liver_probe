@@ -10,13 +10,25 @@
 '****************************************************************
 define OSC 8
 
-ANSEL = %00000000
-TRISA = %00000000
-TRISC = %00000000
-OSCCON = %01110111
+PORTA = 0
+PORTB = 0
+PORTC = 0
+TRISA = 0
+TRISB = %00010100
+TRISC = %10010110
+OSCCON = %01110110
+ADCON0 = 0
+ADCON1 = %00001111
+'ADCON2 = 
+T1CON = 0           'Turn off secondary oscillator
+T3CON = 0
+UCON = 0'%10        'Turn off USB
+UCFG = %00001000
+UIE = 0
+UEIE = 0
 
 sig var PORTA.2
-n_sig var PORTC.3
+n_sig var PORTA.3
 
 asm
 

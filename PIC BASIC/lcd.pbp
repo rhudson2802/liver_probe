@@ -58,7 +58,7 @@ include "modedefs.bas"
     ' Set starting Data bit (0 or 4) if 4-bit bus
     DEFINE LCD_DBIT 0
     ' Set LCD Register Select port
-    DEFINE LCD_RSREG PORTC
+    DEFINE LCD_RSREG PORTA
     ' Set LCD Register Select bit
     DEFINE LCD_RSBIT 5
     ' Set LCD Enable port
@@ -168,8 +168,12 @@ lcdout $FE, 1
 pause LCD_DELAY
 
 mainloop:
+high PORTA.5
+pause 10
+low PORTA.5
+pause 10
 high lcd_power
-    goto menu
+    'goto menu
 goto mainloop
 
 

@@ -169,12 +169,12 @@ serout2 rs232_out, baud_1200, [str x\8, 10, 10]
 
 
 time[0] = $00    'Seconds
-time[1] = $45    'Minutes
-time[2] = $12    'Hours
-time[3] = $01    'Weekday
-time[4] = $10    'Day
-time[5] = $05    'Month
-time[6] = $21    'Year
+time[1] = %01010100    'Minutes
+time[2] = %00010000    'Hours
+time[3] = %00000110    'Weekday
+time[4] = %00010101    'Day
+time[5] = %00000101    'Month
+time[6] = %00100001    'Year
         
 
 
@@ -209,10 +209,12 @@ i2cwrite sda, scl, rtc_addr, $00, [str time\7]
 'i2cwrite sda, scl, rtc_addr, $05, %00000101 'Month
 'i2cwrite sda, scl, rtc_addr, $06, %00100001 'Year (tens and units)
 
+
 'addr = $00
 i2cwrite sda, scl, rtc_addr, $00, %10000000, i2c_failed
 'addr = $07
 i2cwrite sda, scl, rtc_addr, $07, %01001011  ' Output square wave on MFP
+
 pause 1000
 
 'addr = $03                          

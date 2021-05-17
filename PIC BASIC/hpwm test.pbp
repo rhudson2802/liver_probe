@@ -87,21 +87,21 @@
     
     
     ' Set up PWM to run in hardware
-    PR2 = 43
-    CCPR2L = %00010110
-    CCP2CON.5 = 0
-    CCP2CON.4 = 0
-    TRISB.3 = 0                                     
-    T2CON = %00000100
-    CCP2CON = %00001111
-    
-    'PR2 = 19
-    'CCPR2L = %00001010
+    'PR2 = 43
+    'CCPR2L = %00010110
     'CCP2CON.5 = 0
     'CCP2CON.4 = 0
     'TRISB.3 = 0                                     
     'T2CON = %00000100
     'CCP2CON = %00001111
+    
+    PR2 = 19
+    CCPR2L = %00001010
+    CCP2CON.5 = 0
+    CCP2CON.4 = 0
+    TRISB.3 = 0                                     
+    T2CON = %00000100
+    CCP2CON = %00001111
     
 #else
     #if __PROCESSOR__ = "16F688"
