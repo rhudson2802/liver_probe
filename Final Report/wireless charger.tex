@@ -124,7 +124,6 @@ Once the PIC detects an under-voltage condition, it will turn off all of the out
 
 
 
-
 \subsection{Firmware}
 The wireless charger requires a PWM signal with frequency $f=\SI{100}{\kilo\hertz}$ and duty cycle $D=0.5$. The PIC18F2550 has a built-in Capture/Compare/PWM (CCP) module \cite{pic18f2550}. This allows the PWM signal to be generated in hardware, rather than having to worry about precisely timing the software. A software implementation would have been difficult, as the PIC must do many other tasks as well as the PWM signal generation (such as listening for any incoming messages on the receiver), which would result in a variable delay time before the PWM could next be toggled. This is undesirable as it would not produce the desired constant frequency and duty ratio signal. The CCP pin could be set up as PWM at the beginning of the program and would continue to generate the signal regardless of what the rest of the program was doing.\\
 
@@ -228,6 +227,7 @@ The current delivered to the batteries at the \SI{55}{\kilo\hertz} resonance was
 
 The efficiency was then measured. The input voltage was \SI{12}{\volt}dc, and the RMS input current was measured across the \SI{22}{\ohm} series resistor in the RLC circuit. The output voltage was measured across the batteries when they were open circuit, and the RMS output current was measured across the \SI{1}{\ohm} current sense resistor. Table \ref{tab: efficiency} shows the measured efficiency when the circuit operates in resonance, and when it delivers the recommended \SI{8}{\milli\ampere} current. The efficiency is small (around 10\%), which is to be expected as the system uses air cored coils which will have lots of leakage, and the coils have some resistive loss. Modern Qi mobile phone chargers have an efficiency of 70\% \cite{wireless_power_review}, so the system is much less efficient than the state-of-the-art. However, the Qi standard uses a more complex control system involving communication between the receiver and transmitter \cite{wireless_power_review}, whereas this system has been designed for simplicity and low-cost so the efficiency penalty is justified. The base unit is mains powered and its overall power consumption is small, so the low efficiency is not an issue. Nevertheless, the efficiency is better when the circuit is driven in resonance than when it is off-resonance.\\ %*********WHY???********** 
 
+When the batteries were loaded, their output voltage dropped from \SI{7.2}{\volt} to around \SI{5.2}{\volt}. This means that there will only be a small operating range where the LDO can provide a stable \SI{5}{\volt} rail. Upon reflection, it may have been better to use a buck-boost converter as this can maintain an output voltage which is higher than the input, so the lifetime of the device will increase.\\
 
 
 
