@@ -135,7 +135,7 @@ Figure \ref{fig: battery voltage sensor} shows the circuit used to detect the un
 \end{equation}
 \end{multicols}
 
-R25 was set to \SI{0}{\ohm} so an extra footprint would be placed on the PCB design to allow for fine tuning of the hysteresis, if the original design were found to not be suitable during testing. Diode D7 was included because the PIC pin the circuit was connected to, RA3, was also the $\overline{\text{MCLR}}$ pin used by the PICkit3 programmer. This pin raised to a high voltage during PIC programming. Diode D7 clamps the op-amp output to \SI{5}{\volt} to prevent damage during programming. The \SI{33}{\kilo\ohm} resistor allows the programmer to adjust the pin voltage independent of the op-amp, so the op-amp does not tie it high or low.\\
+R25 was set to \SI{0}{\ohm} so an extra footprint would be placed on the PCB design to allow for fine tuning of the hysteresis, if the original design were found to not be suitable during testing. Diode D7 was included because the PIC pin the circuit was connected to, RA3, was also the $\overline{\text{MCLR}}$ pin used by the PICkit3 programmer. This pin raised to a high voltage during PIC programming. Diode D7 clamps the op-amp output to \SI{5}{\volt} to prevent damage during programming. The \SI{33}{\kilo\ohm} resistor allows the programmer to adjust the pin voltage independent of the op-amp, so the op-amp does not tie it high or low. The $\overline{\text{MCLR}}$ config bit had to be cleared in the PIC program to allow this pin to be used as a digital input. \\
 
 Once the PIC detects an under-voltage condition, it will turn off all of the outputs which consume power. It is important that the circuit does not continue to draw current, as this may drain the batteries too much so they can no longer be recharged. The wireless transmitter module was designed with a PMOS switch at its Vcc rail so that it could be fully switched off by the PIC (as it consumes some power even when it is not transmitting, for instance to power the local oscillator). The PIC then transitions to its low frequency oscillator mode, which uses a \SI{31}{\kilo\hertz} clock rather than the standard \SI{8}{\kilo\hertz} clock. This reduces the quiescent current from \SI{2}{\milli\ampere} to \SI{30}{\micro\ampere}. Periodically, the PIC will perform a read operation to see if the battery voltage has been restored, and if it has then it will turn the device back on.\\
 
@@ -262,15 +262,19 @@ When the batteries were loaded, their output voltage dropped from \SI{7.2}{\volt
 	\hline
 	Component & Red LED & IR LED & Tx module (low output) & Tx module (high output)\\
 	\hline
-	Current (mA) & 6 & 11 & 2 & 9 \\
+	Current (mA) & 14.3 & 23.9 & 0 & 0.6 \\
 	\hline
 	\end{tabular}
-	\caption{Current drawn by major components on remote unit.}
-	\label{fig: remote current}
+	\caption{Current drawn by major components on remote unit. These are expressed as a difference between the current measured when the PIC is idle to the current when the corresponding output pin is high.}
+	\label{tab: remote current}
 	\end{center}
 \end{table}
 
-INCLUDE ONCE 100 mA ISSUE HAS BEEN FIXED
+The PIC drew \SI{9.4}{\milli\ampere} when it was idle and running on a \SI{8}{\mega\hertz} clock. This gives the device's ``stand-by'' lifetime to be \SI{8.5}{\hour}, as \SI{80}{\milli\ampere\hour} batteries are used. When the clock speed was reduced to \SI{31}{\kilo\hertz}, the current reduced to \SI{7.5}{\milli\ampere}. The \SI{1.9}{\milli\ampere} reduction will help to ensure that the batteries do not become fully discharged. Table \ref{tab: remote current} shows the currents drawn by the other components in the remote unit. The transmitter module draws negligible current in practice, so there was in fact no need to include the PMOS power switch.\\
+
+LED CURRENTS\\
+
+INCLUDE ONCE 100 mA ISSUE HAS BEEN FIXED\\
 
 
 \subsubsection{Base Unit}
@@ -303,7 +307,7 @@ INCLUDE ONCE 100 mA ISSUE HAS BEEN FIXED
 	\cline{1-2}
 	\end{tabular}
 	\caption{Current drawn by major components on the base unit.}
-	\label{fig: base current}
+	\label{tab: base current}
 	\end{center}
 \end{table}
 
