@@ -5,37 +5,38 @@ The system requirements were derived from an analysis of the original probe's we
 
 \begin{enumerate}
 \item \label{req: simple} \textbf{The system should be simple to use with little prior training}\\
-The surgeon using the system will be under high levels of stress, so the system should be intuitive to use to ensure the surgeon does not accidentally use it wrongly. The system should provide a clear interface which does not require prior training to understand, as it cannot be assumed that every surgeon will have been taught how to use it.
+The surgeon using the system will be under high levels of stress, so the system should be intuitive to use to ensure the surgeon does not accidentally use it wrongly. The system should provide a use interface, as it cannot be assumed that every surgeon will have been taught how to use it.
 
 \item \label{req: cheap} \textbf{The system should be cheap}\\
-The system should be cheap compared to the overall cost of a liver transplant, which can be several thousand pounds. Any disposable parts of the system should be cheap so that it is not an issue to discard them if the they are damaged. Dr Watson suggested that the disposable parts of the system should cost no more than £45.
+The system should be cheap compared to the overall cost of a liver transplant, which can be several thousand pounds. Any disposable parts of the system should be cheap so that it is not an issue to discard them if they are damaged. Dr Watson suggested that the disposable parts of the system should cost no more than £45.
 
 \item \label{req: robust} \textbf{The system should be mechanically robust}\\
-The original probe frequently experienced accidental damage in the clinical environment, rendering it non-functional. Sources of damage included being dropped on the floor and being submerged in preservation fluid. Therefore, the new system should be designed to be robust to these sources of damage.
+The original probe frequently experienced accidental damage in the clinical environment, rendering it non-functional. Therefore, the new system should be designed to be robust to these sources of damage.
 
-\item \label{req: small} \textbf{The probe should be small}\\
-The probe should fit comfortably in the surgeon's hand.
+\item \label{req: small} \textbf{The probe should be small and hand-held}\\
+
 
 
 \item \label{req: correlation} \textbf{The system's output should be highly correlated with the output of the original probe}\\
-As this project concerns the design of the new probe before it can reach clinical trials, the results it produces should be highly correlated with controlled tests of the original probe, to ensure it will perform similarly in clinic. The comparison tests were carried out by performing a measurement at variable distances from a piece of A4 paper, as this simulates changing the backscatter of the liver.
+As this project will not include clinical trials, the measurements of the new probe should be highly correlated with controlled tests of the original probe, to ensure it will perform similarly in clinic.
 
 
 
 \item \label{req: sterilise} \textbf{The system must be able to withstand the medical sterilisation process}\\
 In order to be used in clinic, the probe must be able to be sterilised. The most common sterilisation is an autoclave, which use saturated steam under pressure to heat the device to 134\si{\celsius} for 3-3.5 minutes \cite{nhs_autoclave}. The system should be able to withstand the thermal and mechanical stresses associated with this. The system should also be made from materials able to withstand the chemical sterilisation process, which varies across NHS trusts.
+%Cut chemical sterilisation?
 
 \item \label{req: seal} \textbf{The system should be hermetically sealed}\\
-A hermetic seal will ensure that the device is safe from comtamination from pathogens getting inside the device and not being sterilised. 
+This ensures that the device is safe from contamination from pathogens getting inside the device.
 
 \item \label{req: biocompatible} \textbf{The system should be made from biocompatible materials}\\
-Biocompatible materials are essential to ensure device safety and that it will pass the approval process.
+This is essential to ensure device safety and to pass the regulatory process.
 
 
 
 
 \item \label{req: screen} \textbf{The system should have a screen}\\
-The system should display the measurements on a screen so the surgeon knows the result of the measurement immediately. The screen should also display any menus to select other features and error messages so the surgeon can easily navigate the device interface.
+The system should display the measurements on a screen, so the surgeon knows the result of the measurement immediately. The screen should also display menu screens and error messages so the surgeon can easily navigate the device interface.
 
 \item \label{req: temperature} \textbf{The system should measure temperature}\\
 The brightness of LEDs and responsivity of photodiodes varies with temperature, so a temperature measurement should be logged with each liver measurement to enable the system to be calibrated properly.
