@@ -10,6 +10,10 @@
 '****************************************************************
 include "modedefs.bas"
 
+#config
+    __config _INTRC_OSC_NOCLKOUT & _WDT_OFF & _MCLRE_OFF & _CP_OFF
+#endconfig
+
 define OSC 8
 define CHAR_PACING 1000
 define ADC_BITS 10
@@ -28,8 +32,8 @@ tx_power var PORTA.0
 ANSEL = %10001000
 ADCON0 = %11011101
 ADCON1 = %00110000
-TRISA = %00011011
-TRISC = %00101000
+TRISA = %11011010
+TRISC = %11101011
 OSCCON = %1110111
 CMCON0 = %00000000
 
@@ -39,7 +43,7 @@ mainloop:
 'OSCCON = %00000001
     high red_led
     high liver_led
-    high button_led
+    low button_led
     low tx_out
     high tx_power
     pause 10000

@@ -53,8 +53,8 @@ init:
 ANSEL = %10001000
 ADCON0 = %11011101
 ADCON1 = %00110000
-TRISA = %00011011
-TRISC = %00101000
+TRISA = %11011010'%00011011
+TRISC = %11101011'%00101000
 OSCCON = %1110111
 CMCON0 = %00000000
 
@@ -62,7 +62,7 @@ low tx_power
 
 
 mainloop:
-    high liver_led
+    'high liver_led
     high button_led
     high red_led
 
@@ -88,7 +88,7 @@ read_button:
         low button_led
         pause 1
         adcin button_pt, light  'read in light data
-        high button_led
+        'high button_led
         pause 1
         adcin button_pt, dark   'read in dark data
         
