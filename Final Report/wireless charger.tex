@@ -54,9 +54,28 @@ The performance of the proposed charging circuit was investigated. First, the co
 	\label{fig: charger simulation}
 \end{figure}
 
-The circuit was simulated in LTspice \cite{ltspice}, with the circuit schematic shown in figure \ref{fig: charger simulation}. A voltage source with series resistance was used to model the H-bridge output. The circuit was tested on breadboard, so the surface mount NSR05F20NXT5G diodes could not be used. Instead, a through-hole diode was selected for testing purposes (Vishay UF4001-E3/54 \cite{tht_diode}), and this diode was modelled in the LTspice simulation, so the results could be compared with the experimental results. The coupling between the coils was set to 0.28, to model \SI{10}{\milli\metre} coil separation. The inductors and batteries had an equivalent series resistance modelled as well. The simulation suggested that the primary coil should have an RMS voltage of \SI{44.4}{\volt}, and the secondary coil should have an RMS voltage of \SI{8.24}{\volt}. This led to an average battery charging current of \SI{13.1}{\milli\ampere}, which would be suitable to recharge the remote unit. The breadboard experiments indicated a maximum charging current of \SI{5}{\milli\ampere} when the coils were touching, which is much less than the simulated value at \SI{10}{\milli\metre} separation. At \SI{10}{\milli\metre} separation, the charger could only deliver around \SI{0.5}{\milli\ampere}. This could be because of the presence of parasitic elements within the circuit damping the resonance and reducing the magnitude of the currents. \\ %************EXPERIMENT RESULTS**************\\
+The circuit was simulated in LTspice \cite{ltspice}, with the circuit schematic shown in figure \ref{fig: charger simulation}. A voltage source with series resistance was used to model the H-bridge output. The circuit was tested on breadboard, so the surface mount NSR05F20NXT5G diodes could not be used. Instead, a through-hole diode was selected for testing purposes (Vishay UF4001-E3/54 \cite{tht_diode}), and this diode was modelled in the LTspice simulation, so the results could be compared with the experimental results. The coupling between the coils was set to 0.28, to model \SI{10}{\milli\metre} coil separation. The inductors and batteries had an equivalent series resistance modelled as well. The simulation suggested that the primary coil should have an RMS voltage of \SI{44.4}{\volt}, and the secondary coil should have an RMS voltage of \SI{8.24}{\volt}. This led to an average battery charging current of \SI{13.1}{\milli\ampere}, which would be suitable to recharge the remote unit. 
 
-%Coil combinations
+\begin{table}[htbp]
+	\begin{center}
+	\begin{tabular}{|l|*{4}{c|}}
+		\hline
+		\backslashbox{\textbf{Primary Turns}}{\textbf{Secondary Turns}} & \textbf{50} & \textbf{100} & \textbf{160} & \textbf{200} \\
+		\hline
+		\textbf{50} & - & 3.97 & 5.32 & 3.32 \\
+		\hline
+		\textbf{100} & 4.46 & - & 5.22 & 4.75 \\
+		\hline
+		\textbf{160} & 3.95 & 4.15 & - & 3\\
+		\hline
+	\end{tabular}
+	\caption{Current measurements (in milliamps) across a 7.2V battery load for varying combinations of primary and secondary coil. The coils were touching.}
+	\label{tab: coil combinations}
+	\end{center}
+\end{table}
+
+The charger was tested to see the effect of changing the number of turns in the primary and secondary coils (table \ref{tab: coil measurements}). The best combination of primary and secondary coils are the 50/160 and 100/160 combinations. The breadboard experiments indicated a maximum charging current of \SI{5}{\milli\ampere} when the coils were touching, which is much less than the simulated value at \SI{10}{\milli\metre} separation. At \SI{10}{\milli\metre} separation, the charger could only deliver around \SI{0.5}{\milli\ampere}. This could be because of the presence of parasitic elements within the circuit damping the resonance and reducing the magnitude of the currents. \\ 
+
 
 
 The initial tests indicated that the charger would not deliver sufficient current to charge the batteries quickly, as the recommend current to charge the batteries in 16 hours is \SI{8}{\milli\ampere}. Therefore, the supply voltage was stepped up to \SI{12}{\volt}, as this would mean that there would be more volts at the secondary side, so a greater current would flow. The circuit in figure \ref{fig: charger schematic} needed to be adapted to the \SI{12}{\volt} supply. A gate driver needed to be designed for the PMOS to provide it with a \SI{12}{\volt} gate signal rather than the \SI{5}{\volt} signal the PIC provides. Because the PMOS gate voltage is referred to the \SI{12}{\volt} rail, if a \SI{5}{\volt} signal were applied to the gate then it would remain on, as the gate-source voltage (\SI{7}{\volt}) will be greater than the threshold voltage. This will result in a large shoot-through current when the corresponding NMOS is on, as it will look like a short to ground to the supply. This will damage the MOSFETs and the supply, as well as not allowing the charger to operate properly. \\
@@ -250,6 +269,8 @@ When the batteries were loaded, their output voltage dropped from \SI{7.2}{\volt
 	\label{fig: remote current}
 	\end{center}
 \end{table}
+
+INCLUDE ONCE 100 mA ISSUE HAS BEEN FIXED
 
 
 \subsubsection{Base Unit}
