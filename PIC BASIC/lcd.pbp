@@ -173,7 +173,7 @@ pause 10
 low PORTA.5
 pause 10
 high lcd_power
-    'goto menu
+    goto menu
 goto mainloop
 
 
@@ -233,7 +233,7 @@ menu:
         lcdout $FE, $D4, $7E
     endif
     
-    pause 10
+    pause 1000
     i = i + 1
     menu_option = (menu_option + 1) // 3
 goto menu_loop
@@ -291,13 +291,13 @@ view_readings:
     'get reading
     lcdout $FE, $80, dec4 i, " ", dec2 i, "/", dec2 i, " ", dec2 i, ":", dec2 i 'Write 4 digit ID, month/day hour:min
     pause LCD_DELAY
-    lcdout $FE, $C0+4, "READING: ", dec4 i
+    lcdout $FE, $C0+4, "READING: ", dec 136'i
     pause LCD_DELAY
     
     'get reading
     lcdout $FE, $94, dec4 i, " ", dec2 i, "/", dec2 i, " ", dec2 i, ":", dec2 i 'Write 4 digit ID, month/day hour:min
     pause LCD_DELAY
-    lcdout $FE, $D4+4, "READING: ", dec4 i
+    lcdout $FE, $D4+4, "READING: ", dec 523'i
     pause LCD_DELAY
     
     

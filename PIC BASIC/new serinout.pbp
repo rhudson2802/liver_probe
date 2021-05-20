@@ -88,13 +88,13 @@ include "modedefs.bas"
     
     
     ' Set up PWM to run in hardware
-    'PR2 = 19
-    'CCPR2L = %00001010
-    'CCP2CON.5 = 0
-    'CCP2CON.4 = 0
-    'TRISB.3 = 0
-    'T2CON = %00000100
-    'CCP2CON = %00001111     
+    PR2 = 35
+    CCPR2L = %00010010
+    CCP2CON.5 = 0
+    CCP2CON.4 = 0
+    TRISB.3 = 0                                     
+    T2CON = %00000100
+    CCP2CON = %00001111     
 #else
     #if __PROCESSOR__ = "16F688"
         #config
@@ -147,7 +147,7 @@ mainloop:
     x = message[0] * 100 + message[1]
     cnt = cnt + 1
     'message_check = x.byte0 ^ x.byte1
-    serout2 serial_out, baud_1200, ["REC: ", dec4 x, " NUM: ", dec4 cnt, 10]'dec checksum, " ", dec message_check, 10]
+    serout2 serial_out, baud_1200, ["REC: ", dec4 x, " NUM: ", dec3 cnt, 10]'dec checksum, " ", dec message_check, 10]
     'serout serial_out, baud, ["received"]'#message[0], #message[1], 10]
 goto mainloop
 

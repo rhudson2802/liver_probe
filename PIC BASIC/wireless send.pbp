@@ -66,7 +66,8 @@ include "modedefs.bas"
         
         ANSEL = %10000000
         ADCON0 = %11011101
-        TRISC = %00001000
+        TRISA = %11011010
+        TRISC = %11101011
         OSCCON = %1110111   
     #else
         #error "Program does not support " + __PROCESSOR__
@@ -91,19 +92,17 @@ n_bits var byte
 receive var byte  
 serial_out var PORTC.4
 tx_out var PORTC.4
+led var PORTA.5
+ 
+low led
 
 serout serial_out, baud, ["Hello world"]
+serout2 tx_out, baud_1200, [rep "U"\240]'UUUUU"]
 
-mainloop:
-    for i = 1 to 9999
-        if i > 9 then
-            n_bits = 2
-        else
-            n_bits = 1
-        endif
-        serout2 tx_out, baud_300, ["UUUUUUUU"]'UUUUU"]
-        pause 5
-        serout2 serial_out, baud_1200, ["m ", dec4 i, 10]
+    for i = 0 to 999
+    high led
+        serout2 serial_out, baud_1200, [rep "U"\10, "m ", dec4 i, 10]
+        low led
         'serout tx_out, baud, ["UUUUUUUUl ", #n_bits, " m 000", #i]
        ' pause 1000
         'serout tx_out, baud, ["m ", #i]
@@ -123,7 +122,7 @@ mainloop:
         'next j
         
     next i
-   
+mainloop:   
 goto mainloop
 
 end    
