@@ -1,0 +1,19 @@
+\begin{center}
+\textbf{\Large{Portable/Disposable System to Measure Liver Optical Backscatter (B-PAR10-1)}}\\
+\textbf{\large{Robert Hudson - Jesus College}}\\
+\end{center}
+\hrule
+
+\begin{abstract}
+The aim of this project was to develop a system capable of measuring the optical backscatter properties of liver tissue. This information needed to be relayed to a surgeon, as it indicates whether a liver will be a good transplant organ. To ensure the device could be medically sterilised, a hermetic seal was required around the system. This led to the development of two different devices, a ``base'' unit and a ``remote'' unit. The remote unit is hermetically sealed, and is the device which takes the measurements from the liver. It sends the results wirelessly to the base unit.\\
+
+Three main subsystems were required by the system: the measurement system, the wireless communications system and a wireless charging system. The first stage of the project was idea generation and prototyping on breadboard for the three subsystems. Once suitable designs were created, PCBs were manufactured and the systems were tested. PICs were used as microcontrollers for the project, and firmware was written in PICBASIC to control the system.\\
+
+The measurement system used an infrared LED to illuminate the target, and a phototransistor to produce a signal proportional to the backscattered light. The readings were highly correlated with an existing liver optical backscatter probe which underwent clinical trials, so the project should also be successful in clinic.\\
+
+The communications system used RF transceiver modules on the remote and base units. The maximum reliable range using the selected modules was \SI{14}{\metre}. The wireless charger used an inductive charging system involving resonant coupled coils and a H-bridge driven with a square wave. This could deliver up to \SI{37}{\milli\ampere} to the remote unit's batteries.\\
+
+Some other features were also included to improve the system. A temperature sensor was added to the remote unit to ensure the measurements could be properly calibrated. An LCD was included on the base unit to provide an interface for the user. EEPROM was used to store the measurements, which were time stamped by an RTC and could be output to a PC via an RS232 link.\\
+
+Designs for the system's casing were produced, but unfortunately these could not be manufactured due to COVID-19 lab restrictions. Future work should package the units in their casings and assert that they have the same performance. The system can then be sent for clinical trials to determine their performance in vivo, and to get feedback from the surgeons who use them to develop the product further.\\
+\end{abstract}
