@@ -268,9 +268,10 @@ When the batteries were loaded, their output voltage dropped from \SI{7.2}{\volt
 	\begin{center}
 	\begin{tabular}{|c|c|c|c|c|}
 	\hline
-	Component & Red LED & IR LED & Tx module (low output) & Tx module (high output)\\
+	& & & Tx module & Tx module\\
+	\textbf{Component} & Red LED & IR LED & (low output) & (high output)\\
 	\hline
-	Current (mA) & 14.3 & 23.9 & 0 & 0.6 \\
+	\textbf{Current (mA)} & 14.3 & 23.9 & 0 & 0.6 \\
 	\hline
 	\end{tabular}
 	\caption{Current drawn by major components on remote unit. These are expressed as a difference between the current measured when the PIC is idle to the current when the corresponding output pin is high.}
@@ -278,11 +279,26 @@ When the batteries were loaded, their output voltage dropped from \SI{7.2}{\volt
 	\end{center}
 \end{table}
 
-The PIC drew \SI{9.4}{\milli\ampere} when it was idle and running on a \SI{8}{\mega\hertz} clock. This gives the device's ``stand-by'' lifetime to be \SI{8.5}{\hour}, as \SI{80}{\milli\ampere\hour} batteries are used. When the clock speed was reduced to \SI{31}{\kilo\hertz}, the current reduced to \SI{7.5}{\milli\ampere}. The \SI{1.9}{\milli\ampere} reduction will help to ensure that the batteries do not become fully discharged. Table \ref{tab: remote current} shows the currents drawn by the other components in the remote unit. The transmitter module draws negligible current in practice, so there was in fact no need to include the PMOS power switch.\\
+The PIC drew \SI{9.4}{\milli\ampere} when it was idle and running on a \SI{8}{\mega\hertz} clock. This gives the device's ``stand-by'' lifetime to be \SI{8.5}{\hour}, as \SI{80}{\milli\ampere\hour} batteries are used. When the clock speed was reduced to \SI{31}{\kilo\hertz}, the current reduced to \SI{7.5}{\milli\ampere}. The \SI{1.9}{\milli\ampere} reduction will help to ensure that the batteries do not become fully discharged. Table \ref{tab: remote current} shows the currents drawn by the other components in the remote unit. The transmitter module draws negligible current in practice, so there was in fact no need to include the PMOS power switch. The current drawn when the IR LEDs are on is \SI{23.9}{\milli\ampere}. This is greater than the \SI{11.4}{\milli\ampere} design current from the circuit in figure \ref{fig: measurement schematic}. When the voltage across the \SI{220}{\ohm} resistor was measured, the correct current was found to be flowing through the resistor, so the reason for the additional \SI{12.4}{\milli\ampere} is unknown at this time. Further tests using laboratory equipment may yield the solution.\\
 
-LED CURRENTS\\
+The total energy stored in the batteries is $E_\text{Bat} = \SI{7.2}{\volt}\times\SI{80}{\milli\ampere\hour}\times 80\% = \SI{1659}{\joule}$. The 80\% is given by the batteries' data sheet \cite{rs_pro_batteries}, and is to account for the fact that the batteries will only hold a stable \SI{7.2}{\volt} output for 80\% of their total capacity. The number of readings per full battery charge could then be calculated. This assumed that the button LED was flashed 10 times in a button read, the measurement LED was flashed 50 times to probe the liver, the LEDs were on for \SI{1}{\milli\second} each flash, a \SI{1200}{\bit\per\second} baud rate was used and the data was transmitted three times to add redundancy. It was also assumed that the button would only be polled every \SI{100}{\milli\second}.\\
 
-INCLUDE ONCE 100 mA ISSUE HAS BEEN FIXED\\
+\begin{table}[htbp]
+	\begin{center}
+	\begin{tabular}{*{5}{|c}|}
+	\hline
+	\textbf{System} & Button LED & Measurement LED & Wireless Tx & Idle time\\
+	\hline
+	\textbf{Energy (mJ)} & 1.07 & 5.34 & 23.1 & 4.70	 \\
+	\hline
+	\end{tabular}
+	\caption{Energy used by different sub-systems in the remote unit}
+	\label{tab: remote energy}
+	\end{center}
+\end{table}
+
+The calculated energies (see table \ref{tab: remote energy}) were then combined in a weighted sum to determine the number of readings which could be taken per full battery charge. When the probe was not in use, the button would activate every \SI{100}{\milli\second} and then the system would enter a delay period. This resulted in a stand-by time of 9.88 hours. If the probe is in constant use, so every button poll results in a measurement being taken, then 48,500 measurements can be taken, which corresponds to a lifetime of 8.56 hours. As the probe will be left on trickle charge when it is not in use, these lifetimes will be suitable for the probe to retain its charge during the transplant operation.\\
+
 
 
 \subsubsection{Base Unit}
@@ -291,27 +307,27 @@ INCLUDE ONCE 100 mA ISSUE HAS BEEN FIXED\\
 	\begin{center}
 	\begin{tabular}{|c|c|c|c|}
 	\hline
-	\multicolumn{2}{|c}{\textbf{\SI{5}{\volt} devices}} & \multicolumn{2}{|c|}{\textbf{\SI{3.3}{\volt} devices}}\\
+	\multicolumn{2}{|c}{\textbf{5 V devices}} & \multicolumn{2}{|c|}{\textbf{3.3 V devices}}\\
 	\hline
-	\textbf{Component} & \textbf{Worst-case current (\si{\milli\ampere})} & \textbf{Component} & \textbf{Worst-case current (\si{\milli\ampere})} \\
+	\textbf{Component} & \textbf{Worst-case current (mA)} & \textbf{Component} & \textbf{Worst-case current (mA)} \\
 	\hline
 	PIC & 6 & LCD backlight & 100 \\
 	\cline{3-4}
-	LCD logic & 4 & \textbf{Total} & 100\\
+	LCD logic & 4 & \textbf{Total} & \textbf{100}\\
 	\cline{3-4}
 	LCD & 0.5 & \multicolumn{2}{c}{} \\
 	\cline{3-4}
-	Wireless Rx & 6 &  \multicolumn{2}{c|}{\textbf{\SI{12}{\volt} devices}} \\
+	Wireless Rx & 6 &  \multicolumn{2}{c|}{\textbf{12 V devices}} \\
 	\cline{3-4}
-	Wireless Tx & 12.5 & \textbf{Component} & \textbf{Worst-case current (\si{\milli\ampere})}  \\
+	Wireless Tx & 12.5 & \textbf{Component} & \textbf{Worst-case current (mA)}  \\
 	\cline{3-4}
 	I\textsuperscript{2}C pullups & 4.5 & Wireless charger & 375 \\
 	EEPROM & 3 & \SI{5}{\volt} converter & 37.6 \\
 	RTC & 0.4 & \SI{3.3}{\volt} converter & 100 \\
 	\cline{3-4}
-	Push Buttons & 1 & \textbf{Total} & 512.6  \\
+	Push Buttons & 1 & \textbf{Total} & \textbf{512.6}  \\
 	\hline
-	\textbf{Total} & 37.9  \\
+	\textbf{Total} & \textbf{37.9}  \\
 	\cline{1-2}
 	\end{tabular}
 	\caption{Current drawn by major components on the base unit.}
