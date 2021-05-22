@@ -25,7 +25,9 @@
 \usepackage{amsmath}
 \usepackage{appendix}
 %\usepackage{booktabs}
+%\usepackage{color}
 \usepackage{diagbox}
+\usepackage{enumitem}
 %\usepackage{float}
 \usepackage{listings}
 \usepackage{multicol}
@@ -36,6 +38,13 @@
 \usepackage{tcolorbox}
 %\usepackage{textgreek}
 \usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\hypersetup{
+    colorlinks=false, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=blue,  %choose some color if you want links to stand out
+}
 
 
 
@@ -65,7 +74,7 @@
 \if@cuedwide
 \oddsidemargin=0pt \evensidemargin=0pt \topmargin=0pt \textwidth=421pt \textheight=612pt
 \fi
-\renewcommand{\abstractname}{Summary}
+\renewcommand{\abstractname}{Technical Abstract}
 \def\supervisor#1{\gdef\@supervisor{#1}\gdef\thesupervisor{#1}}
 
 \if@titlepage
