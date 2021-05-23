@@ -130,6 +130,8 @@
 
 'define INTHAND _myint
 define OSC 8
+define I2C_SLOW 1
+define I2C_HOLD 1
 
 led var PORTA.5
 scl var PORTB.1
@@ -144,7 +146,7 @@ rtc_addr var byte               ' RTC I2C address
 rtc_addr = %11011110
 addr var word                   'Memory addr to write/read to (needs to be word length)
 addr = 0
-x var byte[32]
+x var byte[64]
 i var byte
 time var byte[7]
 flag var byte
@@ -154,9 +156,9 @@ pause 10
 serout2 rs232_out, baud_1200, [10, 10, "hello world", 10]
 'i2cwrite sda, scl, eeprom_addr, addr, ["this is a IIB project"], i2c_failed
 'pause 10
-addr = 10
-i2cread sda, scl, eeprom_addr, addr, [str x\8]
-serout2 rs232_out, baud_1200, [str x\8, 10, 10]
+'addr = 10
+'i2cread sda, scl, eeprom_addr, addr, [str x\8]
+'serout2 rs232_out, baud_1200, [str x\8, 10, 10]
 'for i = 1 to 8  
 '    pause 10
 '    i2cread sda, scl, eeprom_addr, [x]
@@ -166,6 +168,10 @@ serout2 rs232_out, baud_1200, [str x\8, 10, 10]
     
 'serout2 rs232_out, baud_1200, [10, "I2C succeeded", 10]
 
+addr = $20
+i2cwrite sda, scl, rtc_addr, addr, ["Hello world"]'"0000000000000000000000000000000000000000000000000000000000000000"], i2c_failed
+i2cread sda, scl, rtc_addr, addr, [str x\64], i2c_failed
+serout2 rs232_out, baud_1200, [str x\64, 10, 10]
 
 
 time[0] = $00    'Seconds

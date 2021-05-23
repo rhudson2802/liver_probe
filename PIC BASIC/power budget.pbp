@@ -43,11 +43,11 @@ mainloop:
 'OSCCON = %00000001
     high red_led
     high liver_led
-    'high button_led
+    high button_led
     low tx_out
     high tx_power
     pause 10
-    low button_led
+    'low button_led
     pause 10
     
 goto mainloop

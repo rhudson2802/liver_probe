@@ -1,0 +1,205 @@
+'****************************************************************
+'*  Name    : UNTITLED.BAS                                      *
+'*  Author  : Robert Hudson                                     *
+'*  Notice  : Copyright (c) 2021 [select VIEW...EDITOR OPTIONS] *
+'*          : All Rights Reserved                               *
+'*  Date    : 21/05/2021                                        *
+'*  Version : 1.0                                               *
+'*  Notes   :                                                   *
+'*          :                                                   *
+'****************************************************************
+' ________________________ Chip Setup ___________________________ 
+                                                 
+#config
+    CONFIG  PLLDIV = 5            ; Divide by 5 (20 MHz oscillator input)
+    CONFIG  CPUDIV = OSC1_PLL2    ; [Primary Oscillator Src: /1][96 MHz PLL Src: /2]
+    CONFIG  USBDIV = 2            ; USB clock source comes from the 96 MHz PLL divided by 2
+    CONFIG  FOSC = INTOSCIO_EC       ; HS oscillator, PLL enabled (HSPLL)
+    CONFIG  FCMEN = OFF           ; Fail-Safe Clock Monitor disabled
+    CONFIG  IESO = OFF            ; Oscillator Switchover mode disabled
+    CONFIG  PWRT = OFF            ; PWRT disabled
+    CONFIG  BOR = ON              ; Brown-out Reset enabled in hardware only (SBOREN is disabled)
+    CONFIG  BORV = 3              ; Minimum setting
+    CONFIG  VREGEN = OFF           ; USB voltage regulator disabled
+    CONFIG  WDT = OFF             ; WDT disabled
+    CONFIG  WDTPS = 512           ; 1:512
+    CONFIG  CCP2MX = OFF          ; CCP2 input/output is multiplexed with RB3
+    CONFIG  PBADEN = OFF          ; PORTB<4:0> pins are configured as digital I/O on Reset
+    CONFIG  LPT1OSC = OFF         ; Timer1 configured for higher power operation
+    CONFIG  MCLRE = ON            ; MCLR pin enabled; RE3 input pin disabled
+    CONFIG  STVREN = ON           ; Stack full/underflow will cause Reset
+    CONFIG  LVP = OFF             ; Single-Supply ICSP disabled
+    CONFIG  XINST = OFF           ; Instruction set extension and Indexed Addressing mode disabled (Legacy mode)
+    CONFIG  DEBUG = OFF           ; Background debugger disabled, RB6 and RB7 configured as general purpose I/O pins
+    CONFIG  CP0 = OFF             ; Block 0 (000800-001FFFh) is not code-protected
+    CONFIG  CP1 = OFF             ; Block 1 (002000-003FFFh) is not code-protected
+    CONFIG  CP2 = OFF             ; Block 2 (004000-005FFFh) is not code-protected
+    CONFIG  CP3 = OFF             ; Block 3 (006000-007FFFh) is not code-protected
+    CONFIG  CPB = OFF             ; Boot block (000000-0007FFh) is not code-protected
+    CONFIG  CPD = OFF             ; Data EEPROM is not code-protected
+    CONFIG  WRT0 = OFF            ; Block 0 (000800-001FFFh) is not write-protected
+    CONFIG  WRT1 = OFF            ; Block 1 (002000-003FFFh) is not write-protected
+    CONFIG  WRT2 = OFF            ; Block 2 (004000-005FFFh) is not write-protected
+    CONFIG  WRT3 = OFF            ; Block 3 (006000-007FFFh) is not write-protected
+    CONFIG  WRTC = OFF            ; Configuration registers (300000-3000FFh) are not write-protected
+    CONFIG  WRTB = OFF            ; Boot block (000000-0007FFh) is not write-protected
+    CONFIG  WRTD = OFF            ; Data EEPROM is not write-protected
+    CONFIG  EBTR0 = OFF           ; Block 0 (000800-001FFFh) is not protected from table reads executed in other blocks
+    CONFIG  EBTR1 = OFF           ; Block 1 (002000-003FFFh) is not protected from table reads executed in other blocks
+    CONFIG  EBTR2 = OFF           ; Block 2 (004000-005FFFh) is not protected from table reads executed in other blocks
+    CONFIG  EBTR3 = OFF           ; Block 3 (006000-007FFFh) is not protected from table reads executed in other blocks
+    CONFIG  EBTRB = OFF           ; Boot block (000000-0007FFh) is not protected from table reads executed in other blocks
+#endconfig
+
+
+PORTA = 0
+PORTB = 0
+PORTC = 0
+TRISA = 0
+TRISB = %11010100
+TRISC = %10010110
+OSCCON = %1110010
+ADCON0 = 0
+ADCON1 = %00001111
+'ADCON2 = 
+T1CON = 0           'Turn off secondary oscillator
+T3CON = 0
+UCON = %10        'Turn off USB
+UCFG = %00001000
+UIE = 0
+UEIE = 0           
+                                                                                                                                  
+' ___________________ Definitions & LCD Definitions _____________ 
+                                                          
+DEFINE OSC 4            ' Tell PBP using a 4 MHZ Crystal
+DEFINE I2C_HOLD 1       ' 
+' Set LCD Data port
+DEFINE LCD_DREG PORTA
+' Set starting Data bit (0 or 4) if 4-bit bus
+DEFINE LCD_DBIT 0
+' Set LCD Register Select port
+DEFINE LCD_RSREG PORTA
+' Set LCD Register Select bit
+DEFINE LCD_RSBIT 5
+' Set LCD Enable port
+DEFINE LCD_EREG PORTA
+' Set LCD Enable bit
+DEFINE LCD_EBIT 4
+                         
+' _________________________ Variables ______________________________
+
+  BCDsecs   var  byte   '
+  BCDmins   var  byte   '
+  BCDHours  var  byte   ' Conversion Variables
+  BCDday    var  byte   ' 
+  BCDdate   var  byte   '
+  BCDmon    var  byte   '
+  BCDyear   var  byte   '
+  
+' ______________________ Clock Variables ___________________________
+
+  ClkSec    var byte '$00   ' Seconds Register       
+  ClkMin    var byte '$01   ' Minutes Register      
+  ClkHour   var byte '$02   '   Hours Register             
+  ClkDay    var byte '$03   '    Days Register                                  
+  ClkDate   var byte '$04   '    Date Register                  
+  ClkMonth  var byte '$05   '   Month Register                              
+  ClkYear   var byte '$06   '    Year Register
+  ClkCont   var byte '$07   '          Control
+  ClkCal    var byte '$08   '      Calibration
+  ClkBuffer var byte[9]     '      Time Buffer 
+
+' ______________________ Alarm0 Variables ___________________________
+
+  Alm0Secs  var byte '$0A   ' Seconds Register       
+  Alm0Mins  var byte '$0B   ' Minutes Register      
+  Alm0Hour  var byte '$0C   '   Hours Register             
+  Alm0Day   var byte '$0D   '    Days Register                                  
+  Alm0Date  var byte '$0E   '    Date Register                  
+  Alm0Month var byte '$0F   '   Month Register                              
+  Alm0Buff var byte[6]
+' ______________________ Alarm0 Variables ___________________________
+ 
+  Alm1Secs  var byte '$11   ' Seconds Register       
+  Alm1Mins  var byte '$12   ' Minutes Register      
+  Alm1Hour  var byte '$13   '   Hours Register             
+  Alm1Day   var byte '$14   '    Days Register                                  
+  Alm1Date  var byte '$15   '    Date Register                  
+  Alm1Month var byte '$16   '   Month Register
+  Alm1Buff var byte[6]  
+ 
+' _____________________ Pin Definitions _________________________ 
+                                                                           
+  SDA var PORTB.0     ' Serial Data Pin RC.4    ( pin )                    
+  SCL var PORTB.1     ' Serial Data Pin RC.3    ( pin )    
+  SetButt  var PORTB.0     '
+  UpButt   var PORTB.1
+  DownButt var PORTB.1
+  lcd_power var PORTB.4
+
+' ____________________ Inital time setup ________________________
+ 
+  ClkSec   = %10000000;$00     
+  ClkMin   = $00    
+  ClkHour  = $00        
+  ClkDay   = $01                               
+  ClkDate  = $17               
+  ClkMonth = $10                           
+  ClkYear  = $78
+  ClkCont  = %10000000;$00
+  clkcal   = $00
+
+' _______________________ Main Program __________________________
+ 
+'
+pause 500
+               ' Allow LCD to Wake Up !
+gosub settime
+
+goto Main
+    
+Main :
+    high lcd_power
+    gosub gettime
+    gosub disptime
+    pause 1000
+    goto main
+    end
+    
+
+' _________________________ Subrountines ________________________
+
+
+SetTime :   ;$DE = write
+    i2cwrite sda, scl, $DE,$00,[str clkbuffer\9]
+    'i2cwrite sda, scl, $DE,$00,[clksec,clkmin,clkhour,clkday,clkdate,clkmonth,clkyear,clkcont,clkcal]
+    'i2cwrite sda, scl, $DE,$00,[clksec]
+    return
+    
+GetTime :    ;$DF = read 11011111
+    i2cread sda, scl, $DF,$00,[str clkbuffer\9]   
+    'i2cread sda, scl, $DF,$00,[clksec,clkmin,clkhour,clkday,clkdate,clkmonth,clkyear]     
+        
+       bcdsecs  = (clksec>>4*10)  + (clksec & %00001111)      ; convert BCD to Decemal ??
+       bcdmins  = (clkmin>>4*10)  + (clkmin & %00001111)      ;
+       bcdhours = (clkhour>>4*10) + (clkhour & %00001111)     ;
+       BCDday   = (clkday>>4*10) + (clkday & %00001111)       ;
+       bcddate  = (clkdate>>4*10) + (clkdate & %00001111)     ;
+       bcdmon   = (clkmonth>>4*10)+ (clkmonth & %00001111)    ;
+       bcdyear  = (clkyear>>4*10) + (clkyear & %00001111)     ;
+       
+    return
+
+DispTime :
+
+    lcdout $FE,1,dec bcdhours,":",dec bcdmins,":",dec bcdsecs         
+    lcdout $FE,$c0,dec bcddate,"/",dec bcdmon,"/",dec bcdyear
+    pause 100
+ 
+'    lcdout $FE,1,dec clkhour,":",dec clkmin,":",dec clksec            
+'    lcdout $FE,$c0," ",dec clkdate,"/",dec clkmonth,"/",dec clkyear
+'    pause 100
+ 
+ 
+ 
+    return
