@@ -5,7 +5,7 @@ The remote unit would have the PCB enclosed in a resin cast, which would provide
 
 As the device would be sterilised in an autoclave, it will experience large changes in temperature. This means that the resin selected must have its coefficient of thermal expansion reasonably matched to the FR4 used in the PCB and to the electronic component casings. If they are not well matched, then when the device is heated the different parts will expand at different rates, leading to stresses building up in the device which could cause damage. When the final product is manufactured, it should be tested over many autoclave cycles to ensure that no damage occurs.\\
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\begin{subfigure}[b]{0.4\linewidth}
 		\includegraphics[width=\linewidth]{cuboid.png}
@@ -33,7 +33,7 @@ As the device would be sterilised in an autoclave, it will experience large chan
 
 The design of the casing shape underwent several iterations to improve the user experience. The iterations were rendered in CAD (see figure \ref{fig: casings}) and modelled using Play-Doh to see how they felt to hold. The first design was a simple cuboid shape (figure \ref{fig: cuboid}), with dimensions large enough to enclose the PCB (which measured \SI{80x40x35}{\milli\metre}). This felt cumbersome to hold, and the corners were uncomfortable. The design was therefore changed to a cylinder (figure \ref{fig: cylinder}), to make the edges smooth. This felt more comfortable, but the cylindrical shape could lead to issues with the wireless charger. Maximum power is transferred when the charging coils are parallel, and zero power is transferred when they are perpendicular. Due to the rotational symmetry of the cylinder, it will not be clear which orientation the surgeon should place the remote unit on the charging pad, and it could possibly roll over and misalign. Thus, a new half cylinder design (figure \ref{fig: half cylinder}) was made. The flat surface on the bottom makes it clear which side should be placed against the charging pad. Furthermore, if the half cylinder is placed on its curved side, gravity will rotate the device so the flat surface is pointing upwards, so the coils will still be parallel, albeit at a greater separation. One problem noted with this design (and all the previous ones) was that it was not clear which side of the device should be placed against the liver and which side has the ``take measurement'' button. Therefore, the final design (figure \ref{fig: final design}) included an extrusion on the front of the device which should be held against the liver. The device should be held like a syringe, and the surgeon uses their thumb to press the button on the back (see figure \ref{fig: real casing}). It was also noted that in order to house the PCB, the half cylinder design needed to have a diameter of \SI{70}{\milli\metre}, which was too big. The final design used a more circular shape to reduce the overall radius, but still included a flat edge on the bottom. \\
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.4\linewidth]{real casing.PNG}
 	\caption{Model of final casing design}
@@ -47,7 +47,7 @@ The design of the casing shape underwent several iterations to improve the user 
 \subsection{Base Unit}\label{base casing}
 PICTURE OF BASE UNIT\\
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\begin{subfigure}[b]{0.4\linewidth}
 		\includegraphics[width=\linewidth]{charging pad.png}

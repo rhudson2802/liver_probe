@@ -1,7 +1,7 @@
 \section{Measurement System}
 \subsection{Hardware}
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{measurement.PNG}
 	\caption{Circuit schematic of backscatter measurement system.}
@@ -21,7 +21,7 @@ The MCP6002-I/SN \cite{mcp6002} was selected as the op-amp. This has a short cir
 
 The light transmitted by the LED is then reflected off the target liver, and the received light is collected by phototransistor Q2. This produces a current proportional to the input light power. A transimpedance amplifier is used convert this to a readable voltage signal. Assuming op-amp U1B is ideal, the phototransistor current $i_f$ passes through the resistor R3, which leads to an output voltage signal $v_0 = 2.5 - i_f R_f$. The \SI{2.5}{\volt} rail at the non-inverting input acts to bias the op-amp. This was selected as half the supply rails to ensure that the op-amp output signal could have maximum voltage swing before clipping at the supply rails.\\
 
-\begin{table}[htbp]
+\begin{table}[htb]
 	\centering
 	\caption{Results for feedback resistor calibration experiments. The peak-to-peak signal is the difference between the output voltage when the LED was on/off, and the minimum signal is the output voltage when the LED was on.}
 	\label{tab: tia feedback resistor}
@@ -55,7 +55,7 @@ The transimpedance amplifier is a notoriously unstable circuit due to the photot
 
 A button also needed to be designed for the probe, so the surgeon could indicate that they wanted to take a measurement. A standard push button could not be used because the remote unit had to be hermetically sealed. Therefore, a non-contact means of sensing a button press had to be devised. This could either be capacitive, sensing the finger like the touch screen on a mobile phone, or optical, by measuring light reflected from the finger. It was found that the liver backscatter measurement system (figure \ref{fig: measurement schematic}) discriminated well between the presence or absence of a finger at a range of a few centimetres, so this circuit was used as the button. The downside to this method is that it is an active sensing system, requiring power to be supplied to the LED and phototransistor. The system was found to give an output of 0-10 arbitrary units if no finger was present, and several hundred arbitrary units if a finger was present, so a threshold of 100 was set for a button press. \\
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.35\linewidth]{2-5v rail.PNG}
 	\caption{Op-amp unity buffer used to generate \SI{2.5}{\volt} rail.}
@@ -68,7 +68,7 @@ The measurement system used a \SI{2.5}{\volt} reference rail. This rail had to b
 
 
 \subsection{Firmware}
-The system would give different readings depending on the background lighting conditions, as these would appear as an offset in the phototransistor current. To add resilience to background light, each measurement was the difference between the phototransistor reading when the LED was on and when it was off. Assuming the phototransistor has a linear incident light intensity-current response, this difference will leave just the information about the liver with no dependence on background light. A series of readings was made (N=50) and the average taken, to further increase the resilience to noise. The PICBASIC code is given below.\\
+The system would give different readings depending on the background lighting conditions, as these would appear as an offset in the phototransistor current. To add resilience to background light, each measurement was the difference between the phototransistor reading when the LED was on and when it was off. Assuming the phototransistor has a linear incident light intensity-current response, this difference will leave just the information about the liver with no dependence on background light. A series of readings was made (N=50) and the average taken, to further increase the resilience to noise. The PICBASIC code is given below.
 
 \begin{lstlisting}
 ir_led var PORTC.2
@@ -116,7 +116,7 @@ goto mainloop
 
 
 \subsection{Testing}
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{old probe comparison.png}
 	\caption{Comparison of old and new probe readings when aimed at a sheet of white printer paper, at a separation of 1, 2, 3, 4 and 5 cm. The red line indicates the boundary between high- and low-fat livers measured by the old probe in clinical trials. Plotted on a log-log scale.}
@@ -125,7 +125,7 @@ goto mainloop
 
 The measurement system was first tested to measure the correlation between readings taken with the old probe and those taken with the new design. This was important, because the new design's readings need to be highly correlated with the old probe to ensure that the new probe will have the same predictive power in clinical trials. The probes give an output in arbitrary units which is simply the ADC output of the PIC. These will have different absolute values for the two designs due to different component selection and circuit design. The two probes had their correlation tested by measuring the output at fixed distances from a sheet of A4 paper. This will give different intensities of backscattered light, so can be used for calibration. Figure \ref{fig: old probe comparison} shows the outcome of this experiment. The R\textsuperscript{2} correlation coefficient is 0.9859, so the probes are highly correlated as desired. \\
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{liquids.png}
 	\caption{Measurements made by the probe on different liquids, with a liquid depth of \SI{2}{\centi\metre} and probe range of \SI{3}{\centi\metre}.}

@@ -18,7 +18,7 @@ The relevant data was the liver reflectance measurement and the temperature. The
 \item \label{check: decimal sum} \textbf{Decimal Sum} - Sum the four decimal digits.
 \end{enumerate}
 
-\begin{table}[htbp]
+\begin{table}[htb]
 	\begin{center}
 	\caption{Mean and variance of the three checksum functions, assuming a uniform distribution for the data value between $[0,1023]$.}
 	\label{tab: checksums}
@@ -34,7 +34,7 @@ The relevant data was the liver reflectance measurement and the temperature. The
 	\end{center}
 \end{table}
 
-The three functions had their mean and variance computed using a Python script (see table \ref{tab:checksums}). In this application, checksums are used to detect errors but not for error correction. Therefore, the checksum should ideally assign a different output for each input argument, as this will make it more likely for an error to be detected. The binary XOR has the best performance, as the binary operation naturally uses all 8 bits of the output byte so it has the largest variance. The decimal operations are biased towards the smaller byte values, with the decimal sum being the worst as it can only access a range of $[0,36]$. The binary XOR was selected as the checksum. The data was also repeated to ensure that if the receiver accidentally missed a packet, then it was not lost. The full transmitter command is given below:\\
+The three functions had their mean and variance computed using a Python script (see table \ref{tab:checksums}). In this application, checksums are used to detect errors but not for error correction. Therefore, the checksum should ideally assign a different output for each input argument, as this will make it more likely for an error to be detected. The binary XOR has the best performance, as the binary operation naturally uses all 8 bits of the output byte so it has the largest variance. The decimal operations are biased towards the smaller byte values, with the decimal sum being the worst as it can only access a range of $[0,36]$. The binary XOR was selected as the checksum. The data was also repeated to ensure that if the receiver accidentally missed a packet, then it was not lost. The full transmitter command is given below:
 
 %with results presented in table \ref{tab: checksums}. In this application, checksums are used to detect errors but not for error correction. Therefore, the checksum should ideally assign a different output for each input argument, as this means that there will be fewer matching inputs for any checksum, so the error is more likely to be detected. The binary XOR has the best performance. It has a mean equal to the mean of all the possible checksum outputs so is centred, and has a large variance. It also only assigns each checksum value to an average of 4 possible input values, making it more likely that an error can be detected. This good performance is because the binary operation naturally uses all 8 bits of the output byte. The decimal operations are biased towards the smaller byte values, with the decimal sum being the worst as it can only access a range of $[0,36]$. The binary XOR was selected as the checksum. The data was also repeated to ensure that if the receiver accidentally missed a packet, then it was not lost. The full transmitter command is given below:\\
 
@@ -52,7 +52,7 @@ checksum = (reading / 256) ^ (reading // 256)
 serout2 wireless_tx, baud_1200, [rep ``U''\10, ``liver '', dec4 reading, checksum, dec4 temperature, dec4 reading, checksum, dec4 temperature]
 \end{lstlisting}
 
-The \verb|dec4| modifier outputs the value stored in the variable as a four-digit decimal number, and the \verb|rep| modifier sends a repeated character \verb|\n| times. The base unit used the \verb|serin2| command in a similar fashion, with the main difference being the \verb|wait(``x'')| modifier, which will wait until it receives the string ``\verb|x|'' before saving data to the following variables. The code is given below:\\
+The \verb|dec4| modifier outputs the value stored in the variable as a four-digit decimal number, and the \verb|rep| modifier sends a repeated character \verb|\n| times. The base unit used the \verb|serin2| command in a similar fashion, with the main difference being the \verb|wait(``x'')| modifier, which will wait until it receives the string ``\verb|x|'' before saving data to the following variables. The code is given below:
 
 \begin{lstlisting}
 wireless_rx var PORTA.6                            ''  Set up an alias for receiver pin
@@ -70,7 +70,7 @@ endif
 
 
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{dropout.png}
 	\caption{Receive module output when a square wave signal is applied to transmit module.}
@@ -79,7 +79,7 @@ endif
 
 The modules were initially tested with a square wave to ensure the receiver output the correct signal (see figure \ref{fig: dropout}). Initially, there is a noise region which indicates that the transmit module is not sending any data. The dynamic threshold will be low in this region, so any background noise will cause a transition across the threshold. After this, the square wave is observed. However, after roughly \SIrange{90}{110}{\milli\second}, the receiver output falls to zero for approximately \SIrange{60}{80}{\milli\second}. Only after this dropout region is reliable communication re-established. This dropout region occurred regardless of the baud rate and data. No reason could be found for this on the data sheet or through experimentation, but since the timing of the dropout could be predicted accurately, its effects could be mitigated. The remote unit was programmed to send \SI{200}{\milli\second} of character ``U'' before sending any real data, to ensure that the no data was lost in the dropout region.\\
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{range.png}
 	\caption{Proportion of 500 sent data packets which were received correctly.}

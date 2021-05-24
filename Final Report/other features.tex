@@ -1,7 +1,7 @@
 \section{Other Features}
 
 \subsection{Temperature Sensor}
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.4\linewidth]{temperature sensor.PNG}
 	\caption{Temperature sensor circuit schematic.}
@@ -25,7 +25,7 @@ The sensor was designed to have a range of \SIrange{5}{150}{\celsius}, to cover 
 
 
 \subsection{LCD}
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.5\linewidth]{lcd.PNG}
 	\caption{LCD interface circuitry.}
@@ -69,7 +69,7 @@ pause LCD_DELAY
 LCDOUT $FE, $94+4, "Liver Probe"                
 \end{lstlisting}
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.4\linewidth]{welcome.jpg}
 	\caption{LCD welcome screen}
@@ -81,7 +81,7 @@ LCDOUT $FE, $94+4, "Liver Probe"
 
 
 \subsection{Memory}
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.3\linewidth]{memory.PNG}
 	\caption{EEPROM interface circuitry.}
@@ -97,7 +97,7 @@ The EEPROM chip was accessed using the PICBASIC \verb|i2cread| and \verb|i2cwrit
 
 
 \subsection{Real Time Clock}
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.4\linewidth]{rtc.PNG}
 	\caption{RTC interface circuitry.}
@@ -111,7 +111,7 @@ The Microchip MCP7940N-I/SN \cite{rtc} was selected as the RTC module for the ba
 
 
 \subsection{Buttons}
-\begin{figure}[htbp]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.6\linewidth]{switches.jpg}
 	\caption{Breakout board for push buttons.}
