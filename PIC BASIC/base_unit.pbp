@@ -160,13 +160,13 @@ init:
     UEIE = 0
     
     'Reset reading counter at programming time
-    'reading_addr data @0, 0
+    reading_addr data @0, 0
     'Read in current value at runtime
-    'read reading_addr, reading_counter
+    read reading_addr, reading_counter
     i2cwrite sda, scl, eeprom_addr, $00, [0,0,0,0,0,0,0,0,0], i2c_failed
     
 pwm_init:
-    ' Set up PWM to run in hardware
+    ' Set up PWM to run in hardware at 55kHz
     PR2 = 35
     CCPR2L = %00010010
     CCP2CON.5 = 0
@@ -178,7 +178,7 @@ pwm_init:
     
 mainloop:
     ' Delay to allow LCD to initialise
-    pause 1000
+    pause 500
     first_time = 1
     reading = 0
     temperature = 0
@@ -288,7 +288,7 @@ take_readings:
         gosub get_time
         i2cwrite sda, scl, eeprom_addr, addr, [reading_counter, reading, temperature, month, day, hour, minute], i2c_failed
         ' Save new reading_counter to on-chip EEPROM
-        'write reading_addr, reading_counter
+        write reading_addr, reading_counter
     else
         reading = 0
     endif
@@ -311,12 +311,15 @@ delete_menu:
     lcdout $FE, $D4+6, "MENU to cancel"
     pause LCD_DELAY
     
+    pause 1000
+    
     'Check option and goto menu or delete
     delete_choice:
-        if sw_ok = 0 then
+        if sw_up = 0 or sw_down = 0 then
+            pause 500
+            goto menu
+        elseif sw_ok = 0 then
             goto delete
-        elseif sw_up = 0 or sw_down = 0 then
-            goto menu_loop
         endif
         pause 10
     goto delete_choice
@@ -326,12 +329,10 @@ goto delete_menu
 
 delete:
     high lcd_power
-    lcdout $FE, 1
-    pause LCD_DELAY
-    
+        
     ' Reset reading counter. This will allow EEPROM to be recovered by reprogramming
     ' PIC if it is deleted by accident
-    'write reading_addr, 0
+    write reading_addr, 0
     reading_counter = 0
     
     lcdout $FE, 1
@@ -341,7 +342,7 @@ delete:
     lcdout $FE, $94+6, "deleted"      
     pause LCD_DELAY
 
-    pause 5000
+    pause 2000
 goto menu
 
 
@@ -349,6 +350,11 @@ goto menu
 
 view_readings:
     ' Displays readings stored in EEPROM
+    
+    if reading_counter = 0 then
+        gosub no_readings
+        goto menu
+    endif    
     
     ' Draw the display the first time the loop runs, and set requested reading
     ' to the last one in memory
@@ -418,6 +424,16 @@ get_reading:
     i2cread sda, scl, eeprom_addr, addr, [reading_id, reading, temperature, month, day, hour, minute], i2c_failed
 return
     
+    
+no_readings:
+    lcdout $FE, 1
+    pause LCD_DELAY
+    lcdout $FE, $C0+4, "No Readings"
+    pause LCD_DELAY
+    lcdout $FE, $94+5, "in Memory"
+    pause LCD_DELAY
+    pause 2000
+    return
 
 
 
