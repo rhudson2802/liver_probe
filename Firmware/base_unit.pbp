@@ -88,12 +88,6 @@ define I2C_SLOW 0
 define I2C_HOLD 1
 
 
-
-
-
-LCD_DELAY con 1
-
-
 wireless_rx var PORTA.6
 wireless_tx var PORTB.2
 rs232_out var PORTC.6
@@ -113,12 +107,22 @@ scl var PORTB.1
 sda var PORTB.0
 
 
+
 baud_300 con 3313 | %0100000000000000
 baud_600 con 1646 | %0100000000000000
 baud_1200 con 813 | %0100000000000000
 MESSAGE_REPEATS con 3
 READING_DELAY con 1000
+LCD_DELAY con 1
+BUTTON_DELAY con 250
+MEM_BYTES con 9              ' Number of EEPROM bytes required for one reading
 
+eeprom_addr var byte         ' EEPROM I2C address
+eeprom_addr = %10100000
+rtc_addr var byte            ' RTC I2C address
+rtc_addr = %11011110
+addr var word                ' Memory addr to write/read to (needs to be word length)
+addr = 0
 
 reading var word
 temperature var word
@@ -126,6 +130,16 @@ checksum var byte
 
 i var byte
 menu_option var byte
+reading_id var byte
+request_id var byte
+reading_counter var byte
+first_time var byte
+
+month var byte
+day var byte
+hour var byte
+minute var byte
+second var byte
 
 
 
@@ -136,18 +150,24 @@ init:
     PORTC = 0
     TRISA = %01000000
     TRISB = %11000000
-    TRISC = %10000100
+    TRISC = %10111111
     ADCON0 = 0
     ADCON1 = %00001111
-    T1CON = 0           'Turn off secondary oscillator
+    T1CON = 0           ' Turn off secondary oscillator
     T3CON = 0
-    UCON = %10          'Turn off USB
+    UCON = %10          ' Turn off USB
     UCFG = %00001000
     UIE = 0
     UEIE = 0
     
+    ' Reset reading counter at programming time
+    reading_addr data @0, 0
+    ' Read in current value at runtime
+    read reading_addr, reading_counter
+    i2cwrite sda, scl, eeprom_addr, $00, [0,0,0,0,0,0,0,0,0], i2c_failed
+    
 pwm_init:
-    ' Set up PWM to run in hardware
+    ' Set up PWM to run in hardware at 55kHz
     PR2 = 35
     CCPR2L = %00010010
     CCP2CON.5 = 0
@@ -158,6 +178,9 @@ pwm_init:
     
     
 mainloop:
+    ' Delay to allow LCD to initialise
+    pause 500
+    first_time = 1
     reading = 0
     temperature = 0
     checksum = 0
@@ -168,7 +191,9 @@ goto mainloop
 
 menu:
     high lcd_power
-    menu_option = 1
+    menu_option = 0
+    
+    ' Draw menu
     lcdout $FE, 1
     pause LCD_DELAY
     lcdout $FE, $80, "MENU"
@@ -182,33 +207,51 @@ menu:
     lcdout $FE, $D4+2, "Delete all memory"
     pause LCD_DELAY
     
+    gosub draw_arrow
+    
     menu_loop:
         gosub write_time
         
-        if menu_option == 0 then
-            lcdout $FE, $C0, $7E
-            lcdout $FE, $94, " "
-            lcdout $FE, $D4, " "
-        elseif menu_option == 1 then
-            lcdout $FE, $C0, " "
-            lcdout $FE, $94, $7E
-            lcdout $FE, $D4, " "
-        else
-            lcdout $FE, $C0, " "
-            lcdout $FE, $94, " "
-            lcdout $FE, $D4, $7E
-        endif
-        
+        ' Check for a button press
+        ' OK => goto selected state
         if sw_ok = 0 then
             on menu_option goto take_readings, view_readings, delete_menu
+        ' DOWN => Move arrow down
         elseif sw_down = 0 then
             menu_option = (menu_option + 1) //3
+            gosub draw_arrow
+            pause BUTTON_DELAY
+        'UP => Move arrow up
         elseif sw_up = 0 then
-            menu_option = (menu_option - 1) // 3
+            if menu_option = 0 then
+                menu_option = 2
+            else
+                menu_option = (menu_option - 1) // 3
+            endif
+            gosub draw_arrow
+            pause BUTTON_DELAY
         endif
-        pause 10
     goto menu_loop
 goto menu
+
+
+
+draw_arrow:
+' Draws arrow on menu screen
+    if menu_option == 0 then
+        lcdout $FE, $C0, $7E
+        lcdout $FE, $94, " "
+        lcdout $FE, $D4, " "
+    elseif menu_option == 1 then
+        lcdout $FE, $C0, " "
+        lcdout $FE, $94, $7E
+        lcdout $FE, $D4, " "
+    else
+        lcdout $FE, $C0, " "
+        lcdout $FE, $94, " "
+        lcdout $FE, $D4, $7E
+    endif
+return
 
 
 
@@ -218,26 +261,36 @@ take_readings:
     pause LCD_DELAY
     gosub write_time
     
-    lcdout $FE, $C0, "READING: ", dec reading               'Write reading
+    lcdout $FE, $C0, "READING: ", dec reading             
     pause LCD_DELAY
     
-    lcdout $FE, $94                                         'Move cursor to 3rd line
+    ' Move cursor to 3rd line
+    lcdout $FE, $94
     pause LCD_DELAY
-    if reading < 750 then
+    if reading = 0 then
+        'Pass
+    elseif reading < 750 then
         lcdout "GOOD LIVER"
     else   
         lcdout "BAD LIVER"
     endif
     pause LCD_DELAY
     
-    lcdout $FE, $D4, "TEMPERATURE: ", dec temperature       'Write temperature
+    gosub convert_temperature
+    lcdout $FE, $D4, "TEMPERATURE: ", dec temperature
     
     pause 100
     
     serin2 wireless_rx, baud_1200, [wait("m"), dec4 reading, wait("c "), checksum, wait("t"), dec4 temperature]
     
     if checksum = reading.byte1 ^ reading.byte0 then
-        'SAVE READING
+        ' Save data to memory
+        reading_counter = reading_counter + 1
+        addr = reading_counter * MEM_BYTES
+        gosub get_time
+        i2cwrite sda, scl, eeprom_addr, addr, [reading_counter, reading, temperature, month, day, hour, minute], i2c_failed
+        ' Save new reading_counter to on-chip EEPROM
+        write reading_addr, reading_counter
     else
         reading = 0
     endif
@@ -260,12 +313,15 @@ delete_menu:
     lcdout $FE, $D4+6, "MENU to cancel"
     pause LCD_DELAY
     
+    pause 1000
+    
     'Check option and goto menu or delete
     delete_choice:
-        if sw_ok = 0 then
+        if sw_up = 0 or sw_down = 0 then
+            pause 500
+            goto menu
+        elseif sw_ok = 0 then
             goto delete
-        elseif sw_up = 0 or sw_down = 0 then
-            goto menu_loop
         endif
         pause 10
     goto delete_choice
@@ -275,13 +331,11 @@ goto delete_menu
 
 delete:
     high lcd_power
-    lcdout $FE, 1
-    pause LCD_DELAY
-    
-    lcdout $FE, $C0+1, "Deleting readings"
-    pause LCD_DELAY
-    
-    'Clear EEPROM
+        
+    ' Reset reading counter. This will allow EEPROM to be recovered by reprogramming
+    ' PIC if it is deleted by accident
+    write reading_addr, 0
+    reading_counter = 0
     
     lcdout $FE, 1
     pause LCD_DELAY
@@ -290,14 +344,59 @@ delete:
     lcdout $FE, $94+6, "deleted"      
     pause LCD_DELAY
 
-    pause 5000
+    pause 2000
 goto menu
 
 
 
 
 view_readings:
+    ' Displays readings stored in EEPROM
+    
+    if reading_counter = 0 then
+        gosub no_readings
+        goto menu
+    endif    
+    
+    ' Draw the display the first time the loop runs, and set requested reading
+    ' to the last one in memory
+    if first_time = 1 then
+        request_id = reading_counter
+        gosub draw_readings
+        first_time = 0
+    endif
+    
     high lcd_power
+    
+    ' Move to a previous reading if DOWN is pressed
+    if sw_down = 0 then
+        request_id = request_id - 2
+        if request_id = 1 then
+            request_id = 2
+        elseif request_id = 0 then
+            request_id = reading_counter
+        endif
+                
+        gosub draw_readings
+        pause BUTTON_DELAY
+        
+    ' Move to the next reading if UP is pressed
+    elseif sw_up = 0 then
+        request_id = request_id + 2
+        if request_id = reading_counter + 1 then
+            request_id = reading_counter
+        elseif request_id > reading_counter then
+            request_id = 2
+        endif
+        
+        gosub draw_readings
+        pause BUTTON_DELAY
+    endif
+goto view_readings
+
+
+draw_readings:  
+    ' Draws readings in EEPROM on LCD at preset request_id
     lcdout $FE, 1
     pause LCD_DELAY    
     
@@ -306,27 +405,59 @@ view_readings:
     lcdout $FE, $94+19, $7F
     pause LCD_DELAY
     
-    'get reading
-    lcdout $FE, $80, dec4 i, " ", dec2 i, "/", dec2 i, " ", dec2 i, ":", dec2 i 'Write 4 digit ID, month/day hour:min
+    addr = (request_id - 1) * MEM_BYTES
+    gosub get_reading
+    lcdout $FE, $80, dec4 reading_id, " ", dec2 day, "/", dec2 month, " ", dec2 hour, ":", dec2 minute
     pause LCD_DELAY
-    lcdout $FE, $C0+4, "READING: ", dec 136'i
-    pause LCD_DELAY
-    
-    'get reading
-    lcdout $FE, $94, dec4 i, " ", dec2 i, "/", dec2 i, " ", dec2 i, ":", dec2 i 'Write 4 digit ID, month/day hour:min
-    pause LCD_DELAY
-    lcdout $FE, $D4+4, "READING: ", dec 523'i
+    lcdout $FE, $C0+4, "READING: ", dec reading
     pause LCD_DELAY
     
+    addr = request_id * MEM_BYTES
+    gosub get_reading
+    lcdout $FE, $94, dec4 reading_id, " ", dec2 day, "/", dec2 month, " ", dec2 hour, ":", dec2 minut
+    pause LCD_DELAY
+    lcdout $FE, $D4+4, "READING: ", dec reading
+    pause LCD_DELAY
+return
+
+
+get_reading:
+    ' Fetches reading from EEPROM at preset addr
+    i2cread sda, scl, eeprom_addr, addr, [reading_id, reading, temperature, month, day, hour, minute], i2c_failed
+return
     
-    pause 1000
-    i = i+1
-goto view_readings
+    
+no_readings:
+    lcdout $FE, 1
+    pause LCD_DELAY
+    lcdout $FE, $C0+4, "No Readings"
+    pause LCD_DELAY
+    lcdout $FE, $94+5, "in Memory"
+    pause LCD_DELAY
+    pause 2000
+return
+
+
+
 
     
-get_time:
-save_data: 
+get_time: ' Read RTC
+    month = 0
+    day = 0
+    hour = 0
+    minute = 0
+    second = 0
+return
+
+convert_temperature: ' Convert PIC ADC o/p to Celsius
+return
+ 
+i2c_failed: ' Error handling for I2C failure
+return
+
 write_time:
-    lcdout $FE, $80 + 12, dec2 menu_option, ":", dec2 sw_up, ":", dec2 i    'Write time   rep " "\12
+' Writes current time to top right corner
+    gosub get_time
+    lcdout $FE, $80 + 12, dec2 menu_option, ":", dec2 request_id, ":", dec2 reading_counter    'Write time   rep " "\12
     pause LCD_DELAY
 return

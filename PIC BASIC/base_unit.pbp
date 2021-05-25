@@ -115,12 +115,13 @@ MESSAGE_REPEATS con 3
 READING_DELAY con 1000
 LCD_DELAY con 1
 BUTTON_DELAY con 250
+MEM_BYTES con 9              ' Number of EEPROM bytes required for one reading
 
-eeprom_addr var byte         'EEPROM I2C address
+eeprom_addr var byte         ' EEPROM I2C address
 eeprom_addr = %10100000
-rtc_addr var byte               ' RTC I2C address
+rtc_addr var byte            ' RTC I2C address
 rtc_addr = %11011110
-addr var word                   'Memory addr to write/read to (needs to be word length)
+addr var word                ' Memory addr to write/read to (needs to be word length)
 addr = 0
 
 reading var word
@@ -152,16 +153,16 @@ init:
     TRISC = %10111111
     ADCON0 = 0
     ADCON1 = %00001111
-    T1CON = 0           'Turn off secondary oscillator
+    T1CON = 0           ' Turn off secondary oscillator
     T3CON = 0
-    UCON = %10          'Turn off USB
+    UCON = %10          ' Turn off USB
     UCFG = %00001000
     UIE = 0
     UEIE = 0
     
-    'Reset reading counter at programming time
+    ' Reset reading counter at programming time
     reading_addr data @0, 0
-    'Read in current value at runtime
+    ' Read in current value at runtime
     read reading_addr, reading_counter
     i2cwrite sda, scl, eeprom_addr, $00, [0,0,0,0,0,0,0,0,0], i2c_failed
     
@@ -260,10 +261,11 @@ take_readings:
     pause LCD_DELAY
     gosub write_time
     
-    lcdout $FE, $C0, "READING: ", dec reading               'Write reading
+    lcdout $FE, $C0, "READING: ", dec reading             
     pause LCD_DELAY
     
-    lcdout $FE, $94                                         'Move cursor to 3rd line
+    ' Move cursor to 3rd line
+    lcdout $FE, $94
     pause LCD_DELAY
     if reading = 0 then
         'Pass
@@ -275,7 +277,7 @@ take_readings:
     pause LCD_DELAY
     
     gosub convert_temperature
-    lcdout $FE, $D4, "TEMPERATURE: ", dec temperature       'Write temperature
+    lcdout $FE, $D4, "TEMPERATURE: ", dec temperature
     
     pause 100
     
@@ -284,7 +286,7 @@ take_readings:
     if checksum = reading.byte1 ^ reading.byte0 then
         ' Save data to memory
         reading_counter = reading_counter + 1
-        addr = reading_counter * 9
+        addr = reading_counter * MEM_BYTES
         gosub get_time
         i2cwrite sda, scl, eeprom_addr, addr, [reading_counter, reading, temperature, month, day, hour, minute], i2c_failed
         ' Save new reading_counter to on-chip EEPROM
@@ -403,16 +405,16 @@ draw_readings:
     lcdout $FE, $94+19, $7F
     pause LCD_DELAY
     
-    addr = (request_id - 1) * 9
+    addr = (request_id - 1) * MEM_BYTES
     gosub get_reading
-    lcdout $FE, $80, dec4 reading_id, " ", dec2 day, "/", dec2 month, " ", dec2 hour, ":", dec2 minute 'Write 4 digit ID, month/day hour:min
+    lcdout $FE, $80, dec4 reading_id, " ", dec2 day, "/", dec2 month, " ", dec2 hour, ":", dec2 minute
     pause LCD_DELAY
     lcdout $FE, $C0+4, "READING: ", dec reading
     pause LCD_DELAY
     
-    addr = request_id * 9
+    addr = request_id * MEM_BYTES
     gosub get_reading
-    lcdout $FE, $94, dec4 reading_id, " ", dec2 day, "/", dec2 month, " ", dec2 hour, ":", dec2 minute 'Write 4 digit ID, month/day hour:min
+    lcdout $FE, $94, dec4 reading_id, " ", dec2 day, "/", dec2 month, " ", dec2 hour, ":", dec2 minut
     pause LCD_DELAY
     lcdout $FE, $D4+4, "READING: ", dec reading
     pause LCD_DELAY
@@ -433,7 +435,7 @@ no_readings:
     lcdout $FE, $94+5, "in Memory"
     pause LCD_DELAY
     pause 2000
-    return
+return
 
 
 
@@ -454,7 +456,7 @@ i2c_failed: ' Error handling for I2C failure
 return
 
 write_time:
-'Writes current time to top right corner
+' Writes current time to top right corner
     gosub get_time
     lcdout $FE, $80 + 12, dec2 menu_option, ":", dec2 request_id, ":", dec2 reading_counter    'Write time   rep " "\12
     pause LCD_DELAY

@@ -23,13 +23,14 @@ define ADC_CLOCK 3
 
 red_led var PORTA.5
 liver_led var PORTC.2
-liver_pt con 7          'Analogue port used as input for liver phototransistor
-button_led var PORTA.2
-button_pt con 3         'Analogue port used as input for button phototransistor
-tx_out var PORTC.4
+liver_pt con 7          ' Analogue port used as input for liver phototransistor
+button_led var PORTA.2    
+button_pt con 3         ' Analogue port used as input for button phototransistor
+wireless_tx var PORTC.4
 tx_power var PORTA.0
 batt_volts var PORTA.3
-temp_sensor con 4       'Analogue port used as input for temperature sensor
+temp_sensor con 4       ' Analogue port used as input for temperature sensor
+current_sensor con 5    ' Analogue port used as input for battery current sensor
 
 baud_300 con 3313 | %0100000000000000
 baud_600 con 1646 | %0100000000000000
@@ -46,6 +47,7 @@ button_request var byte
 reading var word
 checksum var byte
 temperature var word
+current var word
 dark var word
 light var word
 i var byte
@@ -58,31 +60,48 @@ init:
     TRISA = %11011010
     TRISC = %11101011
     CMCON0 = %00000000
+    
+    ' Save device id in internal EEPROM to allow calibration between devices
+    device_id data @0, 0
 
-low tx_power
+
 
 
 mainloop:
+    low tx_power
+    low wireless_tx
     high liver_led
     high button_led
     high red_led
     
-    'gosub check_voltage
-
-    gosub read_button
-    if button_request = 0 then
-        high red_led
-        pause BUTTON_DELAY
+    gosub check_voltage
+    
+    gosub check_current
+    
+    if current > 512 then
+        ' Device is NOT charging
+        gosub read_button
+        if button_request = 0 then
+            high red_led
+            pause BUTTON_DELAY
+        else
+            low red_led
+            gosub take_measurement
+            pause READING_DELAY
+        endif
     else
-        low red_led
-        gosub take_measurement
-        pause READING_DELAY
+        ' Could send control messages back to base unit to monitor charging
+        'serout2 wireless_tx, baud_1200, ["Charging"]
+        pause 1000
     endif
 goto mainloop
 
 
 
 read_button:
+    ' Use 2.5V reference
+    ADCON0.6 = 1
+    
     reading = 0
     dark = 0
     light = 0
@@ -90,10 +109,10 @@ read_button:
     for i = 1 to N_BUTTON
         low button_led
         pause 1
-        adcin button_pt, light  'read in light data
+        adcin button_pt, light  ' read in light data
         high button_led
         pause 1
-        adcin button_pt, dark   'read in dark data
+        adcin button_pt, dark   ' read in dark data
         
         ' Add current readings to sum
         ' Dark should be > light if measurement variation is due to our probe
@@ -115,6 +134,9 @@ return
 
 
 take_measurement:
+    ' Use 2.5V reference
+    ADCON0.6 = 1
+    
     reading = 0
     dark = 0
     light = 0
@@ -122,10 +144,10 @@ take_measurement:
     for i = 1 to N_LIVER
         low liver_led
         pause 1
-        adcin liver_pt, light  'read in light data
+        adcin liver_pt, light  ' read in light data
         high liver_led
         pause 1
-        adcin liver_pt, dark   'read in dark data
+        adcin liver_pt, dark   ' read in dark data
         
         ' Add current readings to sum
         ' Dark should be > light if measurement variation is due to our probe
@@ -134,15 +156,17 @@ take_measurement:
         endif
     next i  
     
-    'Compute mean
+    ' Compute mean
     reading = reading / N_LIVER
     
-    'Compute checksum to send with data
+    ' Compute checksum to send with data
     checksum = reading.byte1 ^ reading.byte0
     
-    'Measure current temperature
+    ' Measure current temperature
+    ' Use 5V reference
+    ADCON0.6 = 0
     adcin temp_sensor, temperature
-    
+    gosub check_current
     ' Send data back to base unit
     ' Repetitions are for redundancy to avoid missed packets
     serout2 wireless_tx, baud_1200, [rep "U"\NUM_U]
@@ -164,4 +188,17 @@ check_voltage:
         low wireless_tx
         OSCCON = %00000001
     wend
+return
+
+
+check_current:
+    ' Measure battery current
+    ' Use 5V reference
+    ADCON0.6 = 0
+    current = 0
+    for i = 1 to 50
+        adcin current_sensor, light
+        current = current + light
+    next i
+    current = current / 50
 return

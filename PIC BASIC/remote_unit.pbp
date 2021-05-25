@@ -23,14 +23,14 @@ define ADC_CLOCK 3
 
 red_led var PORTA.5
 liver_led var PORTC.2
-liver_pt con 7          'Analogue port used as input for liver phototransistor
-button_led var PORTA.2
-button_pt con 3         'Analogue port used as input for button phototransistor
+liver_pt con 7          ' Analogue port used as input for liver phototransistor
+button_led var PORTA.2    
+button_pt con 3         ' Analogue port used as input for button phototransistor
 wireless_tx var PORTC.4
 tx_power var PORTA.0
 batt_volts var PORTA.3
-temp_sensor con 4       'Analogue port used as input for temperature sensor
-current_sensor con 5    'Analogue port used as input for battery current sensor
+temp_sensor con 4       ' Analogue port used as input for temperature sensor
+current_sensor con 5    ' Analogue port used as input for battery current sensor
 
 baud_300 con 3313 | %0100000000000000
 baud_600 con 1646 | %0100000000000000
@@ -60,6 +60,9 @@ init:
     TRISA = %11011010
     TRISC = %11101011
     CMCON0 = %00000000
+    
+    ' Save device id in internal EEPROM to allow calibration between devices
+    device_id data @0, 0
 
 
 
@@ -86,6 +89,10 @@ mainloop:
             gosub take_measurement
             pause READING_DELAY
         endif
+    else
+        ' Could send control messages back to base unit to monitor charging
+        'serout2 wireless_tx, baud_1200, ["Charging"]
+        pause 1000
     endif
 goto mainloop
 
@@ -102,10 +109,10 @@ read_button:
     for i = 1 to N_BUTTON
         low button_led
         pause 1
-        adcin button_pt, light  'read in light data
+        adcin button_pt, light  ' read in light data
         high button_led
         pause 1
-        adcin button_pt, dark   'read in dark data
+        adcin button_pt, dark   ' read in dark data
         
         ' Add current readings to sum
         ' Dark should be > light if measurement variation is due to our probe
@@ -137,10 +144,10 @@ take_measurement:
     for i = 1 to N_LIVER
         low liver_led
         pause 1
-        adcin liver_pt, light  'read in light data
+        adcin liver_pt, light  ' read in light data
         high liver_led
         pause 1
-        adcin liver_pt, dark   'read in dark data
+        adcin liver_pt, dark   ' read in dark data
         
         ' Add current readings to sum
         ' Dark should be > light if measurement variation is due to our probe
@@ -149,13 +156,13 @@ take_measurement:
         endif
     next i  
     
-    'Compute mean
+    ' Compute mean
     reading = reading / N_LIVER
     
-    'Compute checksum to send with data
+    ' Compute checksum to send with data
     checksum = reading.byte1 ^ reading.byte0
     
-    'Measure current temperature
+    ' Measure current temperature
     ' Use 5V reference
     ADCON0.6 = 0
     adcin temp_sensor, temperature
