@@ -112,6 +112,8 @@ sda var PORTB.0
 baud_300 con 3313 | %0100000000000000
 baud_600 con 1646 | %0100000000000000
 baud_1200 con 813 | %0100000000000000
+baud_2400 con 396 | %0100000000000000
+baud_4800 con 188 | %0100000000000000
 MESSAGE_REPEATS con 3
 READING_DELAY con 1000
 LCD_DELAY con 1
@@ -131,11 +133,12 @@ checksum var byte
 
 i var byte
 menu_option var byte
-reading_id var byte
-request_id var byte
-reading_counter var byte
-first_time var byte
+reading_id var byte         ' ID of current reading
+request_id var byte         ' ID of reading user wants to view
+reading_counter var byte    ' Number of readings in EEPROM
+first_time var byte         ' Flag which can be set the first time a loop is run
 
+' Clock variables
 month var byte
 day var byte
 hour var byte
@@ -176,6 +179,15 @@ pwm_init:
     TRISB.3 = 0                                     
     T2CON = %00000100
     CCP2CON = %00001111
+    
+    
+output_data:
+    ' Output all data in EEPROM to PC upon reboot
+    serout2 rs232_out, baud_4800, ["ID; Reading; Temperature; Month; Day; Hour; Minute;", 10]
+    for i = 1 to reading_counter
+        gosub get_reading
+        serout2 rs232_out, baud_4800, [dec reading_id, "; ", dec reading, "; ", dec temperature, "; ", dec month, "; ", dec day, "; ", dec hour, "; ", dec minute, "; ", 10]
+    next i
     
     
 mainloop:
@@ -281,7 +293,6 @@ take_readings:
     lcdout $FE, $D4, "TEMPERATURE: ", dec temperature
     
     pause 100
-    
     serin2 wireless_rx, baud_1200, [wait("m"), dec4 reading, wait("c "), checksum, wait("t"), dec4 temperature]
     
     if checksum = reading.byte1 ^ reading.byte0 then
@@ -319,7 +330,7 @@ delete_menu:
     'Check option and goto menu or delete
     delete_choice:
         if sw_up = 0 or sw_down = 0 then
-            pause 500
+            pause BUTTON_DELAY
             goto menu
         elseif sw_ok = 0 then
             goto delete
@@ -415,7 +426,7 @@ draw_readings:
     
     addr = request_id * MEM_BYTES
     gosub get_reading
-    lcdout $FE, $94, dec4 reading_id, " ", dec2 day, "/", dec2 month, " ", dec2 hour, ":", dec2 minut
+    lcdout $FE, $94, dec4 reading_id, " ", dec2 day, "/", dec2 month, " ", dec2 hour, ":", dec2 minute
     pause LCD_DELAY
     lcdout $FE, $D4+4, "READING: ", dec reading
     pause LCD_DELAY

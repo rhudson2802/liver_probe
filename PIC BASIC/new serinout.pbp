@@ -124,6 +124,9 @@ MAX_STRING_LENGTH con 20
 serial_out var PORTC.6
 serial_in var PORTA.6
 baud con N1200
+
+baud_2400 con 396 | %0100000000000000
+baud_4800 con 188 | %0100000000000000
 baud_1200 con 813 | %0100000000000000
 baud_600 con 1646 | %0100000000000000
 baud_300 con 3313 | %0100000000000000
@@ -138,7 +141,7 @@ cnt var word
 
 
 
-serout serial_out, baud, ["hello world", 10]
+serout2 serial_out, baud_4800, ["hello world", 10]
 cnt = 0
 mainloop:
     'high led
