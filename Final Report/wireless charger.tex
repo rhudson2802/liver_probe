@@ -7,7 +7,7 @@ The remote unit was designed to run from a \SI{5}{\volt} supply. \SI{3.3}{\volt}
 %The remote unit was designed to run from a \SI{5}{\volt} supply. \SI{3.3}{\volt} was not suitable as the LEDs had a forward voltage of \SI{1.5}{\volt}, so a \SI{3.3}{\volt} supply would potentially be too small for the current source designed in figure \ref{fig: measurement schematic}. A set of batteries had to be selected which would provide this voltage. The batteries had to be small to ensure the overall remote unit design was small enough to fit in the surgeon's hand, and needed to be rechargeable because of the hermetic seal. Two different chemistries were available from RS Components \cite{rs} in a small, rechargeable package: lithium ion (Li-ion) and Nickel Metal Hydride (NiMH). The NiMH chemistry was more suitable due to the increased safety. Li-ion batteries are highly sensitive to over/under-voltage and high temperatures, and can blow up if these limits are exceeded \cite{batteries}. This requires complex protection circuitry and may mean that the battery will not survive being placed in an autoclave. NiMH are much more resilient to over and under charging, so are much safer than Li-ion. They also have a higher energy density \cite{batteries}. Nevertheless, they are lower voltage so more cells will be required to provide the desired \SI{5}{\volt}, have a long charging time, and they have a high self-discharge rate \cite{batteries}. This is not such an issue for this application, as the remote unit can remain charging until it is required for an operation, and then it will only be used for a short time before being placed on charge again. A \SI{2.4}{\volt} \SI{80}{\milli\ampere\hour} RS-Pro NiMH button cell \cite{rs_pro_batteries} was suitable. Three of these were used to give a nominal \SI{7.2}{\volt} supply, which gave a margin of 44\% for when the cells started to discharge.\\
 %Cut?
 
-A power converter then needed to be selected to drop the \SI{7.2}{\volt} battery voltage to the required \SI{5}{\volt} rail. A Low-Dropout (LDO) voltage regulator was deemed suitable for this application, as it would provide a stable voltage rail. The advantage over a buck converter is the smaller device size and design simplicity, but this comes at the cost of worse efficiency. Furthermore, the output voltage will not have the high frequency ripple associated with switch-mode converters, which is desirable to create a stable analogue rail to ensure that there are no measurement errors. The MCP1702T-5002E/CB \cite{mcp1702} in a SOT-23A package was suitable. This was a \SI{5}{\volt} regulator with a rated output current of \SI{250}{\milli\ampere}. This was well above the \SI{50}{\milli\ampere} maximum current required by the remote unit (see section \ref{power budget}). The quiescent current was \SI{2}{\micro\ampere}, which is negligible compared with the remainder of the circuit, so the regulator will not affect the battery lifetime. The regulator will dissipate a maximum of $(\SI{7.2}{\volt}-\SI{5}{\volt})\times\SI{50}{\milli\ampere}=\SI{110}{\milli\watt}$. The SOT-23A package has a junction to air thermal resistance of \SI{336}{\celsius\per\watt}, so the maximum temperature increase is \SI{37}{\celsius}.\\
+A power converter was then selected to drop the \SI{7.2}{\volt} battery voltage to the required \SI{5}{\volt} rail. A Low-Dropout (LDO) voltage regulator was deemed suitable for this application, as it would provide a stable voltage rail. The advantage over a buck converter is the smaller device size and design simplicity, but this comes at the cost of worse efficiency. Furthermore, the output voltage will not have the high frequency ripple associated with switch-mode converters, which is desirable to create a stable analogue rail to ensure that there are no measurement errors. The MCP1702T-5002E/CB \cite{mcp1702} in a SOT-23A package was suitable. This was a \SI{5}{\volt} regulator with a rated output current of \SI{250}{\milli\ampere}. This was well above the \SI{50}{\milli\ampere} maximum current required by the remote unit (see section \ref{power budget}). The quiescent current was \SI{2}{\micro\ampere}, which is negligible compared with the remainder of the circuit, so the regulator will not affect the battery lifetime. The regulator will dissipate a maximum of $(\SI{7.2}{\volt}-\SI{5}{\volt})\times\SI{50}{\milli\ampere}=\SI{110}{\milli\watt}$. The SOT-23A package has a junction to air thermal resistance of \SI{336}{\celsius\per\watt}, so the maximum temperature increase is \SI{37}{\celsius}.\\
 
 \begin{figure}[htb]
 	\centering
@@ -17,9 +17,9 @@ A power converter then needed to be selected to drop the \SI{7.2}{\volt} battery
 \end{figure}
 	
 
-Inductive charging was selected as an appropriate method of recharging the batteries. This involved placing two air-cored coils in close proximity, applying an AC voltage to the primary and rectifying the voltage across the secondary. This is a similar design to that used in other hermetically sealed low power products, such as an electric toothbrush's charger \cite{wireless_power_review}. Figure \ref{fig: charger schematic} shows the circuit schematic, which uses two PMOS and NMOS pairs in a H-bridge arrangement to generate the AC voltage. The two half bridges are driven with inverted signals, so the voltage across the load alternates between \SI{\pm 5}{\volt}. The series capacitor is used to create a resonant circuit with the inductor, which increases the voltage across the primary coil and smooths the square wave input voltage waveform to a sinusoid across the inductor. The capacitor is designed to give the circuit a resonant frequency equal to the drive frequency, to get the maximum gain possible. The series resistor is included to limit the current through the circuit. An ideal series LC circuit has zero impedance at resonance, so it will look like a short circuit to the external circuit. The PMOS transistors had a current rating of \SI{230}{\milli\ampere}, so using a series resistance of \SI{22}{\ohm} will limit the current to \SI{227}{\milli\ampere}.\\
+Inductive charging was selected as an appropriate method of recharging the batteries. This involved placing two air-cored coils in close proximity, applying an AC voltage to the primary and rectifying the voltage across the secondary. This is a similar design to that used in other hermetically sealed low power products, such as an electric toothbrush's charger \cite{wireless_power_review}. Figure \ref{fig: charger schematic} shows the circuit schematic, which used two PMOS and NMOS pairs in a H-bridge arrangement to generate the AC voltage. The two half bridges were driven with inverted signals, so the voltage across the load alternated between \SI{\pm 5}{\volt}. The series capacitor was used to create a resonant circuit with the inductor, which increased the voltage across the primary coil and smoothed the square wave input voltage waveform to a sinusoid across the inductor. The capacitor was designed to give the circuit a resonant frequency equal to the drive frequency, to get the maximum gain possible. The series resistor was included to limit the current through the circuit. An ideal series LC circuit has zero impedance at resonance, so it will look like a short circuit to the external circuit. The PMOS transistors had a current rating of \SI{230}{\milli\ampere}, so a series resistance of \SI{22}{\ohm} will limit the current to \SI{227}{\milli\ampere}.\\
 
-The primary coil will generate an alternating magnetic field due to the sinusoidal voltage across it. This couples with the secondary coil to induce an alternating voltage. The coupling of air-cored transformers is very poor, so a large voltage will be required across the primary coil to ensure the secondary coil receives enough volts. The resonant circuit aids this. The secondary coil's alternating voltage is then rectified to a DC voltage by a diode bridge. The NSR05F20NXT5G Schottky barrier diode \cite{original_diode} was used in the diode bridge. These were chosen because of their very low forward voltage, \SI{0.2}{\volt}, which would make sure that the required secondary voltage was kept as small as possible. Their reverse leakage was \SI{2}{\micro\ampere}, which was also good. They were rated to \SI{20}{\volt} and \SI{500}{\milli\ampere}, which were well below the expected operating conditions of \SI{10}{\volt} and \SI{10}{\milli\ampere}. The battery voltage was \SI{7.2}{\volt}, so the total required voltage across the secondary including the two diode drops was \SI{7.6}{\volt}.\\
+The primary coil generated an alternating magnetic field due to the sinusoidal voltage across it. This coupled with the secondary coil to induce an alternating voltage. The coupling of air-cored transformers is very poor, so a large voltage was required across the primary coil to ensure the secondary coil receives enough volts. The resonant circuit aided this. The secondary coil's alternating voltage was then rectified to a DC voltage by a diode bridge. The NSR05F20NXT5G Schottky barrier diode \cite{original_diode} was used in the diode bridge. These were chosen because of their very low forward voltage, \SI{0.2}{\volt}, which would make sure that the required secondary voltage was kept as small as possible. Their reverse leakage was \SI{2}{\micro\ampere}, which was also good. They were rated to \SI{20}{\volt} and \SI{500}{\milli\ampere}, which were well below the expected operating conditions of \SI{10}{\volt} and \SI{10}{\milli\ampere}. The battery voltage was \SI{7.2}{\volt}, so the total required voltage across the secondary including the two diode drops was \SI{7.6}{\volt}.\\
 
 \begin{figure}[htb]
 	\centering
@@ -42,7 +42,7 @@ where $N$ is the number of turns, $r$ is the average coil radius in inches, and 
 \end{figure}
 \begin{figure}[htb]
 	\centering
-	\includegraphics[width=0.8\linewidth]{circular coupling.PNG}
+	\includegraphics[width=\linewidth]{v2 circular coupling.PNG}
 	\caption{The experimentally derived coupling coefficient of circular coils as a function of coil separation. The legend gives the turns ratio $N_2/N_1$ for the different experiments.}
 	\label{fig: circular coupling}
 \end{figure}
@@ -185,8 +185,8 @@ CCP2CON = %00001111
 \subsection{Testing}
 \begin{figure}[htb]
 	\centering
-	\includegraphics[width=0.8\linewidth]{rectangular coupling.png}
-	\caption{Coupling coefficient as a function of coil separation for both rectangular and circular coils.}
+	\includegraphics[width=\linewidth]{v2 rectangular coupling.png}
+	\caption{Coupling coefficient as a function of coil separation for both rectangular and circular coils. The legend gives $N_1/N_2$}
 	\label{fig: rectangular coupling}
 \end{figure}
 
@@ -205,7 +205,7 @@ The charger was tested at \SI{100}{\kilo\hertz} using a 100 turn rectangular coi
 
 \begin{figure}[htb]
 	\centering
-	\includegraphics[width=0.8\linewidth]{charging current.png}
+	\includegraphics[width=\linewidth]{v2 charging current.png}
 	\caption{Charging current delivered to \SI{7.2}{\volt} battery load at different coil separations.}
 	\label{fig: current distance}
 \end{figure}
@@ -214,7 +214,7 @@ The charging system was first tested to measure the current delivered to the \SI
 
 \begin{figure}[htb]
 	\centering
-	\includegraphics[width=0.8\linewidth]{v2 resonant frequency.png}
+	\includegraphics[width=\linewidth]{v2 resonant frequency.png}
 	\caption{Charging current delivered to \SI{7.2}{\volt} battery load where the resonant frequency is varied. The coils had a \SI{10}{\milli\metre} separation.}
 	\label{fig: current resonance}
 \end{figure}
@@ -226,7 +226,7 @@ The effect of changing the resonant frequency of the system was then measured. T
 
 \begin{figure}[htb]
 	\centering
-	\includegraphics[width=0.8\linewidth]{v2 frequency.png}
+	\includegraphics[width=\linewidth]{v2 frequency.png}
 	\caption{Charging current delivered to \SI{7.2}{\volt} battery load as a function of drive frequency, for a fixed \SI{55}{\kilo\hertz} LC resonant frequency. The coils had a \SI{10}{\milli\metre} separation.}
 	\label{fig: current frequency}
 \end{figure}
