@@ -92,6 +92,7 @@ define I2C_HOLD 1
 
 
 LCD_DELAY con 1
+BUTTON_DELAY con 250
 
 
 wireless_rx var PORTA.6
@@ -136,7 +137,7 @@ init:
     PORTC = 0
     TRISA = %01000000
     TRISB = %11000000
-    TRISC = %10000100
+    TRISC = %10111111
     ADCON0 = 0
     ADCON1 = %00001111
     T1CON = 0           'Turn off secondary oscillator
@@ -158,6 +159,7 @@ pwm_init:
     
     
 mainloop:
+    pause 1000
     reading = 0
     temperature = 0
     checksum = 0
@@ -168,7 +170,7 @@ goto mainloop
 
 menu:
     high lcd_power
-    menu_option = 1
+    menu_option = 0
     lcdout $FE, 1
     pause LCD_DELAY
     lcdout $FE, $80, "MENU"
@@ -182,33 +184,47 @@ menu:
     lcdout $FE, $D4+2, "Delete all memory"
     pause LCD_DELAY
     
+    gosub draw_arrow
+    
     menu_loop:
         gosub write_time
-        
-        if menu_option == 0 then
-            lcdout $FE, $C0, $7E
-            lcdout $FE, $94, " "
-            lcdout $FE, $D4, " "
-        elseif menu_option == 1 then
-            lcdout $FE, $C0, " "
-            lcdout $FE, $94, $7E
-            lcdout $FE, $D4, " "
-        else
-            lcdout $FE, $C0, " "
-            lcdout $FE, $94, " "
-            lcdout $FE, $D4, $7E
-        endif
         
         if sw_ok = 0 then
             on menu_option goto take_readings, view_readings, delete_menu
         elseif sw_down = 0 then
             menu_option = (menu_option + 1) //3
+            gosub draw_arrow
+            pause BUTTON_DELAY
         elseif sw_up = 0 then
-            menu_option = (menu_option - 1) // 3
+            if menu_option = 0 then
+                menu_option = 2
+            else
+                menu_option = (menu_option - 1) // 3
+            endif
+            gosub draw_arrow
+            pause BUTTON_DELAY
         endif
-        pause 10
     goto menu_loop
 goto menu
+
+
+
+draw_arrow:
+' Draws arrow on menu screen
+    if menu_option == 0 then
+        lcdout $FE, $C0, $7E
+        lcdout $FE, $94, " "
+        lcdout $FE, $D4, " "
+    elseif menu_option == 1 then
+        lcdout $FE, $C0, " "
+        lcdout $FE, $94, $7E
+        lcdout $FE, $D4, " "
+    else
+        lcdout $FE, $C0, " "
+        lcdout $FE, $94, " "
+        lcdout $FE, $D4, $7E
+    endif
+return
 
 
 
