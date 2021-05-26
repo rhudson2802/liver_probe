@@ -12,7 +12,7 @@ A power converter was then selected to drop the \SI{7.2}{\volt} battery voltage 
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{h bridge charger.PNG}
-	\caption{Circuit schematic for H-Bridge inductive wireless charger. The left-hand side circuit is included in the base unit, and the right hand side circuit is included in the remote unit.}
+	\caption{Circuit schematic for wireless charger. The left-hand side circuit is included in the base unit, and the right-hand side circuit is included in the remote unit.}
 	\label{fig: charger schematic}
 \end{figure}
 	
@@ -24,7 +24,7 @@ The primary coil generated an alternating magnetic field due to the sinusoidal v
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{coil inductance.png}
-	\caption{Measured coil inductance for different numbers of coil turns}
+	\caption{Coil inductance for different numbers of coil turns}
 	\label{fig: coil inductance}
 \end{figure}
 
@@ -43,7 +43,7 @@ where $N$ is the number of turns, $r$ is the average coil radius in inches, and 
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{v2 circular coupling.PNG}
-	\caption{The experimentally derived coupling coefficient of circular coils as a function of coil separation. The legend gives the turns ratio $N_2/N_1$ for the different experiments.}
+	\caption{Measured coupling coefficient of circular coils as a function of coil separation. The legend gives the turns ratio $N_2/N_1$ for the different experiments.}
 	\label{fig: circular coupling}
 \end{figure}
 
@@ -65,7 +65,7 @@ The circuit was simulated in LTspice \cite{ltspice}, with the simulation schemat
 
 \begin{table}[htb]
 	\begin{center}
-	\caption{Current measurements (in milliamps) across a 7.2V battery load for varying combinations of primary and secondary coil. The coils were touching.}
+	\caption{Current measurements (in milliamps) across a 7.2V battery load for varying combinations of primary and secondary coil in close contact.}
 	\label{tab: coil combinations}
 	\begin{tabular}{|l|*{4}{c|}}
 		\hline
@@ -99,7 +99,7 @@ To avoid this problem, two MOSFET driver ICs (Microchip's MCP1406 and MCP1407 \c
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{mosfet drivers charger.PNG}
-	\caption{Circuit schematic showing the primary side of the charging circuit using the MCP1406/07 MOSFET drivers.}
+	\caption{Primary side of the charging circuit using the MCP1406/07 MOSFET drivers.}
 	\label{fig: mosfet drivers charger}
 \end{figure}
 
@@ -126,7 +126,7 @@ A circuit was also designed to monitor the voltage of the batteries, importantly
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{battery voltage sensor.PNG}
-	\caption{Battery under-voltage sensor}
+	\caption{Battery under-voltage sensor.}
 	\label{fig: battery voltage sensor}
 \end{figure}
 
@@ -186,7 +186,7 @@ CCP2CON = %00001111
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{v2 rectangular coupling.png}
-	\caption{Coupling coefficient as a function of coil separation for both rectangular and circular coils. The legend gives $N_1/N_2$}
+	\caption{Coupling coefficient for rectangular and circular coils. The legend gives $N_2/N_1$.}
 	\label{fig: rectangular coupling}
 \end{figure}
 
@@ -197,7 +197,7 @@ The charger was tested at \SI{100}{\kilo\hertz} using a 100 turn rectangular coi
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{secondary current.PNG}
-	\caption{Charging current supplied to the batteries at \SI{100}{\kilo\hertz} and a separation of \SI{10}{\milli\metre}.}
+	\caption{Battery charging current waveform at \SI{100}{\kilo\hertz} and a separation of \SI{10}{\milli\metre}.}
 	\label{fig: secondary current}
 \end{figure}
 
