@@ -113,7 +113,8 @@ baud_300 con 3313 | %0100000000000000
 baud_600 con 1646 | %0100000000000000
 baud_1200 con 813 | %0100000000000000
 baud_2400 con 396 | %0100000000000000
-baud_4800 con 188 | %0100000000000000
+baud_4800 con 188 | %0100000000000000 
+baud_14400 con 49 | %0100000000000000
 MESSAGE_REPEATS con 3
 READING_DELAY con 1000
 LCD_DELAY con 1
@@ -144,7 +145,6 @@ day var byte
 hour var byte
 minute var byte
 second var byte
-
 
 
 init:           
@@ -179,20 +179,21 @@ pwm_init:
     TRISB.3 = 0                                     
     T2CON = %00000100
     CCP2CON = %00001111
-    
+
     
 output_data:
     ' Output all data in EEPROM to PC upon reboot
-    serout2 rs232_out, baud_4800, ["ID; Reading; Temperature; Month; Day; Hour; Minute;", 10]
+    serout2 rs232_out, baud_14400, ["ID; Reading; Temperature; Month; Day; Hour; Minute;", 10]
     for i = 1 to reading_counter
+        addr = i * 9
         gosub get_reading
-        serout2 rs232_out, baud_4800, [dec reading_id, "; ", dec reading, "; ", dec temperature, "; ", dec month, "; ", dec day, "; ", dec hour, "; ", dec minute, "; ", 10]
+        serout2 rs232_out, baud_14400, [dec reading_id, "; ", dec reading, "; ", dec temperature, "; ", dec month, "; ", dec day, "; ", dec hour, "; ", dec minute, "; ", 10]
     next i
     
     
 mainloop:
     ' Delay to allow LCD to initialise
-    pause 500
+    'pause 500
     first_time = 1
     reading = 0
     temperature = 0
