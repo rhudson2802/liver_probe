@@ -32,6 +32,7 @@
 \usepackage{listings}
 \usepackage{multicol}
 \usepackage{multirow}
+\usepackage{pdflscape}
 %\usepackage{pgfplotstable}
 \usepackage{subcaption}
 \usepackage[binary-units=true]{siunitx}
