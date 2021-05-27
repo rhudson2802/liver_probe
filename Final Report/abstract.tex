@@ -5,16 +5,16 @@
 \hrule
 
 \begin{abstract}
-The aim of this project was to develop a system capable of measuring the optical backscatter properties of liver tissue. This information needed to be relayed to a surgeon, as it indicates whether a liver will be a good transplant organ. The project develops an existing probe, which produced useful results but had several flaws. The issues which this project resolves are:
+The aim of this project was to develop a system capable of measuring the optical backscatter properties of liver tissue. This information needs to be relayed to a surgeon, as it indicates whether a liver will be a good transplant organ. The project developed an existing probe, which produced useful results but had several flaws. The issues which this project resolves are:
 \begin{itemize}
 \item The original probe suffered damage due to improper use. The new probe must be mechanically robust to avoid damage.
 \item The probe must be low-cost so it can be disposed if it is damaged.
 \item The probe must be easy to use for a surgeon with little training.
 \end{itemize}
 ~\\
-To ensure the device could be medically sterilised, a hermetic seal was required around the system. This led to the development of two different devices: a ``base'' unit and a ``remote'' unit. The remote unit is hermetically sealed, and is the device which takes the measurements from the liver. It sends the results wirelessly to the base unit.\\
+To ensure the device could be medically sterilised, a hermetic seal was required around the system. This led to the development of two different devices: a ``base'' unit and a ``remote'' unit. The remote unit takes measurements from the liver, and is hermetically sealed. It sends the results wirelessly to the base unit.\\
 
-Three main subsystems were required by the system: the measurement system, the wireless communications system, and a wireless charging system. The first stage of the project was idea generation and prototyping on breadboard for the three subsystems. Once suitable designs were created, PCBs were manufactured, and the systems were tested. PICs were used as microcontrollers for the project, and firmware was written in PICBASIC to control the system.\\
+Three main subsystems were required by the system: the measurement system, the wireless communications system, and the wireless charging system. The first stage of the project was idea generation and breadboard prototyping for the three subsystems. Once suitable designs were created, PCBs were manufactured, and the systems were tested. PICs were used as microcontrollers for the project, and firmware was written in PICBASIC to control the system.\\
 
 The measurement system used an infrared LED to illuminate the target, and a phototransistor to produce a signal proportional to the backscattered light. The readings were highly correlated with an existing liver optical backscatter probe which underwent clinical trials, so the project should also be successful in clinic.\\
 
@@ -22,7 +22,7 @@ The communications system used RF transceiver modules on the remote and base uni
 
 Some other features were also included to improve the system. A temperature sensor was added to the remote unit to ensure the measurements could be properly calibrated. An LCD was included on the base unit to provide an interface for the user. EEPROM was used to store the measurements, which were time stamped by an RTC and could be output to a PC via an RS232 link.\\
 
-PCBs were manufactured for the two devices so they could be fully tested. Designs for the system's casing were produced, but unfortunately these could not be manufactured due to COVID-19 lab restrictions. Future work should package the units in their casings and assert that they have the same performance. The system can then be sent for clinical trials to determine their performance in vivo, and to get feedback from the surgeons who use them to develop the product further.\\
+PCBs were manufactured for the two devices so they could be fully tested. Designs for the system's casing were produced, but unfortunately these could not be manufactured due to COVID-19 lab restrictions. Future work should package the units in their casings and assert that they have the same performance. The system can then be tested in clinical trials to determine its performance in vivo and to get feedback from the surgeons who used it, to develop the product further.\\
 
 \begin{figure}[h!]
 	\centering
@@ -36,7 +36,7 @@ PCBs were manufactured for the two devices so they could be fully tested. Design
 	\end{subfigure}
 	\begin{subfigure}[b]{0.4\linewidth}
 		\includegraphics[width=\linewidth]{take readings.jpg}
-		\caption*{LCD interface on base unit}
+		\caption*{LCD interface on the base unit}
 	\end{subfigure}
 %	\begin{subfigure}[b]{0.4\linewidth}
 %		\includegraphics[width=\linewidth]{}
