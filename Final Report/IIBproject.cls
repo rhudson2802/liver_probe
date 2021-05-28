@@ -25,6 +25,7 @@
 \usepackage{amsmath}
 \usepackage{appendix}
 %\usepackage{booktabs}
+\usepackage{changepage}
 %\usepackage{color}
 \usepackage{diagbox}
 \usepackage{enumitem}

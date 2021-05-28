@@ -24,7 +24,7 @@ A first iteration of the design was manufactured (figure \ref{fig: old remote pc
 	\label{fig: remote pcb}
 \end{figure}
 
-Figure \ref{fig: remote pcb} shows the revised PCB design. In addition to removing many test points, the position of the LEDs and phototransistors were changed to be more reflective of their intended position in the probe. They were soldered to surface mount pads to ensure they pointed in the correct direction and that they were accurately aligned to the front/back of the probe. They were covered with black electrical tape to block any cross talk, which ensured that the signals they measured were solely due to the reflectance of the object they were pointed at. Additionally, the battery footprints were changed to use slots rather than circular holes, as this was a better fit for the battery pins. This design measured \SI{53x38}{\milli\metre}, which is small enough to fit in a hand.
+Figure \ref{fig: remote pcb} shows the revised PCB design. In addition to removing many test points, the position of the LEDs and phototransistors were changed to be more reflective of their intended position in the probe. They were soldered to surface mount pads to ensure they pointed in the correct direction and that they were accurately aligned to the front/back of the probe. They were covered with black electrical tape to block any cross talk, which ensured that the signals they measured were solely due to the reflectance of the object they were pointed at. Additionally, the battery footprints were changed to use slots rather than circular holes, as this was a better fit for the battery pins. This design measured \SI{53x38}{\milli\metre}, which was small enough to fit in a hand.
 
 
 
@@ -35,9 +35,9 @@ Figure \ref{fig: remote pcb} shows the revised PCB design. In addition to removi
 
 \begin{figure}[htb]
 	\centering
-	\includegraphics[width=\linewidth]{base pcb.png}
+	\includegraphics[width=0.8\linewidth]{base pcb.png}
 	\caption{Base unit PCB.}
 	\label{fig: base pcb}
 \end{figure}
 
-The shape of the base unit was designed to fit within the selected enclosure (see section \ref{base casing}). There was a lot more space on the base unit so more through hole components could be used. Specifically, some of the power components needed a through hole package because the thermal rating of the surface mount alternatives was too small. The PIC also had a through hole package so that it could be easily transferred to a breadboard for testing. Many components were connected via header sockets, which allowed flexibility during testing. In the commercial version, these components should be mounted directly on the PCB to ensure they do not accidentally disconnect. Any components which cannot be soldered directly should use terminal blocks rather than header sockets to make a stronger connection.
+The shape of the base unit was designed to fit within the selected enclosure (see section \ref{base casing}). The final design is shown in figure \ref{fig: base pcb}. There was a lot more space on the base unit so more through hole components could be used. Specifically, some of the power components needed a through hole package because the thermal rating of the surface mount alternatives was too small. The PIC also had a through hole package so that it could be easily transferred to a breadboard for testing. Many components were connected via header sockets, which allowed flexibility during testing. In the commercial version, these components should be mounted directly on the PCB to ensure they do not accidentally disconnect. Any components which cannot be soldered directly should use terminal blocks rather than header sockets to make a stronger connection. 
