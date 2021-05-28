@@ -8,7 +8,7 @@
 	\label{fig: measurement schematic}
 \end{figure}
 
-Figure \ref{fig: measurement schematic} illustrates the circuit used to perform the backscatter measurements on the liver. The clinical trials of the original probe showed that neither the LED wavelength nor the LED-photodetector spacing affected the correlation with PNF, so this was not a critical design requirement of the new probe. Therefore, an LED in the near infra-red (NIR) range was selected (Vishay TSHA4401 \SI{875}{\nano\metre} \cite{tsha4401}) along with a phototransistor also in the NIR range (Vishay BPW85B \SI{850}{\nano\metre} \cite{bpw85b}).\\
+Figure \ref{fig: measurement schematic} illustrates the circuit used to perform the backscatter measurements on the liver. The clinical trials of the original probe showed that neither the LED wavelength nor the LED-photodetector spacing affected the correlation with PNF, so this was not a critical design requirement of the new probe. Therefore, an LED in the near infrared (NIR) range was selected (Vishay TSHA4401 \SI{875}{\nano\metre} \cite{tsha4401}) along with a phototransistor also in the NIR range (Vishay BPW85B \SI{850}{\nano\metre} \cite{bpw85b}).\\
 
 To ensure repeatable readings, the LED had to be supplied with a constant current, as the brightness of an LED is proportional to its current. The circuit on the left of figure \ref{fig: measurement schematic} was used to provide a constant current. When MOSFET Q1 was off, the voltage at the non-inverting input of the op-amp U1A was \SI{2.5}{\volt}. By the ideal op-amp assumption, the voltage at the inverting input was also \SI{2.5}{\volt}. This fixed the voltage across resistor R2 to \SI{2.5}{\volt}, so it drew \SI{11.4}{\milli\ampere} of current. As no current went through the op-amp input, all the current must have come from the op-amp output and have gone through the LED.  This ensured a constant current through the LED. When the MOSFET was on, it pulled the non-inverting input to ground. Therefore, R2 had no volts across it and hence drew no current, so the LED turned off.\\
 
@@ -49,11 +49,11 @@ The light transmitted by the LED was then reflected off the target liver, and th
 	\end{tabular}
 \end{table}
 
-The feedback resistor $R_f$ needed to be chosen to ensure good output characteristics. If it was too small, then the PIC's ADC would not be able to discriminate between changes in light intensity.  The PIC16F688 uses a 10-bit ADC, so the maximum voltage resolution is \SI{4.88}{\milli\volt} when operated at \SI{5}{\volt}. The feedback resistor also cannot be too large, as this could lead to the op-amp saturating at the ground supply rail. Table \ref{tab: tia feedback resistor} shows the results of an experiment carried out to investigate the signal levels with different feedback resistors. The LED and phototransistor were soldered to stripboard to ensure  a fixed separation of \SI{7.62}{\milli\metre}. This was shone at a piece of white printer paper at a distance which led to the largest signal. The optimum $R_f = \SI{4.7}{\kilo\ohm}$, as this had the largest peak-to-peak signal without saturating. The system was tested using an LED current of \SI{20}{\milli\ampere} as well, but it was decided that this was too close to the op-amp output current limit to be a reliable current source.\\
+The feedback resistor $R_f$ needed to be chosen to ensure good output characteristics. If it were too small, then the PIC's ADC would not be able to discriminate between changes in light intensity.  The PIC16F688 uses a 10-bit ADC, so the maximum voltage resolution is \SI{4.88}{\milli\volt} when operated at \SI{5}{\volt}. The feedback resistor also cannot be too large, as this could lead to the op-amp saturating at the ground supply rail. Table \ref{tab: tia feedback resistor} shows the results of an experiment carried out to investigate the signal levels with different feedback resistors. The LED and phototransistor were soldered to stripboard to ensure  a fixed separation of \SI{7.62}{\milli\metre}. This was shone at a piece of white printer paper at a distance which led to the largest signal. The optimum $R_f = \SI{4.7}{\kilo\ohm}$, as this had the largest peak-to-peak signal without saturating. The system was tested using an LED current of \SI{20}{\milli\ampere} as well, but it was decided that this was too close to the op-amp output current limit to be a reliable current source.\\
 
 The transimpedance amplifier is a notoriously unstable circuit due to the phototransistor's junction capacitance. This can be stabilised by adding the capacitor C1, which compensates for the pole created by the phototransistor capacitance \cite{tia_stability}. The capacitor value was selected to be \SI{470}{\pico\farad}, as this gave a bandwidth of \SI{72}{\kilo\hertz}, which is well above the required bandwidth of the circuit (which is \SI{10}{\kilo\hertz} at most). It is also below the gain-bandwidth product of \SI{1}{\mega\hertz} so will avoid the stability problems.\\
 
-A button also needed to be designed for the probe, so the surgeon could indicate that they wanted to take a measurement. A standard push button could not be used because the remote unit had to be hermetically sealed. Therefore, a non-contact means of sensing a button press had to be devised. This could either be capacitive, sensing the finger like the touch screen on a mobile phone, or optical, by measuring light reflected from the finger. It was found that the liver backscatter measurement system (figure \ref{fig: measurement schematic}) discriminated well between the presence or absence of a finger at a range of a few centimetres, so this circuit was used as the button. The downside to this method is that it is an active sensing system, requiring power to be supplied to the LED and phototransistor. The system was found to give an output of 0-10 arbitrary units if no finger was present, and several hundred arbitrary units if a finger was present, so a threshold of 100 was set for a button press. \\
+A button also needed to be designed for the probe, so the surgeon could indicate that they wanted to take a measurement. A standard push button could not be used because the remote unit had to be hermetically sealed. Therefore, a non-contact means of sensing a button press had to be devised. This could either be capacitive, sensing the finger like the touch screen on a mobile phone, or optical, by measuring light reflected from the finger. It was found that the liver backscatter measurement system (figure \ref{fig: measurement schematic}) discriminated well between the presence or absence of a finger at a range of a few centimetres, so this circuit was used as the button. The downside to this method is that it is an active sensing system, requiring power to be supplied to the LED and phototransistor. \\
 
 \begin{figure}[htb]
 	\centering
@@ -62,7 +62,7 @@ A button also needed to be designed for the probe, so the surgeon could indicate
 	\label{fig: 2.5v rail}
 \end{figure}
 
-The measurement system used a \SI{2.5}{\volt} reference rail. This rail had to be stable as it provided the reference signal for the LED current source and transimpedance amplifier, so any variations in the \SI{2.5}{\volt} signal would lead to measurement errors. An op-amp unity buffer circuit (figure \ref{fig: 2.5v rail}) was used to generate this signal from a potential divider reference. This is more stable than directly using a potential divider, as any loading of the potential divider will decrease the reference voltage it provides. Because an op-amp draws negligible current, the resulting output voltage will be much more stable. The \SI{2.5}{\volt} rail is only used to supply current to a \SI{10}{\kilo\ohm} resistor (\SI{250}{\micro\ampere}) and op-amp input (negligible current), so the buffer will not have to provide significant current and will remain stable.\\
+The measurement system used a \SI{2.5}{\volt} reference rail. This rail had to be stable as it provided the reference signal for the LED current source and transimpedance amplifier, so any variations in the \SI{2.5}{\volt} signal would lead to measurement errors. An op-amp unity buffer circuit (figure \ref{fig: 2.5v rail}) was used to generate this signal from a potential divider reference. This is more stable than directly using a potential divider, as any loading of the potential divider will decrease the reference voltage it provides. Because an op-amp draws negligible current, the resulting output voltage will be much more stable. The \SI{2.5}{\volt} rail is only used to supply current to a \SI{10}{\kilo\ohm} resistor (\SI{250}{\micro\ampere}) and op-amp input (negligible current), so the buffer will not have to provide significant current and hence will remain stable.
 
 
 
@@ -72,40 +72,37 @@ The system would give different readings depending on the background lighting co
 
 \begin{lstlisting}
 ir_led var PORTC.2
-red_led var PORTC.0
-phototransistor con 7       '' Analogue port used as input
+phototransistor con 7       '' Analogue port used for phototransistor
+N con 50
 
 reading var word
 dark var word
 light var word
-N var byte
 i var byte
 
 mainloop:
-reading = 0
-dark = 0
-light = 0
-
-low red_led
-
-for i = 1 to N
-    low ir_led					'' Turn on IR LED
-    pause 1
-    adcin phototransistor, light		'' read in light data
-    high ir_led					'' Turn off IR LED
-    pause 1
-    adcin phototransistor, dark		'' read in dark data
-    
-    '' Add current readings to sum
-    '' Dark should be > light if measurement variation is due to our probe
-    '' Any readings with light > dark are noise so neglect
-    if dark >= light then
-        reading = reading + (dark - light)
-    endif
-next i  
-
-'' Compute mean
-reading = reading / N
+	reading = 0
+	dark = 0
+	light = 0
+	
+	for i = 1 to N
+	    low ir_led					'' Turn on IR LED
+	    pause 1
+	    adcin phototransistor, light		'' Read in light data
+	    high ir_led					'' Turn off IR LED
+	    pause 1
+	    adcin phototransistor, dark		'' Read in dark data
+	    
+	    '' Add current readings to sum
+	    '' Dark should be > light if measurement variation is due to our probe
+	    '' Any readings with light > dark are noise so neglect
+	    if dark >= light then
+	        reading = reading + (dark - light)
+	    endif
+	next i  
+	
+	'' Compute mean
+	reading = reading / N
 
 goto mainloop
 \end{lstlisting}
@@ -123,7 +120,7 @@ goto mainloop
 	\label{fig: old probe comparison}
 \end{figure}
 
-The measurement system was first tested to measure the correlation between readings taken with the old probe and those taken with the new design. This was important because the new design's readings needed to be highly correlated with the old probe, to ensure that the new probe would have the same predictive power in clinical trials. The probes gave an output in arbitrary units, which were simply the ADC output of the PIC. These had different absolute values for the two designs due to their different component selection and circuit design. The two probes had their correlation tested by measuring the output at fixed distances from a sheet of A4 paper. This gave different intensities of backscattered light, so can be used for calibration. Figure \ref{fig: old probe comparison} shows the outcome of this experiment. The R\textsuperscript{2} correlation coefficient is 0.9859, so the probes are highly correlated as desired. \\
+The measurement system was first tested to measure the correlation between readings taken with the old probe and those taken with the new design. This was important because the new design's readings needed to be highly correlated with the old probe, to ensure that the new probe would have the same predictive power in clinical trials. The probes gave an output in arbitrary units, which were simply the ADC output of the PIC. The two probes had their correlation tested by measuring the output at fixed distances from a sheet of white printer paper. This gave different intensities of backscattered light, so could be used for calibration. Figure \ref{fig: old probe comparison} shows the outcome of this experiment. The R\textsuperscript{2} correlation coefficient is 0.9859, so the probes are highly correlated as desired. \\
 
 \begin{figure}[htb]
 	\centering
@@ -132,7 +129,7 @@ The measurement system was first tested to measure the correlation between readi
 	\label{fig: liquids}
 \end{figure}
 
-The measurement system was then tested to determine its response to lipid concentration. Readings were taken from shining the probe at water, semi-skimmed milk (2\% fat), and full-fat milk (4\% fat). Milk has suspended lipid droplets which can be used to model the probe's response to fat concentration. Figure \ref{fig: liquids} shows that the probe reading does increase for the liquids with higher fat concentration.
+The measurement system was then tested to determine its response to lipid concentration. Readings were taken from shining the probe at water, semi-skimmed milk (2\% fat), and full-fat milk (4\% fat). Milk has suspended lipid droplets which could be used to model the probe's response to fat concentration. Figure \ref{fig: liquids} shows that the probe reading does increase for the liquids with higher fat concentration.
 
 
 

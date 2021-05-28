@@ -1,15 +1,15 @@
 \section{Communications}
 
-The wireless communications system needed to be reliable over the length of the operating theatre where the system will be used. This was estimated to be \SI{4}{\metre}. The Quasar QAM-TX3 \cite{qam-tx} and QAM-RX10-433 \cite{qam-rx} transmitter/receiver modules were used to implement the wireless link. These had all the signal processing required for a radio link integrated into a single module. Fully integrated modules were selected because they were low-cost and simplified the design greatly, as RF effects did not need to be considered. The Quasar modules allowed the raw data to be input to the data pin in baseband, then modulated this signal onto a \SI{433}{\mega\hertz} carrier using on-off keying (OOK). This was received by the receiver which demodulated the signal and output the baseband signal at its data pin. The modules could work up to \SI{3}{\kilo\bit\per\second}, which was a suitable speed for the small packets of data which were sent by the remote unit. They operate in the \SI{433}{\mega\hertz} band, which is an unlicensed ISM band in the UK \cite{ism_band}. A \SI{100}{\pico\farad} capacitor was used between the power rails of both modules to smooth out any ripple in the power supply. The transmitter used a short length of wire for an antenna. Due to the high output power (1 dBm \cite{qam-tx}), this led to a strong enough signal to be picked up by the receiver several metres away. \\
+The wireless communications system needed to be reliable over the length of the operating theatre where the system will be used. This was estimated to be \SI{4}{\metre}. The Quasar QAM-TX3 \cite{qam-tx} and QAM-RX10-433 \cite{qam-rx} transmitter/receiver modules were used to implement the wireless link. These had all the signal processing required for a radio link integrated into a single module. Fully integrated modules were selected because they were low-cost and simplified the design greatly, as RF effects did not need to be considered. The Quasar modules allowed the raw data to be input to the data pin in baseband, then modulated this signal onto a \SI{433}{\mega\hertz} carrier using on-off keying (OOK). This was received by the receiver which demodulated the signal and output the baseband signal at its data pin. The modules could work up to \SI{3}{\kilo\bit\per\second}, which was a suitable speed for the small packets of data which were sent by the remote unit. They operate in the \SI{433}{\mega\hertz} band, which is an unlicensed ISM band in the UK \cite{ism_band}. A \SI{100}{\pico\farad} capacitor was used between the power rails of both modules to smooth out any ripple in the power supply. The transmitter used a short length of wire for an antenna. Due to the high output power (10 dBm \cite{qam-tx}), this led to a strong enough signal to be picked up by the receiver several metres away. \\
 %Take out decoupling cap bit
 
 %The modules operated using amplitude modulation (AM), rather than frequency modulation (FM) or phase modulation. AM is more susceptible to additive noise because the data is encoded into the amplitude of the carrier, whereas the amplitude of an FM signal does not relate to the data. Nevertheless, because the transmit power is high and the devices will operate over a short distance, the signal will dominate any noise or interference sources. This means that an AM transmitter is suitable due to its reduced complexity and hence smaller cost.\\
 
 The simplest way to send data between the PIC and the transceivers was to use the \verb|serin2| and \verb|serout2| command. These use the RS-232 communications protocol. RS-232 is an asynchronous serial communication standard, originally designed to communicate between computers and modems \cite{rs232}. An RS-232 connection was also used for the serial link with the PC. To communicate with the PC, an RS-232 to USB module was used to convert the PIC signals to a signal which could be read by a PC from a USB port.\\
 
-Each RS-232 data packet starts with a `0' start bit, which is followed by 8 data bits, a parity bit, and finally, an optional two stop bits \cite{rs232}. For this system, no parity bit was sent and one stop bit was used, following the `8N1' format. The \verb|serout2| command uses the syntax: \verb|SEROUT2 DataPin, Mode, [Data List]|. The \verb|DataPin| argument sets which PIC pin the data will be transmitted from. The \verb|Mode| argument controls how the data is sent. Bits 0-12 set the baud rate, which in this case was set to 1200 baud (\verb|Mode<12:0> = 813| \cite{picbasic_pro}). Bit 13 was set to `0' to indicate no parity bit. Bit 14 selected whether the PIC outputs signals in true form or inverted form, and was set to `1' for the inverted mode. Bit 15 was set to `0' to ensure that the data pin was always driven. Finally, the data which should be sent was specified in square brackets.\\
+Each RS-232 data packet starts with a `0' start bit, which is followed by 8 data bits, a parity bit, and finally, an optional two stop bits \cite{rs232}. For this system, no parity bits and one stop bit were used, following the `8N1' format. The \verb|serout2| command uses the syntax: \verb|SEROUT2 DataPin, Mode, [Data List]|. The \verb|DataPin| argument sets which PIC pin the data will be transmitted from. The \verb|Mode| argument controls how the data is sent. Bits 0-12 set the baud rate, which in this case was set to 1200 baud (\verb|Mode<12:0> = 813| \cite{picbasic_pro}). Bit 13 was set to `0' to indicate no parity bit. Bit 14 selected whether the PIC outputs signals in true or inverted form, and was set to `1' for the inverted mode. Bit 15 was set to `0' to ensure that the data pin was always driven. Finally, the data which should be sent was specified in square brackets.\\
 
-Preliminary tests found that several measures needed to be employed to improve the reliability of the wireless transmission. When no data was being transmitted, the dynamic threshold of the receiver reset to the background noise level, which meant that there was a short delay time before the threshold was re-established at the right level to demodulate the signal properly. Therefore, a series of `U' characters were transmitted. The ASCII value of the character `U' is \verb|`0b01010101'|, so this toggles between the high and low states to set the threshold properly. The \SI{433}{\mega\hertz} band is used for many devices (for example car key-fobs \cite{qam-rx}), so the receiver may pick up spurious transmissions which do not contain the liver probe data. The receiver was always listening, so to ensure that noise or interference were not picked up and decoded, a string was prefixed to the data. The receiver would wait until it received this prefix before starting to save data, as only then would it be sure that the signal was coming from the remote unit. For initial tests, the string \verb|`liver'| was prefixed to the data. \\
+Preliminary tests found that several measures needed to be employed to improve the reliability of the wireless transmission. When no data was being transmitted, the dynamic threshold of the receiver reset to the background noise level, which meant that there was a short delay before the threshold was re-established at the correct level to demodulate the signal properly. Therefore, a series of `U' characters were transmitted. The ASCII value of the character `U' is \verb|`0b01010101'|, so this toggles between the high and low states to set the threshold properly. The \SI{433}{\mega\hertz} band is used for many devices (for example car key-fobs \cite{qam-rx}), so the receiver may pick up spurious transmissions which do not contain the liver probe data. The receiver was always listening, so to ensure that noise or interference were not picked up and decoded, a string was prefixed to the data. The receiver would wait until it received this prefix before starting to save data, as only then would it be sure that the signal was coming from the remote unit. For initial tests, the string \verb|`liver'| was prefixed to the data. \\
 
 The relevant data were the liver reflectance measurement and the temperature. These were sent as four-digit decimal numbers in ASCII. To add resilience to decoding errors, a checksum was included with the data. Three checksum functions were proposed:
 \begin{enumerate}
@@ -41,26 +41,27 @@ The three functions had their mean and variance computed using a Python script (
 \begin{lstlisting}
 ''  Constant to define serout mode 8N1 at 1200 baud
 baud_1200 con 813 | %0100000000000000
-wireless_tx var PORTC.4				''  Set up an alias for transmitter pin
+wireless_tx var PORTC.4
 reading var word 					''  Liver reflectance measurement
 temperature var word					''  Temperature measurement
 checksum var byte
 
 ''  Bitwise XOR between upper and lower byte of reading
-checksum = (reading / 256) ^ (reading // 256)
+checksum = reading.byte1 ^ reading.byte0
 
-serout2 wireless_tx, baud_1200, [rep ``U''\10, ``liver '', dec4 reading, checksum, dec4 temperature, dec4 reading, checksum, dec4 temperature]
+serout2 wireless_tx, baud_1200, [rep `U'\10, `liver', dec4 reading, checksum, dec4 temperature]
 \end{lstlisting}
 
-The \verb|dec4| modifier outputs the value stored in the variable as a four-digit decimal number, and the \verb|rep| modifier sends a repeated character \verb|\n| times. The base unit used the \verb|serin2| command in a similar fashion, with the main difference being the \verb|wait(``x'')| modifier, which will wait until it receives the string ``\verb|x|'' before saving data to the following variables. The code is given below:
+The \verb|dec4| modifier outputs the value stored in the variable as a four-digit decimal number, and the \verb|rep| modifier sends a repeated character \verb|\n| times. The base unit used the \verb|serin2| command in a similar fashion, with the main difference being the \verb|wait(`x')| modifier, which will wait until it receives the string `\verb|x|' before saving data to the following variables. The code is given below:
 
 \begin{lstlisting}
-wireless_rx var PORTA.6                            ''  Set up an alias for receiver pin
+wireless_rx var PORTA.6
 
-serin2 wireless_rx, baud_1200, [wait(``liver''), dec4 reading, checksum, dec4 temperature]
+serin2 wireless_rx, baud_1200, [wait(`liver'), dec4 reading, checksum, dec4 temperature]
 
-''  Compare the received checksum to the checksum calculated from the reading. Error handling should go here.
-if ((reading / 256) ^ (reading // 256)) != checksum then
+''  Compare the received checksum to the checksum calculated from the reading. 
+''  Error handling should go here.
+if (reading.byte1 ^ reading.byte0) != checksum then
     reading = 0
 endif
 \end{lstlisting}
@@ -86,7 +87,7 @@ The modules were initially tested with a square wave to ensure the receiver outp
 	\label{fig: range}
 \end{figure}
 
-The system was then tested to determine its maximum reliable range. This experiment was carried out indoors, to emulate the operating theatre environment. Both the transmitter and receiver were at ground level. 500 data packets were sent from the remote unit, and the number which were received by the base unit were recorded. Figure \ref{fig: range} demonstrates that the maximum reliable range of the system is \SI{14}{\metre}, and above this many packets can be lost. The sharp decrease at \SI{15}{\metre} could be due to fading effects caused by multiple reflections and scattering in the indoor environment, as the communication is re-established at \SI{16}{\metre}. Nevertheless, since the system only needs to communicate over an estimated \SI{4}{\metre}, it will perform well in practice.\\
+The system was then tested to determine its maximum reliable range. This experiment was carried out indoors, to emulate the operating theatre environment. 500 data packets were sent from the remote unit, and the number which were received by the base unit were recorded. Figure \ref{fig: range} demonstrates that the maximum reliable range of the system is \SI{14}{\metre}, and above this many packets can be lost. The sharp decrease at \SI{15}{\metre} could be due to fading effects caused by multiple reflections and scattering in the indoor environment, as the communication is re-established at \SI{16}{\metre}. Nevertheless, since the system only needs to communicate over an estimated \SI{4}{\metre}, it will perform well in practice.
 
 
 
