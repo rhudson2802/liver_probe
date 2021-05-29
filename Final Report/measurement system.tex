@@ -68,7 +68,7 @@ The measurement system used a \SI{2.5}{\volt} reference rail. This rail had to b
 
 
 \subsection{Firmware}
-The system would give different readings depending on the background lighting conditions, as these would appear as an offset in the phototransistor current. To add resilience to background light, each measurement was the difference between the phototransistor reading when the LED was on and when it was off. Assuming the phototransistor has a linear incident light intensity-current response, this difference will leave just the information about the liver with no dependence on background light. A series of readings was made (N=50) and the average was taken, to further increase the resilience to noise. The PICBASIC code is given below.
+The system would give different readings depending on the background lighting conditions, as these would appear as an offset in the phototransistor current. To add resilience to background light, each measurement was the difference between the phototransistor reading when the LED was on and when it was off. Assuming the phototransistor has a linear incident light intensity-current response, this difference will leave just the information about the liver with no dependence on background light. A series of readings were made (N=50) and the average was taken, to further increase the resilience to noise. The PICBASIC code is given below.
 
 \begin{lstlisting}
 ir_led var PORTC.2

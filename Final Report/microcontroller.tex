@@ -3,11 +3,11 @@ A Peripheral Interface Controller (PIC) was chosen as the microcontroller for bo
 
 \begin{figure}[htb]
 	\centering
-	\includegraphics[width=0.6\linewidth]{pickit3.PNG}
+	\includegraphics[width=0.65\linewidth]{pickit3.PNG}
 	\caption{PIC connected to PICkit 3 programmer with external circuitry \cite{pickit3}.}
 	\label{fig: pickit3}
 \end{figure}
 
 The PICkit 3 \cite{pickit3} was used to program the PICs. Figure \ref{fig: pickit3} shows the relevant connections required for programming. A \SI{10}{\kilo\ohm} pull-up resistor was selected for the $\overline{\text{MCLR}}$ line. This was required because the PIC resets whenever $\overline{\text{MCLR}}$ is low, so it needed to be pulled high in normal operation. \\
 
-The PIC18F2550 had a USB interface, which took up the majority of \verb|PORTC|. When the PIC was tested on breadboard, these USB pins could not operate as standard I/O pins as they pulled the pin high or low. The data sheet specified that USB functionality could be turned off by writing to the \verb|UCON| and \verb|UCFG| registers, but this did not work. This meant that the pins designated for USB were not used in this project.
+The PIC18F2550 had a USB interface, which took up the majority of \verb|PORTC|. When the PIC was tested on breadboard, these USB pins could not operate as standard I/O pins as they pulled the pin high or low. The datasheet specified that USB functionality could be turned off by writing to the \verb|UCON| and \verb|UCFG| registers, but this did not work. This meant that the pins designated for USB were not used in this project.
