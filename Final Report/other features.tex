@@ -104,7 +104,7 @@ The EEPROM chip was accessed using the PICBASIC \verb|i2cread| and \verb|i2cwrit
 	\label{fig: rtc schematic}
 \end{figure}
 
-An RTC was required in the base unit to timestamp the measurements. The Microchip MCP7940N-I/SN \cite{rtc} was selected, and the circuit (figure \ref{fig: rtc schematic}) was laid out according to the datasheet recommendations \cite{rtc}. A \SI{3}{\volt} CR2032 battery was used as a backup power supply for the module to ensure the clock would continue timing even if the base power was removed. The module communicates over an I\textsuperscript{2}C interface, so it was connected to the PIC's SDA and SCL lines. The MFP output was not used.
+An RTC was required in the base unit to timestamp the measurements, so it was clear which operation the data referred to. The Microchip MCP7940N-I/SN \cite{rtc} was selected, and the circuit (figure \ref{fig: rtc schematic}) was laid out according to the datasheet recommendations \cite{rtc}. A \SI{3}{\volt} CR2032 battery was used as a backup power supply for the module to ensure the clock would continue timing even if the base power was removed. The module communicates over an I\textsuperscript{2}C interface, so it was connected to the PIC's SDA and SCL lines. The MFP output was not used.
 
 
 
