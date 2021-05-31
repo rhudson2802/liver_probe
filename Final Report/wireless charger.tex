@@ -9,21 +9,24 @@ The remote unit was designed to run from a \SI{5}{\volt} supply. \SI{3.3}{\volt}
 
 A power converter was then selected to drop the \SI{7.2}{\volt} battery voltage to the required \SI{5}{\volt} rail. A Low-Dropout (LDO) voltage regulator was deemed suitable for this application, as it would provide a stable voltage rail. The advantage over a buck converter is the smaller device size and design simplicity, but this comes at the cost of worse efficiency. Furthermore, the output voltage will not have the high-frequency ripple associated with switch-mode converters, which is desirable to create a stable analogue rail to ensure that there are no measurement errors. The MCP1702T-5002E/CB \cite{mcp1702} in a SOT-23A package was suitable. This was a \SI{5}{\volt} regulator with a rated output current of \SI{250}{\milli\ampere}. This was well above the \SI{50}{\milli\ampere} maximum current required by the remote unit (see section \ref{power budget}). The quiescent current was \SI{2}{\micro\ampere}, which is negligible compared with the remainder of the circuit, so the regulator will not affect the battery lifetime. The regulator will dissipate a maximum of $(\SI{7.2}{\volt}-\SI{5}{\volt})\times\SI{50}{\milli\ampere}=\SI{110}{\milli\watt}$. The SOT-23A package has a junction-to-air thermal resistance of \SI{336}{\celsius\per\watt}, so the maximum temperature increase is \SI{37}{\celsius}.\\
 
-
-	
-
-Inductive charging was an appropriate method to recharge the batteries. This involved placing two air-cored coils in close proximity, applying an AC voltage to the primary, and rectifying the voltage across the secondary. This is a similar design to that used in other hermetically sealed low-power products, such as an electric toothbrush charger \cite{wireless_power_review}. Figure \ref{fig: charger schematic} shows the circuit schematic, which uses two PMOS and NMOS pairs in a H-bridge arrangement to generate the AC voltage. The two half bridges were driven with inverted signals, so the voltage across the load alternated between \SI{\pm 5}{\volt}. The series capacitor was used to create a resonant circuit with the inductor, which increased the voltage across the primary coil and smoothed the input square wave to a sinusoid across the inductor. The capacitor was designed to give the circuit a resonant frequency equal to the drive frequency to get the maximum gain possible. The series resistor was included to limit the current through the circuit. An ideal series LC circuit has zero impedance at resonance, so it looks like a short circuit to the external circuit. The PMOS transistors had a current rating of \SI{230}{\milli\ampere}, so a series resistance of \SI{22}{\ohm} limited the current to \SI{227}{\milli\ampere}.\\
-
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{h bridge charger.PNG}
 	\caption{Circuit schematic for the H-Bridge inductive wireless charger. The left-hand side circuit is included in the base unit, and the right-hand side circuit is included in the remote unit.}
 	\label{fig: charger schematic}
 \end{figure}
+	
+
+Inductive charging was an appropriate method to recharge the batteries. This involved placing two air-cored coils in close proximity, applying an AC voltage to the primary, and rectifying the voltage across the secondary. This is a similar design to that used in other hermetically sealed low-power products, such as an electric toothbrush charger \cite{wireless_power_review}. Figure \ref{fig: charger schematic} shows the circuit schematic, which uses two PMOS and NMOS pairs in a H-bridge arrangement to generate the AC voltage. The two half bridges were driven with inverted signals, so the voltage across the load alternated between \SI{\pm 5}{\volt}. The series capacitor was used to create a resonant circuit with the inductor, which increased the voltage across the primary coil and smoothed the input square wave to a sinusoid across the inductor. The capacitor was designed to give the circuit a resonant frequency equal to the drive frequency to get the maximum gain possible. The series resistor was included to limit the current through the circuit. An ideal series LC circuit has zero impedance at resonance, so it looks like a short circuit to the external circuit. The PMOS transistors had a current rating of \SI{230}{\milli\ampere}, so a series resistance of \SI{22}{\ohm} limited the current to \SI{227}{\milli\ampere}.\\
 
 The primary coil generated an alternating magnetic field due to the sinusoidal voltage across it. This coupled with the secondary coil to induce an alternating voltage. The coupling of air-cored transformers is very poor, so a large voltage was required across the primary coil to ensure the secondary coil received enough volts. The resonant circuit aided this. The alternating voltage across the secondary was then rectified to a DC voltage by a diode bridge. The NSR05F20NXT5G Schottky barrier diode \cite{original_diode} was used in the diode bridge. These were chosen because of their very low forward voltage of \SI{0.2}{\volt}, which made sure that the required secondary voltage was kept as small as possible. Their reverse leakage was \SI{2}{\micro\ampere}, which was also good. They were rated to \SI{20}{\volt} and \SI{500}{\milli\ampere}, which was well below the expected operating conditions of \SI{10}{\volt} and \SI{10}{\milli\ampere}. The battery voltage was \SI{7.2}{\volt}, so the total required voltage across the secondary, including the two diode drops, was \SI{7.6}{\volt}.\\
 
-
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.8\linewidth]{coil inductance.png}
+	\caption{Coil inductance for different numbers of coil turns.}
+	\label{fig: coil inductance}
+\end{figure}
 
 There are many empirical laws for the inductance of coils. Wheeler's formula \cite{Wheeler} for circular planar coils is:
 \begin{equation}\label{eq: solenoid}
@@ -33,18 +36,16 @@ where $N$ is the number of turns, $r$ is the average coil radius in inches, and 
 
 \begin{figure}[htb]
 	\centering
-	\includegraphics[width=0.8\linewidth]{coil inductance.png}
-	\caption{Coil inductance for different numbers of coil turns.}
-	\label{fig: coil inductance}
-\end{figure}
-
-\begin{figure}[htb]
-	\centering
 	\includegraphics[width=0.3\linewidth]{coil experiment.png}
 	\caption{Setup for the coil experiments.}
 	\label{fig: coil experiment setup}
 \end{figure}
-
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=\linewidth]{v2 circular coupling.PNG}
+	\caption{Measured coupling coefficient of circular coils as a function of coil separation.}
+	\label{fig: circular coupling}
+\end{figure}
 
 The performance of the proposed charging circuit was investigated. First, the coupling of the coils was determined as a function of the coil separation. The experiment was performed using two planar circular coils which were centred on the same out-of-plane axis. Figure \ref{fig: coil experiment setup} illustrates the experiment setup. The primary coil was driven by the H-bridge circuit in figure \ref{fig: charger schematic}, and the secondary coil had its open circuit voltage measured. A capacitor was used to make the system resonant at \SI{100}{\kilo\hertz}, using the equation:
 \begin{equation}
@@ -52,12 +53,6 @@ C = \frac{1}{(2\pi f_\text{res})^2L}
 \end{equation}
 If the transformer were ideal, the secondary coil voltage would be $V_2 = V_1 \times N_2 / N_1$, where $V_1$ is the voltage across the primary coil, and $N_2 / N_1$ is the secondary to primary turns ratio. To account for the poor coupling in an air-cored transformer, a coupling coefficient $k$ is introduced, so $V_2 = k \times V_1 \times N_2 / N_1$. The reduction in coupling is because the air-core has a low permeability, so the flux from the primary is not strongly linked to the secondary, leading to a large leakage flux. The experiment was repeated for different turns ratios, all giving similar values of the coupling coefficient. The experimentally determined coupling coefficients are plotted in figure \ref{fig: circular coupling}, which shows a coupling coefficient of 0.28 at a separation of \SI{10}{\milli\metre}.\\
 
-\begin{figure}[htb]
-	\centering
-	\includegraphics[width=\linewidth]{v2 circular coupling.PNG}
-	\caption{Measured coupling coefficient of circular coils as a function of coil separation.}
-	\label{fig: circular coupling}
-\end{figure}
 
 \begin{figure}[htb]
 	\centering
@@ -101,17 +96,15 @@ The initial tests indicated that the charger would not deliver sufficient curren
 
 To avoid this problem, two MOSFET driver ICs (Microchip's MCP1406 and MCP1407 \cite{mcp1407}) were selected to replace the H-bridge. These ICs are designed to drive the gate of a power MOSFET, but are also suitable for this application because they supply a large current (up to \SI{6}{\ampere}) and a large voltage (up to \SI{18}{\volt}). Figure \ref{fig: mcp1407} demonstrates that the internal circuitry of the MCP1406/07 takes an input CMOS/TTL signal and uses this to control a push-pull CMOS inverter. Therefore, the H-bridge MOSFETs can be replaced by these ICs, as they take care of the gate drive. The drivers come in two varieties: the inverting MCP1406 and the non-inverting MCP1407. Choosing one of each (for the different sides of the H-bridge) means only one input signal is required from the PIC, freeing up an I/O pin for other uses. The propagation times for both devices are the same (\SI{40}{\nano\second}), so there is no risk of dangerous shoot-through currents, assuming they are placed close enough together on the PCB so that the delay time in the PCB traces is negligible.\\
 
-
-
-The schematic for the primary side is shown in figure \ref{fig: mosfet drivers charger}. Three capacitors were included so the resonant circuit could be finely tuned. A \SI{22}{\ohm} resistor was used to limit the current to \SI{500}{\milli\ampere}, as this was the maximum current the power supply could provide. The circuit provided \SI{2.5}{\milli\ampere} of charging current to the three \SI{2.4}{\volt} batteries when tested on breadboard with the coils separated by \SI{10}{\milli\metre}. This was reflective of the real-life conditions, and the \SI{2.5}{\milli\ampere} charging current would fully charge the 80 mAh batteries in \SI{32}{\hour}. The batteries' recommended charging current is \SI{8}{\milli\ampere}, so while the current is a little low, this will not be a large problem as it is expected that the remote unit will be left on constant charge.\\
-
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{mosfet drivers charger.PNG}
 	\caption{Primary side of the charging circuit using the MCP1406/07 MOSFET drivers.}
 	\label{fig: mosfet drivers charger}
 \end{figure}
-~\\
+
+The schematic for the primary side is shown in figure \ref{fig: mosfet drivers charger}. Three capacitors were included so the resonant circuit could be finely tuned. A \SI{22}{\ohm} resistor was used to limit the current to \SI{500}{\milli\ampere}, as this was the maximum current the power supply could provide. The circuit provided \SI{2.5}{\milli\ampere} of charging current to the three \SI{2.4}{\volt} batteries when tested on breadboard with the coils separated by \SI{10}{\milli\metre}. This was reflective of the real-life conditions, and the \SI{2.5}{\milli\ampere} charging current would fully charge the 80 mAh batteries in \SI{32}{\hour}. The batteries' recommended charging current is \SI{8}{\milli\ampere}, so while the current is a little low, this will not be a large problem as it is expected that the remote unit will be left on constant charge.\\
+
 Using the \SI{12}{\volt} supply voltage resulted in \SI{112}{\volt} across the primary coil and \SI{51}{\volt} across the secondary (under open circuit conditions with \SI{10}{\milli\metre} separation). This was greater than the NSR05F20NXT5G voltage rating of \SI{20}{\volt}, so new diodes were selected for the bridge rectifier to handle the higher voltage. The NXP PMEG10020ELRX Schottky barrier diode \cite{new_diode} was rated to \SI{100}{\volt} and \SI{2}{\ampere}, so was suitable for the application. It had a low forward voltage of \SI{0.4}{\volt} and a reverse leakage current of \SI{10}{\nano\ampere} at \SI{25}{\celsius}, which will lead to good performance.\\
 
 
@@ -192,11 +185,11 @@ CCP2CON = %00001111
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{v2 rectangular coupling.png}
-	\caption{Coupling coefficient for rectangular and circular coils. The legend gives $N_2/N_1$.}
+	\caption{Coupling coefficient for rectangular and circular coils. The legend gives $N_2/N_1$}
 	\label{fig: rectangular coupling}
 \end{figure}
 
-~\\
+
 The charger was tested at \SI{100}{\kilo\hertz} using a 100-turn rectangular coil for the primary and a 150-turn rectangular coil for the secondary. The coils measured \SI{70 x 35}{\milli\metre}. Rectangular coils were required to maximise the coil area for the probe casing geometry. Figure \ref{fig: rectangular coupling} demonstrates that the coupling between the rectangular coils was identical to the circular coils used in the breadboard tests, so the results for the circular coils will have the same order of magnitude if repeated with rectangular coils.\\
 
 
@@ -209,7 +202,7 @@ The charger was tested at \SI{100}{\kilo\hertz} using a 100-turn rectangular coi
 
 
 
-\begin{figure}[h!]
+\begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{v2 charging current.png}
 	\caption{Charging current delivered to \SI{7.2}{\volt} battery load at different coil separations.}
@@ -270,10 +263,6 @@ When the batteries were loaded, their output voltage dropped from \SI{7.2}{\volt
 \subsection{Power Budgets}\label{power budget}
 \subsubsection{Remote Unit}
 
-
-
-The PIC drew \SI{9.4}{\milli\ampere} when it was idle and running on an \SI{8}{\mega\hertz} clock. This gives the device a ``stand-by'' lifetime of \SI{8.5}{\hour}, as 80 mAh batteries are used. When the clock speed was reduced to \SI{31}{\kilo\hertz}, the current reduced to \SI{7.5}{\milli\ampere}. The \SI{1.9}{\milli\ampere} reduction helps to ensure that the batteries do not become fully discharged. Table \ref{tab: remote current} shows the currents drawn by the other components in the remote unit. In practice, the transmitter module drew negligible current, so there was no need to include the PMOS switch on its power rails. The current drawn when the IR LED was on was \SI{23.9}{\milli\ampere}. This was greater than the \SI{11.4}{\milli\ampere} design current from the circuit in figure \ref{fig: measurement schematic}. When the voltage across the \SI{220}{\ohm} resistor was measured, the correct current flowed through it, so the reason for the additional \SI{12.4}{\milli\ampere} is unknown at this time. Further tests using laboratory equipment may yield an explanation for this.\\
-
 \begin{table}[htb]
 	\begin{center}
 	\caption{Current drawn by major components on the remote unit. These are expressed as a difference between the current measured when the PIC was idle and the current when the corresponding output pin was high.}
@@ -288,6 +277,8 @@ The PIC drew \SI{9.4}{\milli\ampere} when it was idle and running on an \SI{8}{\
 	\end{tabular}
 	\end{center}
 \end{table}
+
+The PIC drew \SI{9.4}{\milli\ampere} when it was idle and running on an \SI{8}{\mega\hertz} clock. This gives the device a ``stand-by'' lifetime of \SI{8.5}{\hour}, as 80 mAh batteries are used. When the clock speed was reduced to \SI{31}{\kilo\hertz}, the current reduced to \SI{7.5}{\milli\ampere}. The \SI{1.9}{\milli\ampere} reduction helps to ensure that the batteries do not become fully discharged. Table \ref{tab: remote current} shows the currents drawn by the other components in the remote unit. In practice, the transmitter module drew negligible current, so there was no need to include the PMOS switch on its power rails. The current drawn when the IR LED was on was \SI{23.9}{\milli\ampere}. This was greater than the \SI{11.4}{\milli\ampere} design current from the circuit in figure \ref{fig: measurement schematic}. When the voltage across the \SI{220}{\ohm} resistor was measured, the correct current flowed through it, so the reason for the additional \SI{12.4}{\milli\ampere} is unknown at this time. Further tests using laboratory equipment may yield an explanation for this.\\
 
 The total energy stored in the batteries is $E_\text{Bat} = \SI{7.2}{\volt}\times\SI{80}{\milli\ampere\hour}\times 80\% = \SI{1659}{\joule}$. The factor of 80\% is given by the batteries' datasheet \cite{rs_pro_batteries} and accounts for the fact that the batteries will only hold a stable \SI{7.2}{\volt} output for 80\% of their total capacity. The number of readings per full battery charge was then calculated. This assumed that the button LED was flashed 10 times in a button read, the measurement LED was flashed 50 times to probe the liver, the LEDs were on for \SI{1}{\milli\second} each flash, a \SI{1200}{\bit\per\second} baud rate was used, and the data was transmitted three times to add redundancy. It was also assumed that the button would only be polled once every \SI{100}{\milli\second}.\\
 

@@ -25,14 +25,14 @@ The sensor was designed to have a range of \SIrange{5}{150}{\celsius}, to cover 
 
 
 \subsection{LCD}
-PICBASIC had a built-in command \verb|lcdout| which could be used to control an LCD with a Hitachi 44780 controller \cite{picbasic_pro}. To this end, an LCD module with an equivalent controller was selected. A 4x20 character matrix was required to enable the screen to display all the necessary information. The Displaytech 204-A-CC-BC-3LP \cite{lcd} was selected. This used the Samsung KS0076B driver, which had an equivalent instruction set to the Hitachi 44780, meaning it could be controlled using the \verb|lcdout| command. Figure \ref{fig: lcd schematic} shows the LCD interface circuitry. The R/$\overline{\text{W}}$ pin was tied to ground, as the LCD only needed to be written to. $V_o$ controlled the contrast of the display, and the datasheet recommended biasing this at \SI{0.2}{\volt} \cite{lcd}. The remaining pins were data signals which were connected to PIC pins. The LCD could operate using either a 4- or 8-bit parallel interface \cite{picbasic_pro}. In this application, the 4-bit interface was chosen to minimise the number of PIC pins used by the LCD. The \verb|lcdout| command required that these 4 data signals were connected to either the upper or lower nybble of a single I/O port. Only \verb|PORTA<0:3>| was suitable, as all the remaining ports had pins which were required for other functions or unimplemented bits in the \verb|PORT|.\\
-
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.5\linewidth]{lcd.PNG}
 	\caption{LCD interface circuitry.}
 	\label{fig: lcd schematic}
 \end{figure}
+
+PICBASIC had a built-in command \verb|lcdout| which could be used to control an LCD with a Hitachi 44780 controller \cite{picbasic_pro}. To this end, an LCD module with an equivalent controller was selected. A 4x20 character matrix was required to enable the screen to display all the necessary information. The Displaytech 204-A-CC-BC-3LP \cite{lcd} was selected. This used the Samsung KS0076B driver, which had an equivalent instruction set to the Hitachi 44780, meaning it could be controlled using the \verb|lcdout| command. Figure \ref{fig: lcd schematic} shows the LCD interface circuitry. The R/$\overline{\text{W}}$ pin was tied to ground, as the LCD only needed to be written to. $V_o$ controlled the contrast of the display, and the datasheet recommended biasing this at \SI{0.2}{\volt} \cite{lcd}. The remaining pins were data signals which were connected to PIC pins. The LCD could operate using either a 4- or 8-bit parallel interface \cite{picbasic_pro}. In this application, the 4-bit interface was chosen to minimise the number of PIC pins used by the LCD. The \verb|lcdout| command required that these 4 data signals were connected to either the upper or lower nybble of a single I/O port. Only \verb|PORTA<0:3>| was suitable, as all the remaining ports had pins which were required for other functions or unimplemented bits in the \verb|PORT|.\\
 
 The \verb|lcdout| command allowed simple control of the LCD. First, several \verb|define|s were set to configure the compiler. Then, commands could be written to the LCD by sending the byte \verb|$FE| before the corresponding command in the PICBASIC manual \cite{picbasic_pro} or LCD datasheet \cite{lcd}. Characters could be written by looking up the character code in the LCD's character map (specified in the datasheet \cite{lcd}) or by providing PICBASIC with the required string. A delay was required between each write operation to ensure the LCD was ready to receive another instruction, otherwise an error would occur. A simple program is included below, and the output is shown in figure \ref{fig: lcd}.
 
@@ -111,12 +111,19 @@ An RTC was required in the base unit to timestamp the measurements, so it was cl
 
 
 \subsection{Buttons}
-The base unit required some buttons to interact with the menu. Four buttons were required, termed ``MENU'', ``OK'', ``UP'', and ``DOWN''. The 2-1825910-7 tactile switch \cite{buttons} available from Farnell was suitable and was used with \SI{15}{\kilo\ohm} pull-up resistors. Due to a lack of available pins on the PIC, the ``OK'' and ``DOWN'' buttons were connected to the ``ICSPDAT'' and ``ICSPCLK'' lines, respectively. These are used for in-circuit serial programming, and the inclusion of the switch circuits does not cause an issue, because the pull-up resistor allows the programmer to take control of the line whenever it requires. The ``MENU'' button was initially connected to an external interrupt pin ``INT2'', but after testing was changed to the ``$\overline{\text{MCLR}}$'' pin. When in normal operation, the base unit spends most of its time listening for data coming from the remote unit. When the ``MENU'' button is pressed, however, the base unit should immediately transition to the menu screen. PICBASIC does not have a convenient method to interrupt the \verb|serin2| command, so the ``MENU'' button was changed to the ``$\overline{\text{MCLR}}$'' pin to hard reset the unit when the button was pressed. The buttons could be read by a simple digital read to the corresponding PIC pin. A breakout board (figure \ref{fig: buttons}) was designed for the buttons to be soldered to, which in turn could be mounted to the base unit casing by M2 bolts.
-
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.6\linewidth]{switches.jpg}
 	\caption{Breakout board for push buttons.}
 	\label{fig: buttons}
-	\vspace{-8mm}
 \end{figure}
+
+The base unit required some buttons to interact with the menu. Four buttons were required, termed ``MENU'', ``OK'', ``UP'', and ``DOWN''. The 2-1825910-7 tactile switch \cite{buttons} available from Farnell was suitable and was used with \SI{15}{\kilo\ohm} pull-up resistors. Due to a lack of available pins on the PIC, the ``OK'' and ``DOWN'' buttons were connected to the ``ICSPDAT'' and ``ICSPCLK'' lines, respectively. These are used for in-circuit serial programming, and the inclusion of the switch circuits does not cause an issue, because the pull-up resistor allows the programmer to take control of the line whenever it requires. The ``MENU'' button was initially connected to an external interrupt pin ``INT2'', but after testing was changed to the ``$\overline{\text{MCLR}}$'' pin. When in normal operation, the base unit spends most of its time listening for data coming from the remote unit. When the ``MENU'' button is pressed, however, the base unit should immediately transition to the menu screen. PICBASIC does not have a convenient method to interrupt the \verb|serin2| command, so the ``MENU'' button was changed to the ``$\overline{\text{MCLR}}$'' pin to hard reset the unit when the button was pressed. The buttons could be read by a simple digital read to the corresponding PIC pin. A breakout board (figure \ref{fig: buttons}) was designed for the buttons to be soldered to, which in turn could be mounted to the base unit casing by M2 bolts.
+
+
+
+
+
+
+
+
