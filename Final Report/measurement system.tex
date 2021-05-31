@@ -74,7 +74,6 @@ The system would give different readings depending on the background lighting co
 ir_led var PORTC.2
 phototransistor con 7       '' Analogue port used for phototransistor
 N con 50
-
 reading var word
 dark var word
 light var word
@@ -122,7 +121,7 @@ goto mainloop
 
 The measurement system was first tested to measure the correlation between readings taken with the old probe and those taken with the new design. This was important because the new design's readings needed to be highly correlated with the old probe, to ensure that the new probe would have the same predictive power in clinical trials. The probes gave an output in arbitrary units, which were simply the ADC output of the PIC. The two probes had their correlation tested by measuring the output at fixed distances from a sheet of white printer paper. This gave different intensities of backscattered light, so could be used for calibration. Figure \ref{fig: old probe comparison} shows the outcome of this experiment. The R\textsuperscript{2} correlation coefficient is 0.9859, so the probes are highly correlated as desired. \\
 
-\begin{figure}[htb]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\linewidth]{liquids.png}
 	\caption{Measurements made by the probe on different liquids, with a liquid depth of \SI{2}{\centi\metre} and probe range of \SI{3}{\centi\metre}.}
@@ -130,9 +129,3 @@ The measurement system was first tested to measure the correlation between readi
 \end{figure}
 
 The measurement system was then tested to determine its response to lipid concentration. Readings were taken from shining the probe at water, semi-skimmed milk (2\% fat), and full-fat milk (4\% fat). Milk has suspended lipid droplets which could be used to model the probe's response to fat concentration. Figure \ref{fig: liquids} shows that the probe reading does increase for the liquids with higher fat concentration.
-
-
-
-
-
-
