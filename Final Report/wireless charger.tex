@@ -27,7 +27,7 @@ The primary coil generated an alternating magnetic field due to the sinusoidal v
 	\caption{Coil inductance for different numbers of coil turns.}
 	\label{fig: coil inductance}
 \end{figure}
-
+\newpage
 There are many empirical laws for the inductance of coils. Wheeler's formula \cite{Wheeler} for circular planar coils is:
 \begin{equation}\label{eq: solenoid}
 L (\si{\micro\henry})= \frac{r^2N^2}{8r + 11d}
@@ -104,7 +104,7 @@ To avoid this problem, two MOSFET driver ICs (Microchip's MCP1406 and MCP1407 \c
 \end{figure}
 
 The schematic for the primary side is shown in figure \ref{fig: mosfet drivers charger}. Three capacitors were included so the resonant circuit could be finely tuned. A \SI{22}{\ohm} resistor was used to limit the current to \SI{500}{\milli\ampere}, as this was the maximum current the power supply could provide. The circuit provided \SI{2.5}{\milli\ampere} of charging current to the three \SI{2.4}{\volt} batteries when tested on breadboard with the coils separated by \SI{10}{\milli\metre}. This was reflective of the real-life conditions, and the \SI{2.5}{\milli\ampere} charging current would fully charge the 80 mAh batteries in \SI{32}{\hour}. The batteries' recommended charging current is \SI{8}{\milli\ampere}, so while the current is a little low, this will not be a large problem as it is expected that the remote unit will be left on constant charge.\\
-
+\newpage
 Using the \SI{12}{\volt} supply voltage resulted in \SI{112}{\volt} across the primary coil and \SI{51}{\volt} across the secondary (under open circuit conditions with \SI{10}{\milli\metre} separation). This was greater than the NSR05F20NXT5G voltage rating of \SI{20}{\volt}, so new diodes were selected for the bridge rectifier to handle the higher voltage. The NXP PMEG10020ELRX Schottky barrier diode \cite{new_diode} was rated to \SI{100}{\volt} and \SI{2}{\ampere}, so was suitable for the application. It had a low forward voltage of \SI{0.4}{\volt} and a reverse leakage current of \SI{10}{\nano\ampere} at \SI{25}{\celsius}, which will lead to good performance.\\
 
 
