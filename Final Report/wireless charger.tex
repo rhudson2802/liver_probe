@@ -192,7 +192,6 @@ CCP2CON = %00001111
 
 The charger was tested at \SI{100}{\kilo\hertz} using a 100-turn rectangular coil for the primary and a 150-turn rectangular coil for the secondary. The coils measured \SI{70 x 35}{\milli\metre}. Rectangular coils were required to maximise the coil area for the probe casing geometry. Figure \ref{fig: rectangular coupling} demonstrates that the coupling between the rectangular coils was identical to the circular coils used in the breadboard tests, so the results for the circular coils will have the same order of magnitude if repeated with rectangular coils.\\
 
-
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{secondary current.PNG}
@@ -200,9 +199,7 @@ The charger was tested at \SI{100}{\kilo\hertz} using a 100-turn rectangular coi
 	\label{fig: secondary current}
 \end{figure}
 
-
-
-\begin{figure}[htb]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=\linewidth]{v2 charging current.png}
 	\caption{Charging current delivered to \SI{7.2}{\volt} battery load at different coil separations.}
@@ -211,7 +208,7 @@ The charger was tested at \SI{100}{\kilo\hertz} using a 100-turn rectangular coi
 
 The charging system was first tested to measure the current delivered to the \SI{7.2}{\volt} battery load at different coil separations. A \SI{3.2}{\pico\farad} capacitor was used to ensure the primary coil (with \SI{840}{\micro\henry} inductance) operated near resonance at \SI{100}{\kilo\hertz}. Figure \ref{fig: secondary current} shows that the current waveform observed in the batteries was a rectified sinusoid, as expected. Figure \ref{fig: current distance} demonstrates that the current-distance characteristics show a similar trend to the coupling-distance characteristics. The recommended charging current for the batteries is \SI{8}{\milli\ampere} \cite{rs_pro_batteries}, which is exceeded at distances less than \SI{28}{\milli\metre}. The minimum coil separation is \SI{10}{\milli\metre}, which includes the plastic casing surrounding the coils.\\
 
-\begin{figure}[htb]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=\linewidth]{v2 resonant frequency.png}
 	\caption{Charging current delivered to the \SI{7.2}{\volt} battery load where the resonant frequency is varied. The coils had a \SI{10}{\milli\metre} separation.}
@@ -223,7 +220,7 @@ The effect of changing the resonant frequency of the system was then measured. T
 %The charging current decreases at low and high frequencies. %******WHY THE DECREASE AT LOW/HIGH FREQUENCIES************
 %Therefore, the system will be designed to operate at \SI{55}{\kilo\hertz}, as this will provide the maximum current.\\
 
-\begin{figure}[htb]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=\linewidth]{v2 frequency.png}
 	\caption{Charging current delivered to the \SI{7.2}{\volt} battery load as a function of drive frequency for a fixed \SI{55}{\kilo\hertz} LC resonant frequency. The coils had a \SI{10}{\milli\metre} separation.}
@@ -355,7 +352,7 @@ The base unit required two voltage converters to generate a \SI{5}{\volt} and \S
 	\label{fig: base ldos}
 \end{figure}
 
-The \SI{3.3}{\volt} rail could be created by stepping down either the \SI{12}{\volt} or the \SI{5}{\volt} rail (see figure \ref{fig: base ldos}). Both topologies led to the same total conversion loss of \SI{1.14}{\watt}, but the parallel topology was chosen because the \SI{5}{\volt} converter had a smaller output current, so it was less likely to reach the maximum available output current. To prevent overheating, the converters were set a maximum temperature rise of \SI{100}{\celsius} when operating at full output current. This meant that the junction-to-air thermal resistance had to be less than \SI{268}{\celsius\per\watt} for the \SI{5}{\volt} converter and \SI{86.2}{\celsius\per\watt} for the \SI{3.3}{\volt} converter. 
+The \SI{3.3}{\volt} rail could be created by stepping down either the \SI{12}{\volt} or the \SI{5}{\volt} rail (see figure \ref{fig: base ldos}). Both topologies led to the same total conversion loss of \SI{1.14}{\watt}, but the parallel topology was chosen because the \SI{5}{\volt} converter had a smaller output current, so it was less likely to reach the maximum available output current. To prevent overheating, the converters were set a maximum temperature rise of \SI{100}{\celsius} when operating at full output current. This meant that the junction-to-air thermal resistance had to be less than \SI{268}{\celsius\per\watt} for the \SI{5}{\volt} converter and \SI{86.2}{\celsius\per\watt} for the \SI{3.3}{\volt} converter. \\
 
 \begin{table}[htb]
 	\centering
