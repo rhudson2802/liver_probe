@@ -6,7 +6,7 @@
 	\label{fig: flowchart}
 \end{figure}
 
-\begin{figure}[htb]
+\begin{figure}[h!]
 	\centering
 	\begin{subfigure}[b]{0.4\linewidth}
 		\includegraphics[width=\linewidth]{menu screen.jpg}
@@ -32,7 +32,7 @@
 	\label{fig: lcd screens}
 \end{figure}
 
-Figure \ref{fig: flowchart} shows the flowchart for the base unit software. It has four states: ``menu'', ``take readings'', ``view readings, and ``delete readings''. Figure \ref{fig: lcd screens} shows what is displayed on the LCD for each state. The system boots up in the menu state, where the user navigates between the options by using the up and down buttons, and selects an option by pressing the OK button. Once an option is selected, the system moves to that state. The system will transition back to the menu state whenever the menu button is pressed, regardless of what the system is currently doing, because the menu button is connected to the $\overline{\text{MCLR}}$ hardware reset.\\
+Figure \ref{fig: flowchart} shows the flowchart for the base unit software. It has four states: ``menu'', ``take readings'', ``view readings, and ``delete readings''. Figure \ref{fig: lcd screens} shows what is displayed on the LCD for each state. The system boots up in the menu state, where the user navigates between the options by pressing the up and down buttons, and selects an option by pressing the OK button. Once an option is selected, the system moves to that state. The system will transition back to the menu state whenever the menu button is pressed, regardless of what the system is currently doing, because the menu button is connected to the $\overline{\text{MCLR}}$ hardware reset.\\
 
 In the ``take readings'' state, the system listens for data from the remote unit, and when it picks up a valid data packet, it will display it on the LCD. The system will compare the reading to a preset threshold for fatty/lean livers and display this to the user. It will also display the current time and the temperature of the remote unit.\\
 
