@@ -1,6 +1,0 @@
-* Develop system architecture for base so this can have a PCB made (display, memory, RTC etc)
-* Test out RF modules
-* Step up inductive charging to 12V to hopefully get better power output
-* Investigate coupling coefficient as a function of coil separation
-* Start working with different size/shape coils, which are more likely to be used by the probe
-* Model probe shapes in Play-doh
